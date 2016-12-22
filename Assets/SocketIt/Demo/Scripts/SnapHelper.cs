@@ -18,6 +18,7 @@ namespace SocketIt.Demo
             initPosition = snapSocketA.Module.transform.position;
             initRotation = snapSocketA.Module.transform.rotation;
 
+
             ISocketSnapper snapper = snapSocketA.Module.GetComponent<ISocketSnapper>();
 
             snapper.OnSnapStart += OnSnapStart;

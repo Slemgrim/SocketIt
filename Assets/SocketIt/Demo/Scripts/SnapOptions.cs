@@ -14,8 +14,8 @@ public class SnapOptions : MonoBehaviour {
         public Button ButtonRotationForward;
         public Button ButtonSetParent;
 
-        public Color ActiveButtonColor = Color.green;
-        public Color InActiveButtonColor = Color.gray;
+        private Color ActiveButtonColor = new Color(0,200,255, 1);
+        private Color InActiveButtonColor = new Color(0, 200, 255, .5f);
 
         void Start()
         {
