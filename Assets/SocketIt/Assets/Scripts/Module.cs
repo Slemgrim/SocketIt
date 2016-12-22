@@ -21,7 +21,7 @@ namespace SocketIt
             }
         }
 
-        public void Start()
+        public void Awake()
         {
             Sockets = new List<Socket>(GetComponentsInChildren<Socket>());
         }

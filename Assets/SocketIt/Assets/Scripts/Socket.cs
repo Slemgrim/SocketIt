@@ -30,7 +30,7 @@ namespace SocketIt {
             }
         }
 
-        public void Start()
+        public void Awake()
         {
             CheckModule();
         }

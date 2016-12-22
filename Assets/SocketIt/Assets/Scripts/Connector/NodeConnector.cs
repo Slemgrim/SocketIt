@@ -61,7 +61,7 @@ namespace SocketIt
 
         public bool Validate(Snap snap)
         {
-            ModuleNode node = snap.SocketB.Module.GetComponent<ModuleNode>();
+            ModuleNode node = snap.SocketB.Socket.Module.GetComponent<ModuleNode>();
             if (OnlyConnectToRootNodes && node != false && node.IsRootNode)
             {
                 return true;

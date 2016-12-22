@@ -16,7 +16,7 @@ namespace SocketIt
 
         private List<ISnapValidator> validators;
 
-        public void Start()
+        public void Awake()
         {
             Sockets = new List<SnapSocket>(GetComponentsInChildren<SnapSocket>());
             validators = new List<ISnapValidator>(GetComponents<ISnapValidator>());

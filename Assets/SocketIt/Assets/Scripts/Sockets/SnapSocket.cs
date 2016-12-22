@@ -6,10 +6,15 @@ namespace SocketIt
 {
     public class SnapSocket : MonoBehaviour
     {
-        public Module Module;
+        public delegate void SnapSocketEvent(Snap snap);
+        public event SnapSocketEvent OnSocketFound;
+        public event SnapSocketEvent OnSockerLost;
+
         private SnapModule SnapModule;
 
-        public Socket Socket;
+        private Socket socket;
+
+        private Module module;
 
         [Range(0.0f, 180.0f)]
         public float AngleLimit = 180;
@@ -43,52 +48,74 @@ namespace SocketIt
             }
         }
 
-        public void Start()
+        public Socket Socket
         {
-            Socket = GetComponent<Socket>();
+            get
+            {
+                return socket;
+            }
+        }
+
+        public Module Module
+        {
+            get
+            {
+                return module;
+            }
+        }
+
+        public void Awake()
+        {
+            socket = GetComponent<Socket>();
             if(Socket == null)
             {
                 throw new SocketException("SnapSocket needs a Socket component");
             }
 
-            if (Module == null)
-            {
-                throw new SocketException("SnapSocket needs a module");
-            }
+            module = socket.Module;
 
-            SnapModule = Module.GetComponent<SnapModule>();
+            SnapModule = socket.Module.GetComponent<SnapModule>();
 
             if (SnapModule == null)
             {
                 throw new SocketException("SnapSocket is not connected to a SnapModule");
-
             }
         }
 
-        public void Found(SnapSocket socket)
+        public void Found(SnapSocket OtherSnapSocket)
         {
-            if (!isValidSocket(socket))
+            if (!isValidSocket(OtherSnapSocket))
             {
                 return;
             }
 
-            SnapModule.OnSocketFound(this, socket);
-            socketInReach = socket;
+            if(OnSocketFound != null)
+            {
+                OnSocketFound(new Snap(this, OtherSnapSocket));
+            }
+
+            SnapModule.OnSocketFound(this, OtherSnapSocket);
+            socketInReach = OtherSnapSocket;
         }
 
-        public void Lost(SnapSocket socket)
+        public void Lost(SnapSocket otherSnapSocket)
         {
-            if (IsLocked || socket.IsLocked)
+            if (IsLocked || otherSnapSocket.IsLocked)
             {
                 return;
             }
 
-            if (socketInReach != socket)
+            if (socketInReach != otherSnapSocket)
             {
                 return;
             }
 
-            SnapModule.OnSocketLost(this, socket);
+            if (OnSockerLost != null)
+            {
+                OnSockerLost(new Snap(this, otherSnapSocket));
+            }
+
+            SnapModule.OnSocketLost(this, otherSnapSocket);
             socketInReach = null;
         }
 
@@ -111,39 +138,39 @@ namespace SocketIt
 
         }
 
-        private bool isValidSocket(SnapSocket socket)
+        private bool isValidSocket(SnapSocket otherSnapSocket)
         {
-            if (socket == this)
+            if (otherSnapSocket == this)
             {
                 return false;
             }
 
-            if (IsLocked || socket.IsLocked)
+            if (IsLocked || otherSnapSocket.IsLocked)
             {
                 return false;
             }
 
-            if (socket.Module == Module)
+            if (socket.Module == otherSnapSocket.Socket.Module)
             {
                 return false;
             }
 
-            if (Socket.IsConnected || socket.Socket.IsConnected)
+            if (Socket.IsConnected || otherSnapSocket.Socket.IsConnected)
             {
                 return false;
             }
 
-            if (AngleLimit < 180 && !isInsideAngle(socket))
+            if (AngleLimit < 180 && !isInsideAngle(otherSnapSocket))
             {
                 return false;
             }
 
-            if (socketInReach != null && socketInReach.Module == Module)
+            if (socketInReach != null && socketInReach.Socket.Module == otherSnapSocket.Socket.Module)
             {
                 return false;
             }
 
-            if (SnapModule.IsLocked || socket.SnapModule.IsLocked)
+            if (SnapModule.IsLocked || otherSnapSocket.SnapModule.IsLocked)
             {
                 return false;
             }

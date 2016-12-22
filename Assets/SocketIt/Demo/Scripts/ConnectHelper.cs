@@ -5,7 +5,7 @@ using System;
 
 namespace SocketIt.Demo
 {
-    public class SpaceConnector : MonoBehaviour
+    public class ConnectHelper : MonoBehaviour
     {
         public Socket socketA;
         public Socket socketB;
