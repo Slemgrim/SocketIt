@@ -6,6 +6,10 @@ namespace SocketIt {
 	
 	public class Socket : MonoBehaviour {
 
+        public delegate void SocketEvent(Connection connection);
+        public event SocketEvent OnConnect;
+        public event SocketEvent OnDisconnect;
+
         public Module Module;
 
         private Socket connectedSocket = null;
@@ -18,6 +22,14 @@ namespace SocketIt {
             }
         }
 
+        public Socket ConnectedSocket
+        {
+            get
+            {
+                return connectedSocket;
+            }
+        }
+
         public void Start()
         {
             CheckModule();
@@ -26,10 +38,10 @@ namespace SocketIt {
         public void Connect(Socket socket)
         {
             ConnectSocket(socket);
-            socket.OnConnect(this);
+            socket.ConnectOther(this);
         }
 
-        public void OnConnect(Socket socket)
+        public void ConnectOther(Socket socket)
         {
             ConnectSocket(socket);
         }
@@ -41,6 +53,11 @@ namespace SocketIt {
                 throw new SocketException("Socket Already Connected");
             }
 
+            if (OnConnect != null)
+            {
+                OnConnect(new Connection(this, socket));
+            }
+
             connectedSocket = socket;
             InformModuleOfConnect(socket);
         }
@@ -48,10 +65,11 @@ namespace SocketIt {
         public void Disconnect(Socket socket)
         {
             DisconnectSocket(socket);
-            socket.OnDisconnect(this);
+
+            socket.DisconnectOther(this);
         }
 
-        public void OnDisconnect(Socket socket)
+        public void DisconnectOther(Socket socket)
         {
             DisconnectSocket(socket);     
         }
@@ -61,6 +79,11 @@ namespace SocketIt {
             if (!IsConnected || socket != connectedSocket)
             {
                 return;
+            }
+
+            if (OnDisconnect != null)
+            {
+                OnDisconnect(new Connection(this, socket));
             }
 
             InformModuleOfDisconnect(connectedSocket);

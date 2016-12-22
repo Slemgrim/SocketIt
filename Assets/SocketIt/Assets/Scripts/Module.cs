@@ -123,7 +123,6 @@ namespace SocketIt
 
         private void AddConnection(Socket callingSocket, Socket otherSocket)
         {
-
             Connection connection = new Connection(callingSocket, otherSocket);            
             connectedModules.Add(connection);
 
