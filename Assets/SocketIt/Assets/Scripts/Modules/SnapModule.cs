@@ -5,6 +5,10 @@ namespace SocketIt
 {
     public class SnapModule : MonoBehaviour
     {
+        /**
+         * Only non static modules can snap. Uncheck this before you want to snap this module. We need this to prevent
+         * both modules snapping at the same time.
+         */
         public bool IsStatic = true;
         public bool IsLockedWhenSocketIsLocked = false;
         public bool IsLocked = false;

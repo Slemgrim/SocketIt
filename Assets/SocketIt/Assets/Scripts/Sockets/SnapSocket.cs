@@ -12,6 +12,7 @@ namespace SocketIt
 
         private SnapModule SnapModule;
 
+
         private Socket socket;
 
         private Module module;

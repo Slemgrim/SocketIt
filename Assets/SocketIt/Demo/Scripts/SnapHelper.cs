@@ -18,10 +18,10 @@ namespace SocketIt.Demo
             initPosition = snapSocketA.Module.transform.position;
             initRotation = snapSocketA.Module.transform.rotation;
 
-            ISocketSnapper snapperB = snapSocketB.Module.GetComponent<ISocketSnapper>();
+            ISocketSnapper snapper = snapSocketA.Module.GetComponent<ISocketSnapper>();
 
-            snapperB.OnSnapStart += OnSnapStart;
-            snapperB.OnSnapEnd += OnSnapEnd;
+            snapper.OnSnapStart += OnSnapStart;
+            snapper.OnSnapEnd += OnSnapEnd;
         }
 
         private void OnSnapEnd(SnapSocket ownSocket, SnapSocket otherSocket)
@@ -56,6 +56,7 @@ namespace SocketIt.Demo
             if (Input.GetKeyDown("r"))
             {
                 snapSocketA.Lost(snapSocketB);
+                snapSocketA.Module.transform.parent = null;
 
                 snapSocketA.Module.transform.position = initPosition;
                 snapSocketA.Module.transform.rotation = initRotation;
