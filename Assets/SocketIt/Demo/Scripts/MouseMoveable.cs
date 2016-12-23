@@ -15,8 +15,13 @@ namespace SocketIt.Demo
 
         private bool isSnapped = false;
 
+        private Vector3 mousePosition;
+
         public void Update()
         {
+            mousePosition = Input.mousePosition;
+            mousePosition.z = transform.position.z - Camera.main.transform.position.z;
+            mousePosition = Camera.main.ScreenToWorldPoint(mousePosition);
 
             if (Input.GetMouseButtonDown(0))
             {
@@ -39,13 +44,20 @@ namespace SocketIt.Demo
 
         private void Follow(GameObject mouseFollower)
         {
-            Vector3 mousePosition = Input.mousePosition;
-            mousePosition.z = transform.position.z - Camera.main.transform.position.z;
-            Vector3 newPosition = Camera.main.ScreenToWorldPoint(mousePosition);
-
-            if(isSnapped && Vector3.Distance(mouseFollower.transform.position, newPosition) > snapDistance)
+            if (isSnapped && Vector3.Distance(mouseFollower.transform.position, mousePosition) > snapDistance)
             {
                 isSnapped = false;
+                List<RaySocket> raySockets = new List<RaySocket>(mouseFollower.GetComponentsInChildren<RaySocket>());
+                foreach (RaySocket raySocket in raySockets)
+                {
+                    raySocket.Reset();
+                }
+
+                List<SnapSocket> snapSockets = new List<SnapSocket>(mouseFollower.GetComponentsInChildren<SnapSocket>());
+                foreach (SnapSocket snapSocket in snapSockets)
+                {
+                    snapSocket.Clear();
+                }
             }
 
             if (isSnapped)
@@ -53,7 +65,7 @@ namespace SocketIt.Demo
                 return;
             }
 
-            mouseFollower.transform.position = newPosition;
+            mouseFollower.transform.position = mousePosition;
 
         }
 
@@ -81,12 +93,24 @@ namespace SocketIt.Demo
                 snapper.OnSnapEnd += OnSnap;
 
                 MakeTransparent(mouseFollower);
+
+                List<RaySocket> raySockets = new List<RaySocket>(follower.GetComponentsInChildren<RaySocket>());
+                foreach(RaySocket raySocket in raySockets)
+                {
+                    raySocket.RaysActive = true;
+                }
             }
         }
 
         private void UnsetMouseFollower()
         {
             MakeOpaque(mouseFollower);
+
+            List<RaySocket> raySockets = new List<RaySocket>(mouseFollower.GetComponentsInChildren<RaySocket>());
+            foreach (RaySocket raySocket in raySockets)
+            {
+                raySocket.RaysActive = false;
+            }
 
             snapModule.IsStatic = true;
             mouseFollower = null;
@@ -105,30 +129,22 @@ namespace SocketIt.Demo
 
         private void MakeTransparent(GameObject go)
         {
-            List<Renderer> rendererList = new List<Renderer>(go.GetComponentsInChildren<Renderer>());
-            rendererList.Add(go.GetComponent<Renderer>());
-            foreach(Renderer renderer in rendererList)
+            List<TransparencyController> transparencyControllers = new List<TransparencyController>(go.GetComponentsInChildren<TransparencyController>());
+            transparencyControllers.Add(go.GetComponent<TransparencyController>());
+            foreach(TransparencyController controller in transparencyControllers)
             {
-                ChangeAlpha(renderer.material, 0.1f);
+                controller.MakeTransparent();
             }
         }
 
         private void MakeOpaque(GameObject go)
         {
-            List<Renderer> rendererList = new List<Renderer>(go.GetComponentsInChildren<Renderer>());
-            rendererList.Add(go.GetComponent<Renderer>());
-
-            foreach (Renderer renderer in rendererList)
+            List<TransparencyController> transparencyControllers = new List<TransparencyController>(go.GetComponentsInChildren<TransparencyController>());
+            transparencyControllers.Add(go.GetComponent<TransparencyController>());
+            foreach (TransparencyController controller in transparencyControllers)
             {
-                ChangeAlpha(renderer.material, 1f);
+                controller.RestoreDefault();
             }
-        }
-
-        private void ChangeAlpha(this Material mat, float alphaValue)
-        {
-            Color oldColor = mat.color;
-            Color newColor = new Color(oldColor.r, oldColor.g, oldColor.b, alphaValue);
-            mat.SetColor("_Color", newColor);
         }
     }
 }
