@@ -47,7 +47,7 @@ namespace SocketIt {
 
             if (OnSnapStart != null)
             {
-                OnSnapStart(ownSocket, otherSocket);
+                OnSnapStart(new Snap(ownSocket, otherSocket));
             }
 
             ownSocket.Lock();
@@ -66,7 +66,7 @@ namespace SocketIt {
 
             if (OnSnapEnd != null)
             {
-                OnSnapEnd(ownSocket, otherSocket);
+                OnSnapEnd(new Snap(ownSocket, otherSocket));
             }
         }
 

@@ -12,8 +12,11 @@ namespace SocketIt.Demo
         private SnapModule snapModule;
         private ISocketSnapper snapper;
         public float snapDistance = 1f;
+        public bool connectOnClick = false;
 
         private bool isSnapped = false;
+
+        private Snap snap;
 
         private Vector3 mousePosition;
 
@@ -25,8 +28,10 @@ namespace SocketIt.Demo
 
             if (Input.GetMouseButtonDown(0))
             {
+
                 if (mouseFollower != null)
                 {
+                    Connect();
                     UnsetMouseFollower();
                 }
                 else
@@ -40,6 +45,15 @@ namespace SocketIt.Demo
                 Follow(mouseFollower);
             }
 
+        }
+
+        private void Connect()
+        {
+            if (connectOnClick && snap != null)
+            {
+                Debug.Log("Connect");
+                snap.SocketA.GetComponent<Socket>().Connect(snap.SocketB.GetComponent<Socket>());
+            }
         }
 
         private void Follow(GameObject mouseFollower)
@@ -119,11 +133,13 @@ namespace SocketIt.Demo
             snapper.OnSnapEnd -= OnSnap;
             snapper = null;
             isSnapped = false;
+            snap = null;
 
         }
 
-        private void OnSnap(SnapSocket ownSocket, SnapSocket otherSocket)
+        private void OnSnap(Snap snap)
         {
+            this.snap = snap;
             isSnapped = true;
         }
 

@@ -42,7 +42,7 @@ namespace SocketIt
 
             if(OnSnapStart != null)
             {
-                OnSnapStart(snap.SocketA, snap.SocketB);
+                OnSnapStart(snap);
             }
         }
 
@@ -58,7 +58,7 @@ namespace SocketIt
 
             if (OnSnapEnd != null)
             {
-                OnSnapEnd(snap.SocketA, snap.SocketB);
+                OnSnapEnd(snap);
             }
 
             this.snap = null;

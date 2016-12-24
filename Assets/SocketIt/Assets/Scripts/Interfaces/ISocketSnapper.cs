@@ -2,7 +2,7 @@
 using System.Collections;
 
 namespace SocketIt {
-	public delegate void SnapEvent(SnapSocket ownSocket, SnapSocket otherSocket);
+	public delegate void SnapEvent(Snap snap);
 
 	public interface ISocketSnapper
 	{

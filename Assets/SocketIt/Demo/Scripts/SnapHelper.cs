@@ -25,25 +25,25 @@ namespace SocketIt.Demo
             snapper.OnSnapEnd += OnSnapEnd;
         }
 
-        private void OnSnapEnd(SnapSocket ownSocket, SnapSocket otherSocket)
+        private void OnSnapEnd(Snap snap)
         {
             Debug.Log(string.Format(
                    "Beginn snapping {0}.{1} to {2}.{3}",
-                   ownSocket.Module.name,
-                   ownSocket.name,
-                   otherSocket.Module.name,
-                   otherSocket.name
+                   snap.SocketA.Module.name,
+                   snap.SocketA.name,
+                   snap.SocketB.Module.name,
+                   snap.SocketB.name
             ));
         }
 
-        private void OnSnapStart(SnapSocket ownSocket, SnapSocket otherSocket)
+        private void OnSnapStart(Snap snap)
         {
             Debug.Log(string.Format(
                 "End snapping {0}.{1} to {2}.{3}",
-                ownSocket.Module.name,
-                ownSocket.name,
-                otherSocket.Module.name,
-                otherSocket.name
+                   snap.SocketA.Module.name,
+                   snap.SocketA.name,
+                   snap.SocketB.Module.name,
+                   snap.SocketB.name
             ));
         }
 
