@@ -108,6 +108,11 @@ namespace SocketIt
 
         public void Lost(SnapSocket otherSnapSocket)
         {
+            if(otherSnapSocket == null)
+            {
+                return;
+            }
+
             if (IsLocked || otherSnapSocket.IsLocked)
             {
                 return;

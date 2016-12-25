@@ -90,9 +90,10 @@ namespace SocketIt
                 return;
             }
 
-            //snap.SocketA.Module.transform.rotation = Quaternion.Slerp(snap.SocketA.Module.transform.rotation, targetRotation, Time.time * 0.05f);
+            snap.SocketA.Module.transform.rotation = Quaternion.Slerp(snap.SocketA.Module.transform.rotation, targetRotation, Time.time * 0.05f);
+            snap.SocketA.Module.transform.position = Vector3.Lerp(snap.SocketA.Module.transform.position, targetPosition, Time.time * 0.05f);
 
-            if(snap.SocketA.Module.transform.rotation == targetRotation)
+            if (snap.SocketA.Module.transform.rotation == targetRotation)
             {
                 StopSnapping();
             }

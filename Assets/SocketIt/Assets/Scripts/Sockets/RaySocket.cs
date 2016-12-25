@@ -6,7 +6,7 @@ namespace SocketIt
     public class RaySocket : MonoBehaviour
     {
 
-        public Camera camera;
+        public Camera cam;
         private SnapSocket socket;
 
         public bool RaysActive = false;
@@ -31,13 +31,13 @@ namespace SocketIt
                 return;
             }
 
-            if(camera == null)
+            if(cam == null)
             {
                 return;
             }
 
-            Vector3 origin = camera.transform.position;
-            Vector3 direction = (transform.position - camera.transform.position) ;
+            Vector3 origin = cam.transform.position;
+            Vector3 direction = (transform.position - cam.transform.position) ;
 
             Debug.DrawRay(origin, direction * 2, Color.green);
 
