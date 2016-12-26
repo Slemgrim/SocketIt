@@ -207,7 +207,12 @@ namespace SocketIt.Examples
         private void MakeTransparent(GameObject go)
         {
             List<TransparencyController> transparencyControllers = new List<TransparencyController>(go.GetComponentsInChildren<TransparencyController>());
-            transparencyControllers.Add(go.GetComponent<TransparencyController>());
+            TransparencyController transparencyController = go.GetComponent<TransparencyController>();
+
+            if (transparencyController != null)
+            {
+                transparencyControllers.Add(transparencyController);
+            }
             foreach (TransparencyController controller in transparencyControllers)
             {
                 controller.MakeTransparent();
@@ -220,7 +225,13 @@ namespace SocketIt.Examples
         private void MakeOpaque(GameObject go)
         {
             List<TransparencyController> transparencyControllers = new List<TransparencyController>(go.GetComponentsInChildren<TransparencyController>());
-            transparencyControllers.Add(go.GetComponent<TransparencyController>());
+            TransparencyController transparencyController = go.GetComponent<TransparencyController>();
+
+            if (transparencyController != null)
+            {
+                transparencyControllers.Add(transparencyController);
+            }
+
             foreach (TransparencyController controller in transparencyControllers)
             {
                 controller.RestoreDefault();

@@ -2,7 +2,7 @@
 using SocketIt.Examples;
 using System;
 
-namespace SocketIt.Example06
+namespace SocketIt.Examples
 {
     public class NodeControll : MonoBehaviour
     {
