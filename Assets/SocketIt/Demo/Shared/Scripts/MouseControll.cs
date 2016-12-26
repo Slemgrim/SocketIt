@@ -14,6 +14,17 @@ namespace SocketIt.Examples
          */
         public float snapDistance = 1f;
 
+        public delegate void MouseEvent(GameObject follower);
+        public event MouseEvent OnPickUp;
+        public event MouseEvent OnDropOff;
+        public event MouseEvent OnSnapStart;
+        public event MouseEvent OnSnapEnd;
+
+        /*
+         * Z distance of mouse pointer
+         */
+        private float mouseDistance = 0;
+
         /*
          * GameObject that is controlled by mouse pointer 
          */
@@ -50,8 +61,12 @@ namespace SocketIt.Examples
 
         private Vector3 GetCurrentMousePositionInWorldSpace()
         {
+            if (mouseDistance == 0) {
+                mouseDistance = transform.position.z - Camera.main.transform.position.z;
+            }
+
             Vector3 pos = Input.mousePosition;
-            pos.z = transform.position.z - Camera.main.transform.position.z;
+            pos.z = mouseDistance;
             pos = Camera.main.ScreenToWorldPoint(pos);
             return pos;
         }
@@ -89,6 +104,11 @@ namespace SocketIt.Examples
 
             // Make the clicked object transparent
             MakeTransparent(this.follower);
+
+            if (OnPickUp != null)
+            {
+                OnPickUp(follower);
+            }
             
         }
 
@@ -106,7 +126,7 @@ namespace SocketIt.Examples
 
             return null;
         }
-
+        
         private void UnsetMouseFollower()
         {
             // Remove all transparency
@@ -124,6 +144,11 @@ namespace SocketIt.Examples
             //Restore the module to static
             snapModule.IsStatic = true;
 
+            if (OnDropOff != null)
+            {
+                OnDropOff(follower);
+            }
+
             //Remove the reference to the follower;
             follower = null;
             snapper.OnSnapEnd -= OnSnap;
@@ -136,6 +161,14 @@ namespace SocketIt.Examples
         {
             //Mark the object as snapped so we can stop moving it around
             isSnapped = true;
+
+            //Reset mouse distance so we can make better calculations about distance between mouse and snapped object
+            mouseDistance = snap.SocketB.transform.position.z - Camera.main.transform.position.z;
+
+            if(OnSnapStart != null)
+            {
+                OnSnapStart(follower);
+            }
         }
 
         /**
@@ -152,6 +185,11 @@ namespace SocketIt.Examples
             if (isSnapped && Vector3.Distance(follower.transform.position, newPosition) > snapDistance)
             {
                 isSnapped = false;
+
+                if (OnSnapEnd != null)
+                {
+                    OnSnapEnd(follower);
+                }
             }
 
             //Do not update the position if the object is in snapping mode

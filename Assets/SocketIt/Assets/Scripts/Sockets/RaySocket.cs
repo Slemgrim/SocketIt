@@ -15,12 +15,15 @@ namespace SocketIt
         void Awake()
         {
             socket = GetComponent<SnapSocket>();
+
+            if(cam == null)
+            {
+                cam = Camera.main;
+            }
         }
 
         public void Reset()
         {
-            Debug.Log("Unset current");
-
             current = null;
         }
 
@@ -64,8 +67,6 @@ namespace SocketIt
                 {
                     continue;
                 }
-
-                Debug.Log("Set current");
 
                 current = raySocket;
                 socket.Found(raySocket.socket);

@@ -1,0 +1,60 @@
+﻿using UnityEngine;
+using System.Collections;
+using SocketIt.Examples;
+using System;
+using System.Collections.Generic;
+
+namespace SocketIt.Example05
+{
+    public class RayController : MonoBehaviour
+    {
+        private MouseControll mouseControll;
+
+        void Awake()
+        {
+            mouseControll = GetComponent<MouseControll>();
+            mouseControll.OnPickUp += OnPickUp;
+            mouseControll.OnDropOff += OnDropOff;
+            mouseControll.OnSnapEnd += ClearSockets;
+
+        }
+
+
+        private void OnPickUp(GameObject follower)
+        {
+            ClearSockets(follower);
+            SetRaysActive(follower, true);
+        }
+
+        private void OnDropOff(GameObject follower)
+        {
+            SetRaysActive(follower, false);
+        }
+
+        private void ClearSockets(GameObject follower)
+        {
+            List<SnapSocket> snapSockets = new List<SnapSocket>(follower.GetComponentsInChildren<SnapSocket>());
+            foreach (SnapSocket snapSocket in snapSockets)
+            {
+                snapSocket.Clear();
+            }
+
+            List<RaySocket> raySockets = new List<RaySocket>(follower.GetComponentsInChildren<RaySocket>());
+            foreach (RaySocket raySocket in raySockets)
+            {
+                raySocket.Reset();
+            }
+        }
+
+        private void SetRaysActive(GameObject follower, bool status)
+        {
+            List<RaySocket> raySockets = new List<RaySocket>(follower.GetComponentsInChildren<RaySocket>());
+            foreach (RaySocket raySocket in raySockets)
+            {
+                raySocket.RaysActive = status;
+            }
+        }
+    }
+}
+
+
