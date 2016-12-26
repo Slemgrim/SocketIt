@@ -4,21 +4,17 @@ using System;
 
 namespace SocketIt
 {
-    public class NodeConnector : MonoBehaviour, IModuleConnector, ISnapValidator
+    public class NodeConnector : MonoBehaviour, IModuleConnector
     {
         public event ModuleConnectEvent OnConnectEnd;
         public event ModuleConnectEvent OnConnectStart;
         public event ModuleConnectEvent OnDisconnectEnd;
         public event ModuleConnectEvent OnDisconnectStart;
 
-        public bool OnlyConnectToRootNodes = true;
-        public bool ConnectToChildNodes = true;
-
         private Module Module;
 
-        public void Start()
+        public void Awake()
         {
-			//return; 
             Module = GetComponent<Module>();
             Module.OnConnect += Connect;
             Module.OnDisconnect += Disconnect;
@@ -58,22 +54,6 @@ namespace SocketIt
             {
                 OnDisconnectEnd(connection);
             }
-        }
-
-        public bool Validate(Snap snap)
-        {
-            ModuleNode node = snap.SocketB.Socket.Module.GetComponent<ModuleNode>();
-            if (OnlyConnectToRootNodes && node != false && node.IsRootNode)
-            {
-                return true;
-            }
-
-            if (ConnectToChildNodes && node != false && node.ParentNode != null)
-            {
-                return true;
-            }
-
-            return false;
         }
     }
 }

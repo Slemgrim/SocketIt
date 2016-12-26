@@ -12,7 +12,7 @@ namespace SocketIt
         private ModuleNode parentNode;
         private List<ModuleNode> childNodes = new List<ModuleNode>();
 
-        private Module Module;
+        private Module module;
 
         public delegate void ModuleNodeEvent(ModuleNode node);
         public event ModuleNodeEvent OnConnectParent;
@@ -36,11 +36,19 @@ namespace SocketIt
             }
         }
 
+        public Module Module
+        {
+            get
+            {
+                return module;
+            }
+        }
+
         public void Start()
         {
-            Module = GetComponent<Module>();
-            Module.OnConnect += OnConnect;
-            Module.OnDisconnect += OnDisconnect;
+            module = GetComponent<Module>();
+            module.OnConnect += OnConnect;
+            module.OnDisconnect += OnDisconnect;
         }
 
         private void OnConnect(Connection connection)

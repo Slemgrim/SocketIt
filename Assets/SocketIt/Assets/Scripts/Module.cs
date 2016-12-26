@@ -148,7 +148,7 @@ namespace SocketIt
             }
         }
 
-        private Connection GetConnection(Module module)
+        public Connection GetConnection(Module module)
         {
             foreach (Connection connection in connectedModules)
             {
@@ -161,7 +161,7 @@ namespace SocketIt
             return null;
         }
 
-        private Connection GetConnection(Socket socket)
+        public Connection GetConnection(Socket socket)
         {
             foreach (Connection connection in connectedModules)
             {

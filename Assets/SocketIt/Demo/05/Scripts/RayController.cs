@@ -15,10 +15,9 @@ namespace SocketIt.Example05
             mouseControll = GetComponent<MouseControll>();
             mouseControll.OnPickUp += OnPickUp;
             mouseControll.OnDropOff += OnDropOff;
-            mouseControll.OnSnapEnd += ClearSockets;
+            mouseControll.OnSnapEnd += OnSnapEnd;
 
         }
-
 
         private void OnPickUp(GameObject follower)
         {
@@ -29,6 +28,11 @@ namespace SocketIt.Example05
         private void OnDropOff(GameObject follower)
         {
             SetRaysActive(follower, false);
+        }
+
+        private void OnSnapEnd(Snap snap)
+        {
+            ClearSockets(snap.SocketA.Module.gameObject);
         }
 
         private void ClearSockets(GameObject follower)

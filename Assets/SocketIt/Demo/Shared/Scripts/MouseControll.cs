@@ -17,8 +17,8 @@ namespace SocketIt.Examples
         public delegate void MouseEvent(GameObject follower);
         public event MouseEvent OnPickUp;
         public event MouseEvent OnDropOff;
-        public event MouseEvent OnSnapStart;
-        public event MouseEvent OnSnapEnd;
+        public event SnapEvent OnSnapStart;
+        public event SnapEvent OnSnapEnd;
 
         /*
          * Z distance of mouse pointer
@@ -33,7 +33,7 @@ namespace SocketIt.Examples
         /*
          * Is the follower in snapping mode
          */
-        private bool isSnapped = false;
+        private Snap currentSnap = null;
 
         /*
          * Current mouse position in world space.
@@ -154,20 +154,20 @@ namespace SocketIt.Examples
             snapper.OnSnapEnd -= OnSnap;
 
             //Reset the isSnapped property to avoid errors with the next followed module
-            isSnapped = false;
+            currentSnap = null;
         }
 
         private void OnSnap(Snap snap)
         {
             //Mark the object as snapped so we can stop moving it around
-            isSnapped = true;
+            currentSnap = snap;
 
             //Reset mouse distance so we can make better calculations about distance between mouse and snapped object
             mouseDistance = snap.SocketB.transform.position.z - Camera.main.transform.position.z;
 
             if(OnSnapStart != null)
             {
-                OnSnapStart(follower);
+                OnSnapStart(snap);
             }
         }
 
@@ -182,18 +182,18 @@ namespace SocketIt.Examples
             }
 
             //Stop snapping if the new position is to far away from a snaped follwer
-            if (isSnapped && Vector3.Distance(follower.transform.position, newPosition) > snapDistance)
+            if (currentSnap != null && Vector3.Distance(follower.transform.position, newPosition) > snapDistance)
             {
-                isSnapped = false;
-
                 if (OnSnapEnd != null)
                 {
-                    OnSnapEnd(follower);
+                    OnSnapEnd(currentSnap);
                 }
+
+                currentSnap = null;
             }
 
             //Do not update the position if the object is in snapping mode
-            if (isSnapped)
+            if (currentSnap != null)
             {
                 return;
             }
