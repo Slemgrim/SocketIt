@@ -14,11 +14,14 @@ public class SnapOptions : MonoBehaviour {
         public Button ButtonRotationForward;
         public Button ButtonSetParent;
 
-        private Color ActiveButtonColor = new Color(0,200,255, 1);
-        private Color InActiveButtonColor = new Color(0, 200, 255, .5f);
+        private Color ActiveButtonColor;
+        private Color InActiveButtonColor;
 
         void Start()
         {
+            ActiveButtonColor = ButtonPosition.colors.pressedColor;
+            InActiveButtonColor = ButtonPosition.colors.normalColor;
+
             UpdateButtons();
         }
 
@@ -26,7 +29,6 @@ public class SnapOptions : MonoBehaviour {
         {
             snapper.SnapPosition = !snapper.SnapPosition;
             UpdateButtons();
-
         }
 
         public void OnToggleRotationUp()
@@ -52,7 +54,6 @@ public class SnapOptions : MonoBehaviour {
 
         private void UpdateButtons()
         {
-
             SetButtonColor(ButtonPosition, snapper.SnapPosition ? ActiveButtonColor : InActiveButtonColor);
             SetButtonColor(ButtonRotationForward, snapper.SnapRotationForward ? ActiveButtonColor : InActiveButtonColor);
             SetButtonColor(ButtonRotationUp, snapper.SnapRotationUp ? ActiveButtonColor : InActiveButtonColor);
