@@ -40,6 +40,14 @@ namespace SocketIt.Examples
          */
         private Vector3 currentMousePosition;
 
+        public Snap CurrentSnap
+        {
+            get
+            {
+                return currentSnap;
+            }
+        }
+
         public void Update()
         {
             currentMousePosition = GetCurrentMousePositionInWorldSpace();

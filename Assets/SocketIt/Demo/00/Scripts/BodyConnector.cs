@@ -2,52 +2,78 @@
 using System.Collections;
 using System;
 using SocketIt.Examples;
+using System.Collections.Generic;
 
 namespace SocketIt.Example00
 {
-    public class BodyConnector : MonoBehaviour, IModuleConnector
+    public class BodyConnector : MonoBehaviour
     {
         public MouseControll mouseControll;
 
-        public event ModuleConnectEvent OnConnectEnd;
-        public event ModuleConnectEvent OnConnectStart;
-        public event ModuleConnectEvent OnDisconnectEnd;
-        public event ModuleConnectEvent OnDisconnectStart;
+        private Module module;
 
         public void Awake()
         {
-            Module module = GetComponent<Module>();
-            ISocketSnapper snapper = GetComponent<ISocketSnapper>();
-
+            module = GetComponent<Module>();
+            mouseControll.OnDropOff += OnDrop;
             module.OnConnect += OnConnect;
-            snapper.OnSnapEnd += OnSnap;
+            module.OnDisconnect += OnDisconnect;
+
             mouseControll.OnPickUp += OnPickUp;
+        }
+
+        private void OnDrop(GameObject follower)
+        {
+            if(follower == gameObject && mouseControll.CurrentSnap != null)
+            {
+                mouseControll.CurrentSnap.SocketA.Socket.Connect(mouseControll.CurrentSnap.SocketB.Socket);
+            }
         }
 
         private void OnPickUp(GameObject follower)
         {
-            follower.GetComponent<Module>().DisconnectAll();
-        }
-
-        private void OnSnap(Snap snap)
-        {
-            snap.SocketA.Socket.Connect(snap.SocketB.Socket);   
+            if (follower.GetComponent<ModuleNode>().ParentNode != null)
+            {
+                follower.GetComponent<Module>().Disconnect(follower.GetComponent<ModuleNode>().ParentNode.Module);
+            }
         }
 
         private void OnConnect(Connection connection)
         {
+            if(connection.Initiator.Module != module)
+            {
+                return;
+            }
+
             HingeJoint joint = gameObject.AddComponent<HingeJoint>();
 
             JointLimits limits = joint.limits;
-            limits.min = 0;
+            limits.min = -45;
             limits.bounciness = 0;
             limits.bounceMinVelocity = 0;
-            limits.max = 90;
+            limits.max = 45;
             joint.limits = limits;
             joint.useLimits = true;
 
             joint.connectedBody = connection.SocketB.Module.GetComponent<Rigidbody>();
+            joint.anchor = connection.SocketA.transform.localPosition;
+
+            connection.SocketA.Module.transform.SetParent(connection.SocketB.Module.transform);
+            
+        }
+
+        private void OnDisconnect(Connection connection)
+        {
+            List<HingeJoint> joints = new List<HingeJoint>(GetComponents<HingeJoint>());
+            foreach (HingeJoint joint in joints)
+            {
+                if (joint.connectedBody == connection.SocketB.Module.GetComponent<Rigidbody>())
+                {
+                    Destroy(joint);
+                }
+            }
+
+            connection.SocketA.Module.transform.SetParent(null);
         }
     }
-
 }

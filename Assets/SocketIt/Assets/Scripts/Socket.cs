@@ -37,16 +37,16 @@ namespace SocketIt {
 
         public void Connect(Socket socket)
         {
-            ConnectSocket(socket);
+            ConnectSocket(socket, this);
             socket.ConnectOther(this);
         }
 
         public void ConnectOther(Socket socket)
         {
-            ConnectSocket(socket);
+            ConnectSocket(socket, socket);
         }
 
-        private void ConnectSocket(Socket socket)
+        private void ConnectSocket(Socket socket, Socket initiator)
         {
             if (IsConnected)
             {
@@ -55,26 +55,26 @@ namespace SocketIt {
 
             if (OnConnect != null)
             {
-                OnConnect(new Connection(this, socket));
+                OnConnect(new Connection(this, socket, initiator));
             }
 
             connectedSocket = socket;
-            InformModuleOfConnect(socket);
+            InformModuleOfConnect(socket, initiator);
         }
 
         public void Disconnect(Socket socket)
         {
-            DisconnectSocket(socket);
+            DisconnectSocket(socket, this);
 
             socket.DisconnectOther(this);
         }
 
         public void DisconnectOther(Socket socket)
         {
-            DisconnectSocket(socket);     
+            DisconnectSocket(socket, socket);     
         }
 
-        private void DisconnectSocket(Socket socket)
+        private void DisconnectSocket(Socket socket, Socket initiator)
         {
             if (!IsConnected || socket != connectedSocket)
             {
@@ -83,10 +83,10 @@ namespace SocketIt {
 
             if (OnDisconnect != null)
             {
-                OnDisconnect(new Connection(this, socket));
+                OnDisconnect(new Connection(this, socket, initiator));
             }
 
-            InformModuleOfDisconnect(connectedSocket);
+            InformModuleOfDisconnect(connectedSocket, initiator);
             connectedSocket = null;
         }
 
@@ -105,14 +105,14 @@ namespace SocketIt {
             Gizmos.DrawIcon(transform.position, "Socket.png", true);
         }
 
-        private void InformModuleOfConnect(Socket otherSocket)
+        private void InformModuleOfConnect(Socket otherSocket, Socket initiator)
         {
-            Module.OnSocketConnect(this, otherSocket);
+            Module.OnSocketConnect(this, otherSocket, initiator);
         }
 
-        private void InformModuleOfDisconnect(Socket otherSocket)
+        private void InformModuleOfDisconnect(Socket otherSocket, Socket initiator)
         {
-            Module.OnSocketDisconnect(this, otherSocket);
+            Module.OnSocketDisconnect(this, otherSocket, initiator);
         }
 
         private void CheckModule()

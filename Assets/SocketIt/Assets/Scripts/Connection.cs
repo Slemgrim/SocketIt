@@ -8,11 +8,13 @@ namespace SocketIt {
     {
         public Socket SocketA;
         public Socket SocketB;
+        public Socket Initiator;
 
-        public Connection(Socket socketA, Socket socketB)
+        public Connection(Socket socketA, Socket socketB, Socket initiator)
         {
             SocketA = socketA;
             SocketB = socketB;
+            Initiator = initiator;
         }
     }
 }

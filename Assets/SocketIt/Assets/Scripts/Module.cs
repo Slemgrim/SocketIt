@@ -46,7 +46,7 @@ namespace SocketIt
             Connection connection = GetConnection(destoryedModule);
             if (connection != null)
             {
-                RemoveConnection(connection.SocketA, connection.SocketB);
+                RemoveConnection(connection.SocketA, connection.SocketB, connection.SocketB);
                 connection.SocketA.Clear();
             }
         }
@@ -68,18 +68,18 @@ namespace SocketIt
             Connection connection = GetConnection(destroyedSocket);
             if(connection != null)
             {
-                RemoveConnection(connection.SocketA, connection.SocketB);
+                RemoveConnection(connection.SocketA, connection.SocketB, connection.SocketB);
             }
         }
 
-        public void OnSocketConnect(Socket ownSocket, Socket otherSocket)
+        public void OnSocketConnect(Socket ownSocket, Socket otherSocket, Socket initiator)
         {
-            AddConnection(ownSocket, otherSocket);
+            AddConnection(ownSocket, otherSocket, initiator);
         }
 
-        public void OnSocketDisconnect(Socket ownSocket, Socket otherSocket)
+        public void OnSocketDisconnect(Socket ownSocket, Socket otherSocket, Socket initiator)
         {
-            RemoveConnection(ownSocket, otherSocket);
+            RemoveConnection(ownSocket, otherSocket, initiator);
         }
 
         public void DisconnectAll()
@@ -117,13 +117,13 @@ namespace SocketIt
             if(connection != null)
             {
                 connection.SocketB.Module.OnOtherSocketDestroyed(socketToRemove);
-                RemoveConnection(connection.SocketA, connection.SocketB);
+                RemoveConnection(connection.SocketA, connection.SocketB, connection.SocketB);
             }
         }
 
-        private void AddConnection(Socket callingSocket, Socket otherSocket)
+        private void AddConnection(Socket callingSocket, Socket otherSocket, Socket initiator)
         {
-            Connection connection = new Connection(callingSocket, otherSocket);            
+            Connection connection = new Connection(callingSocket, otherSocket, initiator);            
             connectedModules.Add(connection);
 
             if (OnConnect != null)
@@ -132,7 +132,7 @@ namespace SocketIt
             }
         }
 
-        private void RemoveConnection(Socket callingSocket, Socket otherSocket)
+        private void RemoveConnection(Socket callingSocket, Socket otherSocket, Socket initiator)
         {
             Connection connection = GetConnection(otherSocket);
             if (connection == null)
