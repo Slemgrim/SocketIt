@@ -15,6 +15,7 @@ namespace SocketIt.Examples
 
 		public string title;
 		public string description;
+        public string tutorial;
 
 		private Text text;
 
@@ -40,7 +41,7 @@ namespace SocketIt.Examples
 
 		private void SetActive(){
 			text.color = activeColor;
-			gui.SetDescription (title, description);
+			gui.SetDescription (title, description, tutorial);
 		}
 
 		private void SetInactive(){

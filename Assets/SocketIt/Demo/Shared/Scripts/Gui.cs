@@ -7,16 +7,26 @@ using UnityEngine.UI;
 namespace SocketIt.Examples {
 	public class Gui : MonoBehaviour {
 
+        public static Gui instance;
+
 		public string startScene = "Intro";
 		private List<LoadSceneOnClick> sceneItems;
 
 		public Text Title;
 		public Text Description;
+        public Text Tutorial;
 
-		public void Awake(){
-			DontDestroyOnLoad(transform.gameObject);
-			sceneItems = new List<LoadSceneOnClick> (GetComponentsInChildren<LoadSceneOnClick>());
-		}
+        public void Awake(){
+            if(instance == null)
+            {
+                DontDestroyOnLoad(transform.gameObject);
+                sceneItems = new List<LoadSceneOnClick>(GetComponentsInChildren<LoadSceneOnClick>());
+                instance = this;
+            } else if (instance != this)
+            {
+                Destroy(gameObject);
+            }
+        }
 
 		public void Start(){
 			SceneManager.LoadScene(startScene);
@@ -29,9 +39,10 @@ namespace SocketIt.Examples {
 			}
 		}
 
-		public void SetDescription(string title, string description){
+		public void SetDescription(string title, string description, string tutorial){
 			Title.text = title;
 			Description.text = description;
+            Tutorial.text = tutorial;
 		}
 	}
 }
