@@ -20,6 +20,8 @@ namespace SocketIt.Examples
         public event SnapEvent OnSnapStart;
         public event SnapEvent OnSnapEnd;
 
+        private bool isEnabled = true;
+
         /*
          * Z distance of mouse pointer
          */
@@ -50,6 +52,11 @@ namespace SocketIt.Examples
 
         public void Update()
         {
+            if (!isEnabled)
+            {
+                return;
+            }
+
             currentMousePosition = GetCurrentMousePositionInWorldSpace();
 
             if (Input.GetMouseButtonDown(0))
@@ -65,6 +72,17 @@ namespace SocketIt.Examples
             }
 
             Follow(follower, currentMousePosition);
+        }
+
+        public void Enable()
+        {
+            isEnabled = true;
+        }
+
+        public void Disable()
+        {
+            UnsetMouseFollower();
+            isEnabled = false;
         }
 
         private Vector3 GetCurrentMousePositionInWorldSpace()
@@ -137,6 +155,11 @@ namespace SocketIt.Examples
         
         private void UnsetMouseFollower()
         {
+            if(follower == null)
+            {
+                return;
+            }
+
             // Remove all transparency
             MakeOpaque(follower);
 

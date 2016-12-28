@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using SocketIt.Examples;
 
 namespace SocketIt.Example00
 {
@@ -10,7 +11,14 @@ namespace SocketIt.Example00
         private List<Quaternion> rotations = new List<Quaternion>();
         private List<Vector3> positions = new List<Vector3>();
 
+        private MouseControll mouseControll;
+
         private bool hasGravity = false;
+
+        void Start()
+        {
+            mouseControll = GetComponent<MouseControll>();
+        }
 
         void Update()
         {
@@ -19,9 +27,11 @@ namespace SocketIt.Example00
                 if (hasGravity)
                 {
                     UnsetGravity();
+                    mouseControll.Enable();
                 }
                 else
                 {
+                    mouseControll.Disable();
                     SetGravity();
                 }
             }
