@@ -13,6 +13,8 @@ namespace SocketIt.Demo
         private Vector3 initPosition;
         private Quaternion initRotation;
 
+        private bool isSnapped = false;
+
         void Start()
         {
             initPosition = snapSocketA.Module.transform.position;
@@ -51,16 +53,19 @@ namespace SocketIt.Demo
         {
             if (Input.GetKeyDown("space"))
             {
-                snapSocketA.Found(snapSocketB);
-            }
+                if (isSnapped)
+                {
+                    snapSocketA.Lost(snapSocketB);
+                    snapSocketA.Module.transform.parent = null;
 
-            if (Input.GetKeyDown("r"))
-            {
-                snapSocketA.Lost(snapSocketB);
-                snapSocketA.Module.transform.parent = null;
-
-                snapSocketA.Module.transform.position = initPosition;
-                snapSocketA.Module.transform.rotation = initRotation;
+                    snapSocketA.Module.transform.position = initPosition;
+                    snapSocketA.Module.transform.rotation = initRotation;
+                    isSnapped = false;
+                } else
+                {
+                    snapSocketA.Found(snapSocketB);
+                    isSnapped = true;
+                }
             }
         }
     }

@@ -9,7 +9,6 @@ namespace SocketIt.Examples {
 
         public static Gui instance;
 
-		public string startScene = "Intro";
 		private List<LoadSceneOnClick> sceneItems;
 
 		public Text Title;
@@ -29,7 +28,6 @@ namespace SocketIt.Examples {
         }
 
 		public void Start(){
-			SceneManager.LoadScene(startScene);
 			SceneManager.sceneLoaded += OnSceneLoad;
 		}
 
