@@ -79,6 +79,11 @@ namespace SocketIt
             {
                 gameObject.AddComponent<Socket>();
             }
+
+            if (GetComponent<Socket>().Module.GetComponent<SnapModule>() == null)
+            {
+                GetComponent<Socket>().Module.gameObject.AddComponent<SnapModule>();
+            }
         }
 
         public void Awake()
