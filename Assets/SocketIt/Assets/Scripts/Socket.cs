@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace SocketIt {
-	
-	public class Socket : MonoBehaviour {
+    [AddComponentMenu("SocketIt/Socket/Socket")]
+    public class Socket : MonoBehaviour {
 
         public delegate void SocketEvent(Connection connection);
         public event SocketEvent OnConnect;
@@ -32,7 +32,10 @@ namespace SocketIt {
 
         public void Awake()
         {
-            CheckModule();
+            if (Module == null)
+            {
+                throw new SocketException("Socket needs a module");
+            }
         }
 
         public void Connect(Socket socket)
@@ -44,6 +47,15 @@ namespace SocketIt {
         public void ConnectOther(Socket socket)
         {
             ConnectSocket(socket, socket);
+        }
+
+        public void Reset()
+        {
+            Module = GetComponentInParent<Module>();
+            if(Module == null)
+            {
+                Debug.LogWarning("No Module component found in parent objects. Manual allocation is required");
+            }
         }
 
         private void ConnectSocket(Socket socket, Socket initiator)
@@ -113,14 +125,6 @@ namespace SocketIt {
         private void InformModuleOfDisconnect(Socket otherSocket, Socket initiator)
         {
             Module.OnSocketDisconnect(this, otherSocket, initiator);
-        }
-
-        private void CheckModule()
-        {
-            if (Module == null)
-            {
-                throw new SocketException("Socket needs a module");
-            }
         }
 
         private bool isValidSocket(Socket socket)

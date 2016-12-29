@@ -3,6 +3,7 @@ using System.Collections;
 
 namespace SocketIt
 {
+    [AddComponentMenu("SocketIt/Socket/Ray Socket")]
     public class RaySocket : MonoBehaviour
     {
 
@@ -24,6 +25,13 @@ namespace SocketIt
 
         public void Reset()
         {
+            if (GetComponent<Socket>() == null)
+            {
+                gameObject.AddComponent<Socket>();
+            }
+
+            cam = Camera.main;
+
             current = null;
         }
 

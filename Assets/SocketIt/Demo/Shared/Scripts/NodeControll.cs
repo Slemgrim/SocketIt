@@ -53,7 +53,7 @@ namespace SocketIt.Examples
         private void ClearParentConnection(GameObject follower)
         {
             follower.transform.parent = null;
-            ModuleNode node = follower.GetComponent<ModuleNode>();
+            NodeModule node = follower.GetComponent<NodeModule>();
 
             if(node.ParentNode == null)
             {

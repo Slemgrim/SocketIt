@@ -20,12 +20,12 @@ namespace SocketIt.Example00
             baseModule.OnNodeDisconnectedIndirect += OnNodeDisconnected;
         }
 
-        private void OnNodeConnected(ModuleNode node)
+        private void OnNodeConnected(NodeModule node)
         {
             node.GetComponent<Renderer>().material = activeMaterial;
         }
 
-        private void OnNodeDisconnected(ModuleNode node)
+        private void OnNodeDisconnected(NodeModule node)
         {
             node.GetComponent<Renderer>().material = inactiveMaterial;
         }

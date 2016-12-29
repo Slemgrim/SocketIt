@@ -5,35 +5,44 @@ using System;
 
 namespace SocketIt
 {
+    [AddComponentMenu("SocketIt/Module/Base Module")]
     public class BaseModule : MonoBehaviour
     {
-        public List<ModuleNode> ConnectedModules = new List<ModuleNode>();
+        public List<NodeModule> ConnectedModules = new List<NodeModule>();
 
-        public delegate void BaseEvent(ModuleNode node);
+        public delegate void BaseEvent(NodeModule node);
 
         public event BaseEvent OnNodeConnected;
         public event BaseEvent OnNodeConnectedIndirect;
         public event BaseEvent OnNodeDisconnected;
         public event BaseEvent OnNodeDisconnectedIndirect;
 
-        private ModuleNode node;
+        private NodeModule Node;
 
-        public void Start()
+        public void Reset()
         {
-            node = GetComponent<ModuleNode>();
-            if (node != null)
+            if (GetComponent<NodeModule>() == null)
             {
-                node.OnConnectChild += OnConnectChild;
-                node.OnDisconnectChild += OnDisconnectChild;
+                gameObject.AddComponent<NodeModule>();
             }
         }
 
-        private void OnConnectChild(ModuleNode node)
+        public void Start()
         {
-            List<ModuleNode> affectedNodes = GetAllChilds(node);
+            Node = GetComponent<NodeModule>();
+            if (Node != null)
+            {
+                Node.OnConnectChild += OnConnectChild;
+                Node.OnDisconnectChild += OnDisconnectChild;
+            }
+        }
+
+        private void OnConnectChild(NodeModule node)
+        {
+            List<NodeModule> affectedNodes = GetAllChilds(node);
             affectedNodes.Add(node);
 
-            foreach (ModuleNode affectedNode in affectedNodes)
+            foreach (NodeModule affectedNode in affectedNodes)
             {
                 Activate(affectedNode);
                 AddToConnectedModules(affectedNode);
@@ -54,12 +63,12 @@ namespace SocketIt
             }
         }
 
-        private void OnDisconnectChild(ModuleNode node)
+        private void OnDisconnectChild(NodeModule node)
         {
-            List<ModuleNode> affectedNodes = GetAllChilds(node);
+            List<NodeModule> affectedNodes = GetAllChilds(node);
             affectedNodes.Add(node);
             
-            foreach(ModuleNode affectedNode in affectedNodes)
+            foreach(NodeModule affectedNode in affectedNodes)
             {
                 Deactivate(affectedNode);
                 RemoveFromConnectedModules(affectedNode);
@@ -81,13 +90,13 @@ namespace SocketIt
             }
         }
 
-        private List<ModuleNode> GetAllChilds(ModuleNode node)
+        private List<NodeModule> GetAllChilds(NodeModule node)
         {
-            List<ModuleNode> childs = new List<ModuleNode>();
+            List<NodeModule> childs = new List<NodeModule>();
 
-            childs = new List<ModuleNode>(node.ChildNodes);
+            childs = new List<NodeModule>(node.ChildNodes);
 
-            foreach (ModuleNode child in node.ChildNodes)
+            foreach (NodeModule child in node.ChildNodes)
             {
                 childs.AddRange(GetAllChilds(child));
             }
@@ -95,7 +104,7 @@ namespace SocketIt
             return childs;
         }
 
-        private void AddToConnectedModules(ModuleNode node)
+        private void AddToConnectedModules(NodeModule node)
         {
             if (!ConnectedModules.Contains(node))
             {
@@ -103,7 +112,7 @@ namespace SocketIt
             }
         }
 
-        private void RemoveFromConnectedModules(ModuleNode node)
+        private void RemoveFromConnectedModules(NodeModule node)
         {
             if (ConnectedModules.Contains(node))
             {
@@ -111,7 +120,7 @@ namespace SocketIt
             }
         }
 
-        private void Activate(ModuleNode node)
+        private void Activate(NodeModule node)
         {
             IBaseConnector connector = node.GetComponent<IBaseConnector>();
             if(connector != null)
@@ -120,7 +129,7 @@ namespace SocketIt
             }
         }
 
-        private void Deactivate(ModuleNode node)
+        private void Deactivate(NodeModule node)
         {
             IBaseConnector connector = node.GetComponent<IBaseConnector>();
             if (connector != null)

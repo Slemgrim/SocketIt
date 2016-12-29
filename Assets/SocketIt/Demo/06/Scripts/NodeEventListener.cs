@@ -6,19 +6,19 @@ namespace SocketIt.Example06
 {
     public class NodeEventListener : MonoBehaviour
     {
-        ModuleNode node;
+        NodeModule node;
 
 
         void Awake()
         {
-            node = GetComponent<ModuleNode>();
+            node = GetComponent<NodeModule>();
             node.OnConnectChild += OnConnectChild;
             node.OnConnectParent += OnConnectParent;
             node.OnDisconnectChild += OnDisconnectChild;
             node.OnDisconnectParent += OnDisconnectParent;
         }
 
-        private void OnDisconnectParent(ModuleNode node)
+        private void OnDisconnectParent(NodeModule node)
         {
             Debug.Log(string.Format(
                 "Node {0} disconnected parent {1}",
@@ -27,7 +27,7 @@ namespace SocketIt.Example06
             ));
         }
 
-        private void OnDisconnectChild(ModuleNode node)
+        private void OnDisconnectChild(NodeModule node)
         {
             Debug.Log(string.Format(
                 "Node {0} disconnected child {1}",
@@ -36,7 +36,7 @@ namespace SocketIt.Example06
             ));
         }
 
-        private void OnConnectParent(ModuleNode node)
+        private void OnConnectParent(NodeModule node)
         {
             Debug.Log(string.Format(
                 "Node {0} connected parent {1}",
@@ -45,7 +45,7 @@ namespace SocketIt.Example06
             ));
         }
 
-        private void OnConnectChild(ModuleNode node)
+        private void OnConnectChild(NodeModule node)
         {
             Debug.Log(string.Format(
                 "Node {0} connected child {1}",

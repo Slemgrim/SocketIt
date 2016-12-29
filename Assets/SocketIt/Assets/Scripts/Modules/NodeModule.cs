@@ -5,22 +5,23 @@ using System;
 
 namespace SocketIt
 {
-    public class ModuleNode : MonoBehaviour
+    [AddComponentMenu("SocketIt/Module/Node Module")]
+    public class NodeModule : MonoBehaviour
     {
         public bool IsRootNode = false;
 
-        private ModuleNode parentNode;
-        private List<ModuleNode> childNodes = new List<ModuleNode>();
+        private NodeModule parentNode;
+        private List<NodeModule> childNodes = new List<NodeModule>();
 
         private Module module;
 
-        public delegate void ModuleNodeEvent(ModuleNode node);
+        public delegate void ModuleNodeEvent(NodeModule node);
         public event ModuleNodeEvent OnConnectParent;
         public event ModuleNodeEvent OnDisconnectParent;
         public event ModuleNodeEvent OnConnectChild;
         public event ModuleNodeEvent OnDisconnectChild;
 
-        public ModuleNode ParentNode
+        public NodeModule ParentNode
         {
             get
             {
@@ -28,7 +29,7 @@ namespace SocketIt
             }
         }
 
-        public List<ModuleNode> ChildNodes
+        public List<NodeModule> ChildNodes
         {
             get
             {
@@ -44,6 +45,14 @@ namespace SocketIt
             }
         }
 
+        public void Reset()
+        {
+            if (GetComponent<Module>() == null)
+            {
+                gameObject.AddComponent<Module>();
+            }
+        }
+
         public void Start()
         {
             module = GetComponent<Module>();
@@ -53,7 +62,7 @@ namespace SocketIt
 
         private void OnConnect(Connection connection)
         {
-            ModuleNode otherNode = connection.SocketB.Module.GetComponent<ModuleNode>();
+            NodeModule otherNode = connection.SocketB.Module.GetComponent<NodeModule>();
         
             if (IsChildNode(otherNode))
             {
@@ -65,7 +74,7 @@ namespace SocketIt
 
         private void OnDisconnect(Connection connection)
         {
-            ModuleNode otherNode = connection.SocketB.Module.GetComponent<ModuleNode>();
+            NodeModule otherNode = connection.SocketB.Module.GetComponent<NodeModule>();
             if (otherNode == null)
             {
                 return;
@@ -81,17 +90,17 @@ namespace SocketIt
             }
         }
 
-        private bool IsParentNode(ModuleNode otherNode)
+        private bool IsParentNode(NodeModule otherNode)
         {
             return ParentNode == otherNode;
         }
 
-        private bool IsConnectedChildNode(ModuleNode otherNode)
+        private bool IsConnectedChildNode(NodeModule otherNode)
         {
             return ChildNodes.Contains(otherNode);
         }
 
-        private bool IsChildNode(ModuleNode otherNode)
+        private bool IsChildNode(NodeModule otherNode)
         {
             if (parentNode == null && !IsRootNode && (otherNode.IsRootNode || otherNode.parentNode != null))
             {
@@ -101,7 +110,7 @@ namespace SocketIt
             return false;
         }
 
-        private void ConnectChild(ModuleNode otherNode)
+        private void ConnectChild(NodeModule otherNode)
         {
             if (childNodes.Contains(otherNode))
             {
@@ -119,7 +128,7 @@ namespace SocketIt
             childNodes.Add(otherNode);
         }
 
-        private void DisconnectChild(ModuleNode otherNode)
+        private void DisconnectChild(NodeModule otherNode)
         {
             otherNode.OnConnectChild -= BroadcastChildConnect;
             otherNode.OnDisconnectChild -= BroadcastChildDisconnect;
@@ -132,7 +141,7 @@ namespace SocketIt
             ChildNodes.Remove(otherNode);
         }
 
-        private void ConnectParent(ModuleNode otherNode)
+        private void ConnectParent(NodeModule otherNode)
         {
             if (OnConnectParent != null)
             {
@@ -142,7 +151,7 @@ namespace SocketIt
             parentNode = otherNode;
         }
 
-        private void DisconnectParent(ModuleNode otherNode)
+        private void DisconnectParent(NodeModule otherNode)
         {
             if (OnDisconnectParent != null)
             {
@@ -152,7 +161,7 @@ namespace SocketIt
             parentNode = null;
         }
 
-        private void BroadcastChildConnect(ModuleNode otherNode)
+        private void BroadcastChildConnect(NodeModule otherNode)
         {
             if (OnConnectChild != null)
             {
@@ -160,7 +169,7 @@ namespace SocketIt
             }
         }
 
-        private void BroadcastChildDisconnect(ModuleNode otherNode)
+        private void BroadcastChildDisconnect(NodeModule otherNode)
         {
             if (OnDisconnectChild != null)
             {

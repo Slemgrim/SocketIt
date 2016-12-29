@@ -3,13 +3,14 @@ using System.Collections.Generic;
 
 namespace SocketIt
 {
+    [AddComponentMenu("SocketIt/Module/Module")]
     public class Module : MonoBehaviour
     {
         public delegate void ModuleEvent(Connection connection);
         public event ModuleEvent OnConnect;
         public event ModuleEvent OnDisconnect;
 
-        private List<Socket> Sockets;
+        private List<Socket> Sockets = new List<Socket>();
 
         private List<Connection> connectedModules = new List<Connection>();
 
@@ -24,6 +25,19 @@ namespace SocketIt
         public void Awake()
         {
             Sockets = new List<Socket>(GetComponentsInChildren<Socket>());
+        }
+
+        public void Reset()
+        {
+            Socket[] sockets = GetComponentsInChildren<Socket>();
+            foreach(Socket socket in sockets)
+            {
+                Sockets.Add(socket);
+                if(socket.Module == null)
+                {
+                    socket.Module = this;
+                }
+            }
         }
 
         /**

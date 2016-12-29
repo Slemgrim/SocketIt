@@ -19,7 +19,7 @@ namespace SocketIt.Example07
 
         }
 
-        private void OnNodeDisconnectedIndirect(ModuleNode node)
+        private void OnNodeDisconnectedIndirect(NodeModule node)
         {
             Debug.Log(string.Format(
                 "Node {0} disconnected indirect to {1}",
@@ -28,7 +28,7 @@ namespace SocketIt.Example07
             ));
         }
 
-        private void OnNodeDisconnected(ModuleNode node)
+        private void OnNodeDisconnected(NodeModule node)
         {
             Debug.Log(string.Format(
                 "Node {0} disconnected to {1}",
@@ -37,7 +37,7 @@ namespace SocketIt.Example07
             ));
         }
 
-        private void OnNodeConnectedIndirect(ModuleNode node)
+        private void OnNodeConnectedIndirect(NodeModule node)
         {
             Debug.Log(string.Format(
                 "Node {0} connected indirect to {1}",
@@ -46,7 +46,7 @@ namespace SocketIt.Example07
             ));
         }
 
-        private void OnNodeConnected(ModuleNode node)
+        private void OnNodeConnected(NodeModule node)
         {
             Debug.Log(string.Format(
                 "Node {0} connected to {1}",

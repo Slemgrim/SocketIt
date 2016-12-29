@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace SocketIt
 {
+    [AddComponentMenu("SocketIt/Module/Snap Module")]
     public class SnapModule : MonoBehaviour
     {
         /**
@@ -19,6 +20,14 @@ namespace SocketIt
         public event SnapModuleEvent OnSnap;
 
         private List<ISnapValidator> validators;
+
+        public void Reset()
+        {
+            if (GetComponent<Module>() == null)
+            {
+                gameObject.AddComponent<Module>();
+            }
+        }
 
         public void Awake()
         {

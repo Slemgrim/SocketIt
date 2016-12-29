@@ -32,9 +32,9 @@ namespace SocketIt.Example00
 
         private void OnPickUp(GameObject follower)
         {
-            if (follower.GetComponent<ModuleNode>().ParentNode != null)
+            if (follower.GetComponent<NodeModule>().ParentNode != null)
             {
-                follower.GetComponent<Module>().Disconnect(follower.GetComponent<ModuleNode>().ParentNode.Module);
+                follower.GetComponent<Module>().Disconnect(follower.GetComponent<NodeModule>().ParentNode.Module);
             }
         }
 

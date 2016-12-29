@@ -9,7 +9,7 @@ namespace SocketIt
 
         public bool Validate(Snap snap)
         {
-            ModuleNode node = snap.SocketB.Socket.Module.GetComponent<ModuleNode>();
+            NodeModule node = snap.SocketB.Socket.Module.GetComponent<NodeModule>();
 
             if (IsRootNode(node) || IsConnectedToTree(node))
             {
@@ -19,7 +19,7 @@ namespace SocketIt
             return false;
         }
 
-        private bool IsRootNode(ModuleNode node)
+        private bool IsRootNode(NodeModule node)
         {
             if (node != false && node.IsRootNode)
             {
@@ -29,7 +29,7 @@ namespace SocketIt
             return false;
         }
 
-        private bool IsConnectedToTree(ModuleNode node)
+        private bool IsConnectedToTree(NodeModule node)
         {
             if (ConnectToChildNodes && node != false && node.ParentNode != null)
             {
