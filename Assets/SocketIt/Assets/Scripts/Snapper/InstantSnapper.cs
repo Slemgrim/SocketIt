@@ -3,8 +3,9 @@ using System.Collections;
 using System;
 
 namespace SocketIt {
-
-	public class InstantSnapper : MonoBehaviour, ISocketSnapper
+    [RequireComponent(typeof(SnapModule))]
+    [AddComponentMenu("SocketIt/Snapper/Instant Snapper")]
+    public class InstantSnapper : MonoBehaviour, ISocketSnapper
 	{
 		public event SnapEvent OnSnapStart;
 		public event SnapEvent OnSnapEnd;

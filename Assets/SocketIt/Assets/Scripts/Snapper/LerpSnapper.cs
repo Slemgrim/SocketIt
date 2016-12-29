@@ -4,6 +4,8 @@ using System;
 
 namespace SocketIt
 {
+    [RequireComponent(typeof(SnapModule))]
+    [AddComponentMenu("SocketIt/Snapper/LERP Snapper")]
     public class LerpSnapper : MonoBehaviour, ISocketSnapper
     {
         private Quaternion targetRotation;

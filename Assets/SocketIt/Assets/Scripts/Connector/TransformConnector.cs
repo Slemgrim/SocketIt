@@ -4,6 +4,8 @@ using System;
 
 namespace SocketIt
 {
+    [RequireComponent(typeof(Module))]
+    [AddComponentMenu("SocketIt/Connector/Transform Connector")]
     public class TransformConnector : MonoBehaviour, IModuleConnector
     {
         public event ModuleConnectEvent OnConnectEnd;

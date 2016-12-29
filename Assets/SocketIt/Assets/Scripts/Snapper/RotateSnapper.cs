@@ -4,7 +4,8 @@ using System;
 
 namespace SocketIt
 {
-
+    [RequireComponent(typeof(SnapModule))]
+    [AddComponentMenu("SocketIt/Snapper/Rotate Snapper")]
     public class RotateSnapper : MonoBehaviour, ISocketSnapper
     {
         public event SnapEvent OnSnapStart;

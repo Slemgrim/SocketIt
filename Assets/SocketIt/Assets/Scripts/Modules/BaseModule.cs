@@ -5,6 +5,7 @@ using System;
 
 namespace SocketIt
 {
+    [RequireComponent(typeof(NodeModule))]
     [AddComponentMenu("SocketIt/Module/Base Module")]
     public class BaseModule : MonoBehaviour
     {
@@ -18,14 +19,6 @@ namespace SocketIt
         public event BaseEvent OnNodeDisconnectedIndirect;
 
         private NodeModule Node;
-
-        public void Reset()
-        {
-            if (GetComponent<NodeModule>() == null)
-            {
-                gameObject.AddComponent<NodeModule>();
-            }
-        }
 
         public void Start()
         {

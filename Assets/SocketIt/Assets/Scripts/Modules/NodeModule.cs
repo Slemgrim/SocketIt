@@ -5,6 +5,7 @@ using System;
 
 namespace SocketIt
 {
+    [RequireComponent(typeof(Module))]
     [AddComponentMenu("SocketIt/Module/Node Module")]
     public class NodeModule : MonoBehaviour
     {
@@ -42,14 +43,6 @@ namespace SocketIt
             get
             {
                 return module;
-            }
-        }
-
-        public void Reset()
-        {
-            if (GetComponent<Module>() == null)
-            {
-                gameObject.AddComponent<Module>();
             }
         }
 

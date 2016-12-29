@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace SocketIt
 {
+    [RequireComponent(typeof(Socket))]
     [AddComponentMenu("SocketIt/Socket/Snap Socket")]
     public class SnapSocket : MonoBehaviour
     {
@@ -75,11 +76,6 @@ namespace SocketIt
 
         public void Reset()
         {
-            if(GetComponent<Socket>() == null)
-            {
-                gameObject.AddComponent<Socket>();
-            }
-
             if (GetComponent<Socket>().Module.GetComponent<SnapModule>() == null)
             {
                 GetComponent<Socket>().Module.gameObject.AddComponent<SnapModule>();

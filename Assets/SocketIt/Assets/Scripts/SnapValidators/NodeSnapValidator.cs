@@ -3,6 +3,9 @@ using System.Collections;
 
 namespace SocketIt
 {
+    [RequireComponent(typeof(SnapModule))]
+    [RequireComponent(typeof(NodeModule))]
+    [AddComponentMenu("SocketIt/Snap Validators/Node Validator")]
     public class NodeSnapValidator : MonoBehaviour, ISnapValidator
     {
         public bool ConnectToChildNodes = true;

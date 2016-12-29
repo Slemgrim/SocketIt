@@ -3,7 +3,9 @@ using System.Collections;
 using System;
 
 namespace SocketIt {
-	public class SnapValidator : MonoBehaviour, ISnapValidator
+    [RequireComponent(typeof(SnapModule))]
+    [AddComponentMenu("SocketIt/Snap Validators/Free Validator")]
+    public class FreeValidator : MonoBehaviour, ISnapValidator
 	{
         public bool SnapOnlyFreeSockets = true;
 

@@ -2,17 +2,10 @@
 using System.Collections;
 
 namespace SocketIt {
+    [RequireComponent(typeof(Socket))]
     [AddComponentMenu("SocketIt/Socket/Collider Socket")]
     public class ColliderSocket : MonoBehaviour {
 		private SnapSocket socket;
-
-        public void Reset()
-        {
-            if (GetComponent<Socket>() == null)
-            {
-                gameObject.AddComponent<Socket>();
-            }
-        }
 
         void Awake(){
 			socket = GetComponent<SnapSocket> ();
