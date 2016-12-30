@@ -3,18 +3,26 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace SocketIt {
-    [System.Serializable]
-    public class Connection
+
+	[RequireComponent(typeof(Module))]
+	[AddComponentMenu("SocketIt/Connection")]
+	public class Connection : MonoBehaviour
     {
         public Socket SocketA;
         public Socket SocketB;
         public Socket Initiator;
 
-        public Connection(Socket socketA, Socket socketB, Socket initiator)
-        {
-            SocketA = socketA;
-            SocketB = socketB;
-            Initiator = initiator;
-        }
+		/*
+		 * Sets connection state on sockets. Do not call this directly
+		 */
+		public void ApplyConnection()
+		{
+			SocketA.ConnectedSocket = SocketB;
+			SocketB.ConnectedSocket = SocketA;
+		}
+
+		public void OnDestroy(){
+			SocketA.Disconnect (SocketB);
+		}	
     }
 }

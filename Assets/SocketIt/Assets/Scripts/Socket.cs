@@ -6,30 +6,22 @@ namespace SocketIt {
     [AddComponentMenu("SocketIt/Socket/Socket")]
     public class Socket : MonoBehaviour {
 
-        public delegate void SocketEvent(Connection connection);
+		public delegate void SocketEvent(Socket socketA, Socket socketB, Socket initiator);
         public event SocketEvent OnConnect;
         public event SocketEvent OnDisconnect;
 
         public Module Module;
 
-        private Socket connectedSocket = null;
+        public Socket ConnectedSocket = null;
 
         public bool IsConnected
         {
             get
             {
-                return connectedSocket != null;
+                return ConnectedSocket != null;
             }
         }
-
-        public Socket ConnectedSocket
-        {
-            get
-            {
-                return connectedSocket;
-            }
-        }
-
+			
         public void Awake()
         {
             if (Module == null)
@@ -67,10 +59,10 @@ namespace SocketIt {
 
             if (OnConnect != null)
             {
-                OnConnect(new Connection(this, socket, initiator));
+                OnConnect(this, socket, initiator);
             }
 
-            connectedSocket = socket;
+            ConnectedSocket = socket;
             InformModuleOfConnect(socket, initiator);
         }
 
@@ -88,23 +80,23 @@ namespace SocketIt {
 
         private void DisconnectSocket(Socket socket, Socket initiator)
         {
-            if (!IsConnected || socket != connectedSocket)
+            if (!IsConnected || socket != ConnectedSocket)
             {
                 return;
             }
 
             if (OnDisconnect != null)
             {
-                OnDisconnect(new Connection(this, socket, initiator));
+                OnDisconnect(this, socket, initiator);
             }
 
-            InformModuleOfDisconnect(connectedSocket, initiator);
-            connectedSocket = null;
+            InformModuleOfDisconnect(ConnectedSocket, initiator);
+            ConnectedSocket = null;
         }
 
         public void Clear()
         {
-            connectedSocket = null;
+            ConnectedSocket = null;
         }
 
         public void OnDestroy()

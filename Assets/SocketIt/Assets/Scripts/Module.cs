@@ -26,7 +26,7 @@ namespace SocketIt
         {
             Sockets = new List<Socket>(GetComponentsInChildren<Socket>());
         }
-
+			
         public void Reset()
         {
             Socket[] sockets = GetComponentsInChildren<Socket>();
@@ -137,7 +137,16 @@ namespace SocketIt
 
         private void AddConnection(Socket callingSocket, Socket otherSocket, Socket initiator)
         {
-            Connection connection = new Connection(callingSocket, otherSocket, initiator);            
+			Connection oldConnection = GetConnection (otherSocket.Module);
+			if(oldConnection != null){
+				Debug.LogWarningFormat ("Module {0} already connected to module {1}", callingSocket.Module.name, otherSocket.Module.name);
+				return;
+			}	
+
+			Connection connection = gameObject.AddComponent<Connection> ();
+			connection.SocketA = callingSocket;
+			connection.SocketB = otherSocket; 
+			connection.Initiator = initiator;
             connectedModules.Add(connection);
 
             if (OnConnect != null)
@@ -155,6 +164,7 @@ namespace SocketIt
             }
 
             connectedModules.Remove(connection);
+			Destroy (connection);
             
             if (OnDisconnect != null)
             {
@@ -187,5 +197,18 @@ namespace SocketIt
 
             return null;
         }
+
+		public Connection GetConnection(Connection con)
+		{
+			foreach (Connection connection in connectedModules)
+			{
+				if (con.SocketB == connection.SocketB && con.SocketA == connection.SocketA)
+				{
+					return connection;
+				}
+			}
+
+			return null;
+		}
     }
 }

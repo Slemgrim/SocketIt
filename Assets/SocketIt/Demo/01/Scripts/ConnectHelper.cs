@@ -69,30 +69,30 @@ namespace SocketIt.Example01
             ChangeEmissionColor(con.SocketA.Module.gameObject, Color.green);
         }
 
-        private void OnSocketConnect(Connection con)
+		private void OnSocketConnect(Socket socketA, Socket socketB, Socket initiator)
         {
             Debug.Log(string.Format(
                 "Socket {0}.{1} connected to {2}.{3}",
-                con.SocketA.Module.name,
-                con.SocketA.name,
-                con.SocketB.Module.name,
-                con.SocketB.name
+                socketA.Module.name,
+                socketA.name,
+                socketB.Module.name,
+                socketB.name
             ));
 
-            ChangeEmissionColor(con.SocketA.gameObject, Color.green);
+            ChangeEmissionColor(socketA.gameObject, Color.green);
         }
 
-        private void OnSocketDisconnect(Connection con)
+		private void OnSocketDisconnect(Socket socketA, Socket socketB, Socket initiator)
         {
             Debug.Log(string.Format(
                 "Socket {0}.{1} disconnected from {2}.{3}",
-                con.SocketA.Module.name,
-                con.SocketA.name,
-                con.SocketB.Module.name,
-                con.SocketB.name
+                socketA.Module.name,
+                socketA.name,
+                socketB.Module.name,
+                socketB.name
             ));
 
-            ChangeEmissionColor(con.SocketA.gameObject, Color.black);
+            ChangeEmissionColor(socketA.gameObject, Color.black);
         }
 
         private void ChangeEmissionColor(GameObject go, Color color)
