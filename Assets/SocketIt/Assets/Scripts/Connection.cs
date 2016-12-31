@@ -12,15 +12,6 @@ namespace SocketIt {
         public Socket SocketB;
         public Socket Initiator;
 
-		/*
-		 * Sets connection state on sockets. Do not call this directly
-		 */
-		public void ApplyConnection()
-		{
-			SocketA.ConnectedSocket = SocketB;
-			SocketB.ConnectedSocket = SocketA;
-		}
-
 		public void OnDestroy(){
 			SocketA.Disconnect (SocketB);
 		}	

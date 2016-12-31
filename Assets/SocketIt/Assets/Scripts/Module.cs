@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 namespace SocketIt
 {
@@ -20,6 +21,17 @@ namespace SocketIt
             {
                 return connectedModules;
             }
+        }
+
+        internal Socket GetConnectedSocket(Socket socket)
+        {
+            Connection connection = GetConnection(socket);
+            if(connection != null)
+            {
+                return connection.SocketB;
+            }
+
+            return null;
         }
 
         public void Awake()
@@ -61,7 +73,6 @@ namespace SocketIt
             if (connection != null)
             {
                 RemoveConnection(connection.SocketA, connection.SocketB, connection.SocketB);
-                connection.SocketA.Clear();
             }
         }
 

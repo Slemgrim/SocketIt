@@ -12,16 +12,27 @@ namespace SocketIt {
 
         public Module Module;
 
-        public Socket ConnectedSocket = null;
-
         public bool IsConnected
         {
             get
             {
-                return ConnectedSocket != null;
+                return GetConnectedSocket() != null;
             }
         }
-			
+
+        public Socket ConnectedSocket
+        {
+            get
+            {
+                return GetConnectedSocket();
+            }
+        }
+
+        private Socket GetConnectedSocket()
+        {
+            return Module.GetConnectedSocket(this);
+        }
+
         public void Awake()
         {
             if (Module == null)
@@ -50,22 +61,6 @@ namespace SocketIt {
             }
         }
 
-        private void ConnectSocket(Socket socket, Socket initiator)
-        {
-            if (IsConnected)
-            {
-                throw new SocketException("Socket Already Connected");
-            }
-
-            if (OnConnect != null)
-            {
-                OnConnect(this, socket, initiator);
-            }
-
-            ConnectedSocket = socket;
-            InformModuleOfConnect(socket, initiator);
-        }
-
         public void Disconnect(Socket socket)
         {
             DisconnectSocket(socket, this);
@@ -78,9 +73,36 @@ namespace SocketIt {
             DisconnectSocket(socket, socket);     
         }
 
+        public void OnDestroy()
+        {
+            Module.OnSocketDestroyed(this);
+        }
+
+        public void OnDrawGizmos()
+        {
+            Gizmos.DrawIcon(transform.position, "Socket.png", true);
+        }
+
+        private void ConnectSocket(Socket socket, Socket initiator)
+        {
+            if (IsConnected)
+            {
+                throw new SocketException("Socket Already Connected");
+            }
+
+            if (OnConnect != null)
+            {
+                OnConnect(this, socket, initiator);
+            }
+
+            InformModuleOfConnect(socket, initiator);
+        }
+
         private void DisconnectSocket(Socket socket, Socket initiator)
         {
-            if (!IsConnected || socket != ConnectedSocket)
+            Socket connectedSocket = GetConnectedSocket();
+
+            if (!IsConnected || socket != connectedSocket)
             {
                 return;
             }
@@ -90,23 +112,7 @@ namespace SocketIt {
                 OnDisconnect(this, socket, initiator);
             }
 
-            InformModuleOfDisconnect(ConnectedSocket, initiator);
-            ConnectedSocket = null;
-        }
-
-        public void Clear()
-        {
-            ConnectedSocket = null;
-        }
-
-        public void OnDestroy()
-        {
-            Module.OnSocketDestroyed(this);
-        }
-
-        public void OnDrawGizmos()
-        {
-            Gizmos.DrawIcon(transform.position, "Socket.png", true);
+            InformModuleOfDisconnect(connectedSocket, initiator);
         }
 
         private void InformModuleOfConnect(Socket otherSocket, Socket initiator)
