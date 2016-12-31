@@ -35,7 +35,7 @@ namespace SocketIt.Example01
         {
             if (Input.GetKeyDown("space"))
             {
-                if (socketA.ConnectedSocket == socketB)
+                if (socketA.GetConnectedSocket() == socketB)
                 {
                     socketA.Disconnect(socketB);
                 }

@@ -12,27 +12,6 @@ namespace SocketIt {
 
         public Module Module;
 
-        public bool IsConnected
-        {
-            get
-            {
-                return GetConnectedSocket() != null;
-            }
-        }
-
-        public Socket ConnectedSocket
-        {
-            get
-            {
-                return GetConnectedSocket();
-            }
-        }
-
-        private Socket GetConnectedSocket()
-        {
-            return Module.GetConnectedSocket(this);
-        }
-
         public void Awake()
         {
             if (Module == null)
@@ -41,15 +20,18 @@ namespace SocketIt {
             }
         }
 
-        public void Connect(Socket socket)
+        public Socket GetConnectedSocket()
         {
-            ConnectSocket(socket, this);
-            socket.ConnectOther(this);
+            return Module.GetConnectedSocket(this);
         }
 
-        public void ConnectOther(Socket socket)
+        public void Connect(Socket socket, bool callOther = true)
         {
-            ConnectSocket(socket, socket);
+            ConnectSocket(socket, this);
+            if (callOther)
+            {
+                socket.Connect(this, false);
+            }
         }
 
         public void Reset()
@@ -61,21 +43,18 @@ namespace SocketIt {
             }
         }
 
-        public void Disconnect(Socket socket)
+        public void Disconnect(Socket socket, bool callOther = true)
         {
             DisconnectSocket(socket, this);
-
-            socket.DisconnectOther(this);
-        }
-
-        public void DisconnectOther(Socket socket)
-        {
-            DisconnectSocket(socket, socket);     
+            if (callOther)
+            {
+                socket.Disconnect(this, false);
+            }
         }
 
         public void OnDestroy()
         {
-            Module.OnSocketDestroyed(this);
+            Module.RemoveSocket(this);
         }
 
         public void OnDrawGizmos()
@@ -85,44 +64,33 @@ namespace SocketIt {
 
         private void ConnectSocket(Socket socket, Socket initiator)
         {
-            if (IsConnected)
+            if (!isValidSocket(socket))
             {
                 throw new SocketException("Socket Already Connected");
             }
 
-            if (OnConnect != null)
+            bool isConnected = Module.ConnectSocket(this, socket, initiator);
+
+            if (isConnected && OnConnect != null)
             {
                 OnConnect(this, socket, initiator);
             }
-
-            InformModuleOfConnect(socket, initiator);
         }
 
         private void DisconnectSocket(Socket socket, Socket initiator)
         {
             Socket connectedSocket = GetConnectedSocket();
-
-            if (!IsConnected || socket != connectedSocket)
+            if (connectedSocket == null || socket != connectedSocket)
             {
                 return;
             }
 
-            if (OnDisconnect != null)
+            bool isDisconnected = Module.DisconnectSocket(this, socket, initiator);
+
+            if (isDisconnected && OnDisconnect != null)
             {
                 OnDisconnect(this, socket, initiator);
             }
-
-            InformModuleOfDisconnect(connectedSocket, initiator);
-        }
-
-        private void InformModuleOfConnect(Socket otherSocket, Socket initiator)
-        {
-            Module.OnSocketConnect(this, otherSocket, initiator);
-        }
-
-        private void InformModuleOfDisconnect(Socket otherSocket, Socket initiator)
-        {
-            Module.OnSocketDisconnect(this, otherSocket, initiator);
         }
 
         private bool isValidSocket(Socket socket)
@@ -132,12 +100,19 @@ namespace SocketIt {
                 return false;
             }
 
-            if (socket.Module == Module)
+            if (socket.Module == this)
             {
                 return false;
             }
 
-            if (IsConnected || socket.IsConnected)
+            Socket otherConnectedSocket = socket.GetConnectedSocket();
+            if (otherConnectedSocket != null && otherConnectedSocket != this)
+            {
+                return false;
+            }
+
+            Socket connectedSocket = GetConnectedSocket();
+            if (connectedSocket != null && connectedSocket != socket)
             {
                 return false;
             }

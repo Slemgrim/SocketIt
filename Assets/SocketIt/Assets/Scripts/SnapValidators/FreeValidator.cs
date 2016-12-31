@@ -21,7 +21,7 @@ namespace SocketIt {
 
         private bool BothSocketsAreFree(Snap snap)
         {
-            return !snap.SocketA.Socket.IsConnected && !snap.SocketB.Socket.IsConnected;
+            return snap.SocketA.Socket.GetConnectedSocket() == null && snap.SocketB.Socket.GetConnectedSocket() == null;
 
         }
     }

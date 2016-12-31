@@ -178,7 +178,7 @@ namespace SocketIt
                 return false;
             }
 
-            if (Socket.IsConnected || otherSnapSocket.Socket.IsConnected)
+            if (Socket.GetConnectedSocket() != null || otherSnapSocket.Socket.GetConnectedSocket() != null)
             {
                 return false;
             }

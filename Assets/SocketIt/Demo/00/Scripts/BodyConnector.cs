@@ -34,7 +34,7 @@ namespace SocketIt.Example00
         {
             if (follower.GetComponent<NodeModule>().ParentNode != null)
             {
-                follower.GetComponent<Module>().Disconnect(follower.GetComponent<NodeModule>().ParentNode.Module);
+                follower.GetComponent<Module>().DisconnectModule(follower.GetComponent<NodeModule>().ParentNode.Module);
             }
         }
 

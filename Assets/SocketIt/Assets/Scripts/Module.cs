@@ -77,14 +77,6 @@ namespace SocketIt
         }
 
         /**
-         * Gets called when one of the modules sockets gets destroyed. 
-         */ 
-        public void OnSocketDestroyed(Socket destroyedSocket)
-        {
-            RemoveSocket(destroyedSocket); 
-        }
-
-        /**
           * Gets called when a socket of a connected module gets destroyed. 
           * We need this to cleanup references to this socket and remove connections
           */
@@ -97,14 +89,14 @@ namespace SocketIt
             }
         }
 
-        public void OnSocketConnect(Socket ownSocket, Socket otherSocket, Socket initiator)
+        public bool ConnectSocket(Socket ownSocket, Socket otherSocket, Socket initiator)
         {
-            AddConnection(ownSocket, otherSocket, initiator);
+            return AddConnection(ownSocket, otherSocket, initiator);
         }
 
-        public void OnSocketDisconnect(Socket ownSocket, Socket otherSocket, Socket initiator)
+        public bool DisconnectSocket(Socket ownSocket, Socket otherSocket, Socket initiator)
         {
-            RemoveConnection(ownSocket, otherSocket, initiator);
+            return RemoveConnection(ownSocket, otherSocket, initiator);
         }
 
         public void DisconnectAll()
@@ -116,7 +108,7 @@ namespace SocketIt
             }
         }
 
-        public void Disconnect(Module module)
+        public void DisconnectModule(Module module)
         {
             Connection connection = GetConnection(module);
             if(connection != null)
@@ -146,12 +138,12 @@ namespace SocketIt
             }
         }
 
-        private void AddConnection(Socket callingSocket, Socket otherSocket, Socket initiator)
+        private bool AddConnection(Socket callingSocket, Socket otherSocket, Socket initiator)
         {
 			Connection oldConnection = GetConnection (otherSocket.Module);
 			if(oldConnection != null){
 				Debug.LogWarningFormat ("Module {0} already connected to module {1}", callingSocket.Module.name, otherSocket.Module.name);
-				return;
+				return false;
 			}	
 
 			Connection connection = gameObject.AddComponent<Connection> ();
@@ -164,14 +156,15 @@ namespace SocketIt
             {
                 OnConnect(connection);
             }
+            return true;
         }
 
-        private void RemoveConnection(Socket callingSocket, Socket otherSocket, Socket initiator)
+        private bool RemoveConnection(Socket callingSocket, Socket otherSocket, Socket initiator)
         {
             Connection connection = GetConnection(otherSocket);
             if (connection == null)
             {
-                return;
+                return false;
             }
 
             connectedModules.Remove(connection);
@@ -181,6 +174,8 @@ namespace SocketIt
             {
                 OnDisconnect(connection);
             }
+
+            return true;
         }
 
         public Connection GetConnection(Module module)
