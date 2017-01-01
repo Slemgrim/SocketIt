@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace SocketIt {
 
@@ -14,6 +12,11 @@ namespace SocketIt {
 
 		public void OnDestroy(){
 			SocketA.Disconnect (SocketB);
-		}	
+		}
+
+        void OnDrawGizmosSelected()
+        {
+            SocketItGizmo.DrawConnection(this);
+        }
     }
 }

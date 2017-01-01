@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 namespace SocketIt {
@@ -60,6 +61,26 @@ namespace SocketIt {
         public void OnDrawGizmos()
         {
             Gizmos.DrawIcon(transform.position, "Socket.png", true);
+        }
+
+        void OnDrawGizmosSelected()
+        {
+            if(Module == null)
+            {
+                return;
+            }
+
+            Connection[] connections = Module.GetComponents<Connection>();
+
+            foreach(Connection connection in connections)
+            {
+                if (connection.SocketA != this)
+                {
+                    continue;
+                }
+
+                SocketItGizmo.DrawConnection(connection);
+            }
         }
 
         private void ConnectSocket(Socket socket, Socket initiator)
