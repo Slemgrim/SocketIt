@@ -41,8 +41,8 @@ namespace SocketIt.Editor
             //Todo
         }
 
-        [MenuItem("SocketIt/Snap")]
-        static void SnapSockets(MenuCommand menuCommand)
+        [MenuItem("SocketIt/Snap/Position %g+i")]
+        static void SnapSocketPosition(MenuCommand menuCommand)
         {
             Socket activeSnapSocket = Selection.activeGameObject.GetComponent<Socket>();
 
@@ -55,18 +55,62 @@ namespace SocketIt.Editor
 
                 Socket snapSocket = gameObject.GetComponent<Socket>();
 
-                Snap(snapSocket, activeSnapSocket);
+                Undo.RecordObject(snapSocket.Module.transform, "Zero Transform Position");
+                SnapPosition(snapSocket, activeSnapSocket);
 
-                Undo.RegisterCompleteObjectUndo(gameObject, "Undo snap");
             }
         }
 
+        [MenuItem("SocketIt/Snap/Rotation %g-o")]
+        static void SnapSocketRotation(MenuCommand menuCommand)
+        {
+            Socket activeSnapSocket = Selection.activeGameObject.GetComponent<Socket>();
+
+            foreach (GameObject gameObject in Selection.gameObjects)
+            {
+                if (gameObject == Selection.activeGameObject)
+                {
+                    continue;
+                }
+
+                Socket snapSocket = gameObject.GetComponent<Socket>();
+
+                Undo.RecordObject(snapSocket.Module.transform, "Zero Transform Position");
+                SnapRotation(snapSocket, activeSnapSocket);
+            }
+        }
+
+
+        [MenuItem("SocketIt/Snap/Position Rotation %g-p")]
+        static void SnapSocketPositionAndRotation(MenuCommand menuCommand)
+        {
+            Socket activeSnapSocket = Selection.activeGameObject.GetComponent<Socket>();
+
+            foreach (GameObject gameObject in Selection.gameObjects)
+            {
+                if (gameObject == Selection.activeGameObject)
+                {
+                    continue;
+                }
+
+                Socket snapSocket = gameObject.GetComponent<Socket>();
+
+                Undo.RecordObject(snapSocket.Module.transform, "Zero Transform Position");
+                SnapRotation(snapSocket, activeSnapSocket);
+                SnapPosition(snapSocket, activeSnapSocket);
+            }
+        }
+
+
         [MenuItem("SocketIt/Connect", true)]
         [MenuItem("SocketIt/Disconnect", true)]
-        [MenuItem("SocketIt/Snap", true)]
+        [MenuItem("SocketIt/Snap/Position %g+i", true)]
+        [MenuItem("SocketIt/Snap/Rotation %g-o", true)]
+        [MenuItem("SocketIt/Snap/Position Rotation %g-p", true)]
+
         static bool ValidateSocketItAction()
         {
-            if (Selection.activeGameObject == null && Selection.gameObjects.Length < 2)
+            if (Selection.activeGameObject == null && Selection.gameObjects.Length != 2)
             {
                 return false;
             }
@@ -95,7 +139,14 @@ namespace SocketIt.Editor
             return true;
         }
 
-        static void Snap(Socket fromSocket, Socket toSocket)
+        static void SnapPosition(Socket fromSocket, Socket toSocket)
+        {
+            Vector3 ownSocketPosition = fromSocket.transform.localPosition;
+            ownSocketPosition = fromSocket.Module.transform.rotation * ownSocketPosition;
+            fromSocket.Module.transform.position = toSocket.transform.position - ownSocketPosition; 
+        }
+
+        static void SnapRotation(Socket fromSocket, Socket toSocket)
         {
             Quaternion forwardRot = Quaternion.FromToRotation(
                 fromSocket.transform.forward,
@@ -110,10 +161,6 @@ namespace SocketIt.Editor
             );
 
             fromSocket.Module.transform.rotation = upRot * fromSocket.Module.transform.rotation;
-
-            Vector3 ownSocketPosition = fromSocket.transform.localPosition;
-            ownSocketPosition = fromSocket.Module.transform.rotation * ownSocketPosition;
-            fromSocket.Module.transform.position = toSocket.transform.position - ownSocketPosition; 
         }
     }
 }
