@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEditor;
+using System;
 
 namespace SocketIt.Editor
 {
@@ -28,17 +29,71 @@ namespace SocketIt.Editor
             go.AddComponent<Socket>();
         }
 
-        [MenuItem("SocketIt/Connect")]
+        [MenuItem("SocketIt/Connect %g+c")]
         static void ConnectSockets(MenuCommand menuCommand)
         {
-            //Todo
+            Socket activeSocket = Selection.activeGameObject.GetComponent<Socket>();
+            Socket socket = null;
+            foreach (GameObject gameObject in Selection.gameObjects)
+            {
+                if (gameObject == Selection.activeGameObject)
+                {
+                    continue;
+                }
+
+                socket = gameObject.GetComponent<Socket>();
+            }
+
+            if(IsConnected(activeSocket) || IsConnected(socket))
+            {
+                return;
+            }
+
+            if(GetConnection(activeSocket, socket) == null)
+            {
+                Connection connection = Undo.AddComponent(activeSocket.Module.gameObject, typeof(Connection)) as Connection;
+                connection.SocketA = activeSocket;
+                connection.SocketB = socket;
+                connection.Initiator = socket;
+            }
+
+            if (GetConnection(socket, activeSocket) == null)
+            {
+                Connection connection = Undo.AddComponent(socket.Module.gameObject, typeof(Connection)) as Connection;
+                connection.SocketA = socket;
+                connection.SocketB = activeSocket;
+                connection.Initiator = socket;
+            }
         }
 
-
-        [MenuItem("SocketIt/Disconnect")]
+        [MenuItem("SocketIt/Disconnect %g+x")]
         static void DisconnectSockets(MenuCommand menuCommand)
         {
-            //Todo
+            Socket activeSocket = Selection.activeGameObject.GetComponent<Socket>();
+            Socket socket = null;
+            foreach (GameObject gameObject in Selection.gameObjects)
+            {
+                if (gameObject == Selection.activeGameObject)
+                {
+                    continue;
+                }
+
+                socket = gameObject.GetComponent<Socket>();
+            }
+
+            Connection connection = GetConnection(activeSocket, socket);
+
+            if(connection != null)
+            {
+                Undo.DestroyObjectImmediate(connection);
+            }
+
+            connection = GetConnection(socket, activeSocket);
+
+            if (connection != null)
+            {
+                Undo.DestroyObjectImmediate(connection);
+            }
         }
 
         [MenuItem("SocketIt/Snap/Position %g+i")]
@@ -61,7 +116,7 @@ namespace SocketIt.Editor
             }
         }
 
-        [MenuItem("SocketIt/Snap/Rotation %g-o")]
+        [MenuItem("SocketIt/Snap/Rotation %g+o")]
         static void SnapSocketRotation(MenuCommand menuCommand)
         {
             Socket activeSnapSocket = Selection.activeGameObject.GetComponent<Socket>();
@@ -81,7 +136,7 @@ namespace SocketIt.Editor
         }
 
 
-        [MenuItem("SocketIt/Snap/Position Rotation %g-p")]
+        [MenuItem("SocketIt/Snap/Position Rotation %g+p")]
         static void SnapSocketPositionAndRotation(MenuCommand menuCommand)
         {
             Socket activeSnapSocket = Selection.activeGameObject.GetComponent<Socket>();
@@ -102,11 +157,11 @@ namespace SocketIt.Editor
         }
 
 
-        [MenuItem("SocketIt/Connect", true)]
-        [MenuItem("SocketIt/Disconnect", true)]
+        [MenuItem("SocketIt/Connect %g+c", true)]
+        [MenuItem("SocketIt/Disconnect %g+x", true)]
         [MenuItem("SocketIt/Snap/Position %g+i", true)]
-        [MenuItem("SocketIt/Snap/Rotation %g-o", true)]
-        [MenuItem("SocketIt/Snap/Position Rotation %g-p", true)]
+        [MenuItem("SocketIt/Snap/Rotation %g+o", true)]
+        [MenuItem("SocketIt/Snap/Position Rotation %g+p", true)]
 
         static bool ValidateSocketItAction()
         {
@@ -161,6 +216,36 @@ namespace SocketIt.Editor
             );
 
             fromSocket.Module.transform.rotation = upRot * fromSocket.Module.transform.rotation;
+        }
+
+        private static bool IsConnected(Socket socket)
+        {
+            Connection[] connections = socket.Module.GetComponents<Connection>();
+
+            foreach (Connection connection in connections)
+            {
+                if (connection.SocketA == socket)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static Connection GetConnection(Socket socketA, Socket socketB)
+        {
+            Connection[] connections = socketA.Module.GetComponents<Connection>();
+
+            foreach (Connection connection in connections)
+            {
+                if (connection.SocketA == socketA && connection.SocketB == socketB)
+                {
+                    return connection;
+                }
+            }
+
+            return null;
         }
     }
 }
