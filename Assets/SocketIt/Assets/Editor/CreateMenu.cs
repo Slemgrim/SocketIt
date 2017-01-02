@@ -29,7 +29,7 @@ namespace SocketIt.Editor
             go.AddComponent<Socket>();
         }
 
-        [MenuItem("SocketIt/Connect %g+c")]
+        [MenuItem("SocketIt/Connect %&c")]
         static void ConnectSockets(MenuCommand menuCommand)
         {
             Socket activeSocket = Selection.activeGameObject.GetComponent<Socket>();
@@ -66,7 +66,7 @@ namespace SocketIt.Editor
             }
         }
 
-        [MenuItem("SocketIt/Disconnect %g+x")]
+        [MenuItem("SocketIt/Disconnect %&x")]
         static void DisconnectSockets(MenuCommand menuCommand)
         {
             Socket activeSocket = Selection.activeGameObject.GetComponent<Socket>();
@@ -96,7 +96,7 @@ namespace SocketIt.Editor
             }
         }
 
-        [MenuItem("SocketIt/Snap/Position %g+i")]
+        [MenuItem("SocketIt/Snap/Position %&i")]
         static void SnapSocketPosition(MenuCommand menuCommand)
         {
             Socket activeSnapSocket = Selection.activeGameObject.GetComponent<Socket>();
@@ -116,7 +116,7 @@ namespace SocketIt.Editor
             }
         }
 
-        [MenuItem("SocketIt/Snap/Rotation %g+o")]
+        [MenuItem("SocketIt/Snap/Rotation %&o")]
         static void SnapSocketRotation(MenuCommand menuCommand)
         {
             Socket activeSnapSocket = Selection.activeGameObject.GetComponent<Socket>();
@@ -136,7 +136,7 @@ namespace SocketIt.Editor
         }
 
 
-        [MenuItem("SocketIt/Snap/Position Rotation %g+p")]
+        [MenuItem("SocketIt/Snap/Position Rotation %&p")]
         static void SnapSocketPositionAndRotation(MenuCommand menuCommand)
         {
             Socket activeSnapSocket = Selection.activeGameObject.GetComponent<Socket>();
@@ -157,15 +157,15 @@ namespace SocketIt.Editor
         }
 
 
-        [MenuItem("SocketIt/Connect %g+c", true)]
-        [MenuItem("SocketIt/Disconnect %g+x", true)]
-        [MenuItem("SocketIt/Snap/Position %g+i", true)]
-        [MenuItem("SocketIt/Snap/Rotation %g+o", true)]
-        [MenuItem("SocketIt/Snap/Position Rotation %g+p", true)]
+        [MenuItem("SocketIt/Connect %&c", true)]
+        [MenuItem("SocketIt/Disconnect %&x", true)]
+        [MenuItem("SocketIt/Snap/Position %&i", true)]
+        [MenuItem("SocketIt/Snap/Rotation %&o", true)]
+        [MenuItem("SocketIt/Snap/Position Rotation %&p", true)]
 
         static bool ValidateSocketItAction()
         {
-            if (Selection.activeGameObject == null && Selection.gameObjects.Length != 2)
+            if (Selection.activeGameObject == null || Selection.gameObjects.Length != 2)
             {
                 return false;
             }

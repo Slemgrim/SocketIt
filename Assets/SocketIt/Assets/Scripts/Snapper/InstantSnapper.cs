@@ -51,9 +51,6 @@ namespace SocketIt {
                 OnSnapStart(new Snap(ownSocket, otherSocket));
             }
 
-            ownSocket.Lock();
-            otherSocket.Lock();
-
             RotateToOtherSocket(ownSocket, otherSocket);
             MoveToOtherSocket(ownSocket, otherSocket);
 
@@ -61,9 +58,6 @@ namespace SocketIt {
             {
                 transform.parent = otherSocket.Module.transform;
             }
-
-            ownSocket.Unlock();
-            otherSocket.Unlock();
 
             if (OnSnapEnd != null)
             {

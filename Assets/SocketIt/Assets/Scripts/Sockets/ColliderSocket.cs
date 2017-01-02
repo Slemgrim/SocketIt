@@ -16,16 +16,7 @@ namespace SocketIt {
             SnapSocket otherSocket = other.GetComponent<SnapSocket> ();
 
 			if (otherSocket != null) {
-				socket.Found(otherSocket);
-			}
-		}
-			
-		void OnTriggerExit(Collider other)
-		{
-            SnapSocket otherSocket = other.GetComponent<SnapSocket> ();
-		
-			if (otherSocket != null) {
-				socket.Lost(otherSocket);
+				socket.Snap(otherSocket);
 			}
 		}
 	}

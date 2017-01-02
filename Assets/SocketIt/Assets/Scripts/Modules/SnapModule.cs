@@ -12,7 +12,6 @@ namespace SocketIt
          * both modules snapping at the same time.
          */
         public bool IsStatic = true;
-        public bool IsLockedWhenSocketIsLocked = false;
         public bool IsLocked = false;
 
         private List<SnapSocket> Sockets;
@@ -31,17 +30,9 @@ namespace SocketIt
         /**
          * Gets called whenever one of the modules socket finds another socket
          */
-        public void OnSocketFound(SnapSocket callingSocket, SnapSocket otherSocket)
+        public void OnSocketSnap(SnapSocket callingSocket, SnapSocket otherSocket)
         {
             Snap(callingSocket, otherSocket);
-        }
-
-        /**
-         * Gets called whenever one of the modules socket looses a previous found socket
-         */
-        public void OnSocketLost(SnapSocket callingSocket, SnapSocket otherSocket)
-        {
-            return;
         }
 
         /**
@@ -50,44 +41,6 @@ namespace SocketIt
         public void OnSocketDestroyed(SnapSocket destroyedSocket)
         {
             RemoveSocket(destroyedSocket);
-        }
-
-        /**
-         * Gets called when a socked gets Looked. We use this to also look the module if
-         * the IsLockedWhenSocketIsLocked property is checked
-         */
-        public void OnSocketLock(SnapSocket lockedSocket)
-        {
-            if (!IsLockedWhenSocketIsLocked)
-            {
-                return;
-            }
-
-            foreach (SnapSocket socket in Sockets)
-            {
-                if (socket.IsLocked)
-                {
-                    IsLocked = true;
-                }
-            }
-        }
-
-        public void OnSocketUnlock(SnapSocket lockedSocket)
-        {
-            if (!IsLockedWhenSocketIsLocked)
-            {
-                return;
-            }
-
-            foreach (SnapSocket socket in Sockets)
-            {
-                if (socket.IsLocked)
-                {
-                    return;
-                }
-            }
-
-            IsLocked = false;
         }
 
         public void RemoveSocket(SnapSocket socketToRemove)
@@ -103,7 +56,6 @@ namespace SocketIt
         private void Snap(SnapSocket callingSocket, SnapSocket otherSocket)
         {
             Snap snap = new Snap(callingSocket, otherSocket);
-
             if (IsStatic || !validateSnap(snap))
             {
                 return;

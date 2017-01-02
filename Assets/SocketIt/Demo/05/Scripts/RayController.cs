@@ -37,12 +37,6 @@ namespace SocketIt.Example05
 
         private void ClearSockets(GameObject follower)
         {
-            List<SnapSocket> snapSockets = new List<SnapSocket>(follower.GetComponentsInChildren<SnapSocket>());
-            foreach (SnapSocket snapSocket in snapSockets)
-            {
-                snapSocket.Clear();
-            }
-
             List<RaySocket> raySockets = new List<RaySocket>(follower.GetComponentsInChildren<RaySocket>());
             foreach (RaySocket raySocket in raySockets)
             {

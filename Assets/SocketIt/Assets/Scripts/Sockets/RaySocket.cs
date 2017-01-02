@@ -72,7 +72,7 @@ namespace SocketIt
                 }
 
                 current = raySocket;
-                socket.Found(raySocket.socket);
+                socket.Snap(raySocket.socket);
             }
         }
     }

@@ -55,7 +55,7 @@ namespace SocketIt.Demo
             {
                 if (isSnapped)
                 {
-                    snapSocketA.Lost(snapSocketB);
+                    //snapSocketA.Lost(snapSocketB);
                     snapSocketA.Module.transform.parent = null;
 
                     snapSocketA.Module.transform.position = initPosition;
@@ -63,7 +63,7 @@ namespace SocketIt.Demo
                     isSnapped = false;
                 } else
                 {
-                    snapSocketA.Found(snapSocketB);
+                    snapSocketA.Snap(snapSocketB);
                     isSnapped = true;
                 }
             }

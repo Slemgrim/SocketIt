@@ -66,12 +66,6 @@ namespace SocketIt.Example04
         
         private void SnapClickedSockets()
         {
-            // Let all sockets forget about their previous snaped sockets
-            foreach (SnapSocket snapSocket in sockets)
-            {
-                snapSocket.Lost(snapSocket.SocketInReach);
-            }
-
             // Snap clicked sockets.
             Snap(sockets[0], sockets[1]);
 
@@ -89,7 +83,7 @@ namespace SocketIt.Example04
             //A snap should always happen into one direction.
             firstClicked.SnapModule.IsStatic = false;
             //Snap the first clicked socket to the second one
-            firstClicked.Found(secondClicked);
+            firstClicked.Snap(secondClicked);
             //Set first clicked socket back to static
             firstClicked.SnapModule.IsStatic = true;
 

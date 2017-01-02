@@ -50,18 +50,12 @@ namespace SocketIt
                 OnSnapStart(new Snap(ownSocket, otherSocket));
             }
 
-            ownSocket.Lock();
-            otherSocket.Lock();
-
             RotateToOtherSocket(ownSocket, otherSocket);
             MoveToOtherSocket(ownSocket, otherSocket);
 
             Debug.Log("Start Snapping");
 
             transform.parent = otherSocket.Module.transform.parent;
-
-            ownSocket.Unlock();
-            otherSocket.Unlock();
 
             if (OnSnapEnd != null)
             {

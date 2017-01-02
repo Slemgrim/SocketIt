@@ -9,8 +9,7 @@ namespace SocketIt
     public class SnapSocket : MonoBehaviour
     {
         public delegate void SnapSocketEvent(Snap snap);
-        public event SnapSocketEvent OnSocketFound;
-        public event SnapSocketEvent OnSockerLost;
+        public event SnapSocketEvent OnSnap;
 
         private SnapModule snapModule;
 
@@ -20,35 +19,6 @@ namespace SocketIt
 
         [Range(0.0f, 180.0f)]
         public float AngleLimit = 180;
-
-        private SnapSocket socketInReach = null;
-
-        private bool isLocked = false;
-
-        [SerializeField]
-        public bool IsLocked
-        {
-            get
-            {
-                return isLocked;
-            }
-        }
-
-        public SnapSocket SocketInReach
-        {
-            get
-            {
-                return socketInReach;
-            }
-        }
-
-        public bool IsInReachOfOther
-        {
-            get
-            {
-                return socketInReach != null;
-            }
-        }
 
         public Socket Socket
         {
@@ -100,75 +70,24 @@ namespace SocketIt
             }
         }
 
-        public void Found(SnapSocket OtherSnapSocket)
+        public void Snap(SnapSocket OtherSnapSocket)
         {
             if (!isValidSocket(OtherSnapSocket))
             {
                 return;
             }
 
-            if(OnSocketFound != null)
+            if (OnSnap != null)
             {
-                OnSocketFound(new Snap(this, OtherSnapSocket));
+                OnSnap(new Snap(this, OtherSnapSocket));
             }
 
-            snapModule.OnSocketFound(this, OtherSnapSocket);
-            socketInReach = OtherSnapSocket;
-        }
-
-        public void Lost(SnapSocket otherSnapSocket)
-        {
-            if(otherSnapSocket == null)
-            {
-                return;
-            }
-
-            if (IsLocked || otherSnapSocket.IsLocked)
-            {
-                return;
-            }
-
-            if (socketInReach != otherSnapSocket)
-            {
-                return;
-            }
-
-            if (OnSockerLost != null)
-            {
-                OnSockerLost(new Snap(this, otherSnapSocket));
-            }
-
-            snapModule.OnSocketLost(this, otherSnapSocket);
-            socketInReach = null;
-        }
-
-        public void Clear()
-        {
-            socketInReach = null;
-        }
-
-        public void Lock()
-        {
-            isLocked = true;
-            snapModule.OnSocketLock(this);
-
-        }
-
-        public void Unlock()
-        {
-            isLocked = false;
-            snapModule.OnSocketUnlock(this);
-
+            snapModule.OnSocketSnap(this, OtherSnapSocket);
         }
 
         private bool isValidSocket(SnapSocket otherSnapSocket)
         {
             if (otherSnapSocket == this)
-            {
-                return false;
-            }
-
-            if (IsLocked || otherSnapSocket.IsLocked)
             {
                 return false;
             }
@@ -184,16 +103,6 @@ namespace SocketIt
             }
 
             if (AngleLimit < 180 && !isInsideAngle(otherSnapSocket))
-            {
-                return false;
-            }
-
-            if (socketInReach != null && socketInReach.Socket.Module == otherSnapSocket.Socket.Module)
-            {
-                return false;
-            }
-
-            if (snapModule.IsLocked || otherSnapSocket.snapModule.IsLocked)
             {
                 return false;
             }
