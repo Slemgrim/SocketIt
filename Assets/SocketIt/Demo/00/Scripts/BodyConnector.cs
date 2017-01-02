@@ -45,15 +45,9 @@ namespace SocketIt.Example00
                 return;
             }
 
-            HingeJoint joint = gameObject.AddComponent<HingeJoint>();
+            CharacterJoint joint = gameObject.AddComponent<CharacterJoint>();
 
-            JointLimits limits = joint.limits;
-            limits.min = -45;
-            limits.bounciness = 0;
-            limits.bounceMinVelocity = 0;
-            limits.max = 45;
-            joint.limits = limits;
-            joint.useLimits = true;
+          
 
             joint.connectedBody = connection.SocketB.Module.GetComponent<Rigidbody>();
             joint.anchor = connection.SocketA.transform.localPosition;
