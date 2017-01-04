@@ -13,15 +13,7 @@ namespace SocketIt
 
         private List<Socket> Sockets = new List<Socket>();
 
-        private List<Connection> connectedModules = new List<Connection>();
-
-        public List<Connection> ConnectedModules
-        {
-            get
-            {
-                return connectedModules;
-            }
-        }
+        public List<Connection> Connections = new List<Connection>();
 
         internal Socket GetConnectedSocket(Socket socket)
         {
@@ -57,7 +49,7 @@ namespace SocketIt
          */
         public void OnDestroy()
         {
-            foreach (Connection connection in connectedModules)
+            foreach (Connection connection in Connections)
             {
                 connection.SocketB.Module.OnOtherModuleDestroyed(this);
             }
@@ -101,7 +93,7 @@ namespace SocketIt
 
         public void DisconnectAll()
         {
-            List<Connection> connections = new List<Connection>(connectedModules);
+            List<Connection> connections = new List<Connection>(Connections);
             foreach(Connection connection in connections)
             {
                 connection.SocketA.Disconnect(connection.SocketB);
@@ -146,11 +138,11 @@ namespace SocketIt
 				return false;
 			}	
 
-			Connection connection = gameObject.AddComponent<Connection> ();
+			Connection connection = new Connection ();
 			connection.SocketA = callingSocket;
 			connection.SocketB = otherSocket; 
 			connection.Initiator = initiator;
-            connectedModules.Add(connection);
+            Connections.Add(connection);
 
             if (OnConnect != null)
             {
@@ -167,8 +159,7 @@ namespace SocketIt
                 return false;
             }
 
-            connectedModules.Remove(connection);
-			Destroy (connection);
+            Connections.Remove(connection);
             
             if (OnDisconnect != null)
             {
@@ -180,7 +171,7 @@ namespace SocketIt
 
         public Connection GetConnection(Module module)
         {
-            foreach (Connection connection in connectedModules)
+            foreach (Connection connection in Connections)
             {
                 if (module == connection.SocketB.Module)
                 {
@@ -193,7 +184,7 @@ namespace SocketIt
 
         public Connection GetConnection(Socket socket)
         {
-            foreach (Connection connection in connectedModules)
+            foreach (Connection connection in Connections)
             {
                 if (socket == connection.SocketB || socket == connection.SocketA)
                 {
@@ -206,7 +197,7 @@ namespace SocketIt
 
 		public Connection GetConnection(Connection con)
 		{
-			foreach (Connection connection in connectedModules)
+			foreach (Connection connection in Connections)
 			{
 				if (con.SocketB == connection.SocketB && con.SocketA == connection.SocketA)
 				{

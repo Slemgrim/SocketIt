@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEditor;
 using System;
+using System.Collections.Generic;
 
 namespace SocketIt.Editor
 {
@@ -51,19 +52,24 @@ namespace SocketIt.Editor
 
             if(GetConnection(activeSocket, socket) == null)
             {
-                Connection connection = Undo.AddComponent(activeSocket.Module.gameObject, typeof(Connection)) as Connection;
+				Connection connection = new Connection ();
                 connection.SocketA = activeSocket;
                 connection.SocketB = socket;
                 connection.Initiator = socket;
+				Undo.RecordObject(activeSocket.Module, "Add Connection to " + activeSocket.Module.name );
+				activeSocket.Module.Connections.Add (connection);
             }
 
             if (GetConnection(socket, activeSocket) == null)
             {
-                Connection connection = Undo.AddComponent(socket.Module.gameObject, typeof(Connection)) as Connection;
-                connection.SocketA = socket;
+				Connection connection = new Connection ();
+				connection.SocketA = socket;
                 connection.SocketB = activeSocket;
                 connection.Initiator = socket;
+				Undo.RecordObject(socket.Module, "Add Connection to " + socket.Module.name);
+				socket.Module.Connections.Add (connection);
             }
+            
         }
 
         [MenuItem("SocketIt/Disconnect %&x")]
@@ -85,14 +91,16 @@ namespace SocketIt.Editor
 
             if(connection != null)
             {
-                Undo.DestroyObjectImmediate(connection);
+				Undo.RecordObject(activeSocket.Module, "Remove Connection from " + activeSocket.Module.name);
+				activeSocket.Module.Connections.Remove (connection);
             }
 
             connection = GetConnection(socket, activeSocket);
 
             if (connection != null)
             {
-                Undo.DestroyObjectImmediate(connection);
+				Undo.RecordObject(socket.Module, "Remove Connection from " + socket.Module.name);
+				socket.Module.Connections.Remove (connection);
             }
         }
 
@@ -110,7 +118,7 @@ namespace SocketIt.Editor
 
                 Socket snapSocket = gameObject.GetComponent<Socket>();
 
-                Undo.RecordObject(snapSocket.Module.transform, "Zero Transform Position");
+				Undo.RecordObject(snapSocket.Module.transform, "Snap position to " + activeSnapSocket.name);
                 SnapPosition(snapSocket, activeSnapSocket);
 
             }
@@ -126,11 +134,11 @@ namespace SocketIt.Editor
                 if (gameObject == Selection.activeGameObject)
                 {
                     continue;
-                }
+                } 
 
                 Socket snapSocket = gameObject.GetComponent<Socket>();
 
-                Undo.RecordObject(snapSocket.Module.transform, "Zero Transform Position");
+				Undo.RecordObject(snapSocket.Module.transform, "Snap rotation to " + activeSnapSocket.name);
                 SnapRotation(snapSocket, activeSnapSocket);
             }
         }
@@ -150,7 +158,7 @@ namespace SocketIt.Editor
 
                 Socket snapSocket = gameObject.GetComponent<Socket>();
 
-                Undo.RecordObject(snapSocket.Module.transform, "Zero Transform Position");
+				Undo.RecordObject(snapSocket.Module.transform, "Snap position and rotation to " + activeSnapSocket.name);
                 SnapRotation(snapSocket, activeSnapSocket);
                 SnapPosition(snapSocket, activeSnapSocket);
             }
@@ -162,7 +170,6 @@ namespace SocketIt.Editor
         [MenuItem("SocketIt/Snap/Position %&i", true)]
         [MenuItem("SocketIt/Snap/Rotation %&o", true)]
         [MenuItem("SocketIt/Snap/Position Rotation %&p", true)]
-
         static bool ValidateSocketItAction()
         {
             if (Selection.activeGameObject == null || Selection.gameObjects.Length != 2)
@@ -220,7 +227,7 @@ namespace SocketIt.Editor
 
         private static bool IsConnected(Socket socket)
         {
-            Connection[] connections = socket.Module.GetComponents<Connection>();
+			List<Connection> connections = socket.Module.Connections;
 
             foreach (Connection connection in connections)
             {
@@ -235,7 +242,7 @@ namespace SocketIt.Editor
 
         private static Connection GetConnection(Socket socketA, Socket socketB)
         {
-            Connection[] connections = socketA.Module.GetComponents<Connection>();
+			List<Connection> connections = socketA.Module.Connections;
 
             foreach (Connection connection in connections)
             {

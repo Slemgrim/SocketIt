@@ -70,7 +70,7 @@ namespace SocketIt {
                 return;
             }
 
-            Connection[] connections = Module.GetComponents<Connection>();
+			List<Connection> connections = Module.Connections;
 
             foreach(Connection connection in connections)
             {
