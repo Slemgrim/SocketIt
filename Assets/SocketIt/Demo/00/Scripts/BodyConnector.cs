@@ -47,8 +47,6 @@ namespace SocketIt.Example00
 
             CharacterJoint joint = gameObject.AddComponent<CharacterJoint>();
 
-          
-
             joint.connectedBody = connection.SocketB.Module.GetComponent<Rigidbody>();
             joint.anchor = connection.SocketA.transform.localPosition;
 

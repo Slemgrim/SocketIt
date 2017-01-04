@@ -12,9 +12,11 @@ namespace SocketIt.Examples
 		public Color activeColor;
 		public Color inactiveColor;
 		public Gui gui;
-
-		public string title;
-		public string description;
+        [MultilineAttribute]
+        public string title;
+        [MultilineAttribute]
+        public string description;
+        [MultilineAttribute]
         public string tutorial;
 
 		private Text text;

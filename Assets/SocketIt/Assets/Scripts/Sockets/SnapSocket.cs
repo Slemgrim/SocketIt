@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace SocketIt
 {
+    [DisallowMultipleComponent]
     [RequireComponent(typeof(Socket))]
     [AddComponentMenu("SocketIt/Socket/Snap Socket")]
     public class SnapSocket : MonoBehaviour

@@ -4,6 +4,7 @@ using System;
 
 namespace SocketIt
 {
+    [DisallowMultipleComponent]
     [RequireComponent(typeof(Module))]
     [AddComponentMenu("SocketIt/Connector/Node Connector")]
     public class NodeConnector : MonoBehaviour, IModuleConnector

@@ -4,6 +4,7 @@ using System;
 
 namespace SocketIt
 {
+    [DisallowMultipleComponent]
     [AddComponentMenu("SocketIt/Module/Module")]
     public class Module : MonoBehaviour
     {

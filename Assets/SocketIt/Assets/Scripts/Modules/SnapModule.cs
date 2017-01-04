@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace SocketIt
 {
+    [DisallowMultipleComponent]
     [RequireComponent(typeof(Module))]
     [AddComponentMenu("SocketIt/Module/Snap Module")]
     public class SnapModule : MonoBehaviour

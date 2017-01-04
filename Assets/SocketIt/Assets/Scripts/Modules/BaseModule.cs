@@ -5,6 +5,7 @@ using System;
 
 namespace SocketIt
 {
+    [DisallowMultipleComponent]
     [RequireComponent(typeof(NodeModule))]
     [AddComponentMenu("SocketIt/Module/Base Module")]
     public class BaseModule : MonoBehaviour
@@ -20,7 +21,7 @@ namespace SocketIt
 
         private NodeModule Node;
 
-        public void Start()
+        public void Awake()
         {
             Node = GetComponent<NodeModule>();
             if (Node != null)

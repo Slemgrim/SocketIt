@@ -4,6 +4,7 @@ using System;
 
 namespace SocketIt
 {
+    [DisallowMultipleComponent]
     [RequireComponent(typeof(SnapModule))]
     [AddComponentMenu("SocketIt/Snapper/LERP Snapper")]
     public class LerpSnapper : MonoBehaviour, ISocketSnapper

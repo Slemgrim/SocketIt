@@ -2,6 +2,7 @@
 using System.Collections;
 
 namespace SocketIt {
+    [DisallowMultipleComponent]
     [RequireComponent(typeof(Socket))]
     [AddComponentMenu("SocketIt/Socket/Collider Socket")]
     public class ColliderSocket : MonoBehaviour {

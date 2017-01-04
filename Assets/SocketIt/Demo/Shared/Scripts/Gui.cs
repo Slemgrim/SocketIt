@@ -10,9 +10,8 @@ namespace SocketIt.Examples {
         public static Gui instance;
 
 		private List<LoadSceneOnClick> sceneItems;
-
 		public Text Title;
-		public Text Description;
+        public Text Description;
         public Text Tutorial;
 
         public void Awake(){

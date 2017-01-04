@@ -5,6 +5,7 @@ using System;
 
 namespace SocketIt
 {
+    [DisallowMultipleComponent]
     [RequireComponent(typeof(Module))]
     [AddComponentMenu("SocketIt/Module/Node Module")]
     public class NodeModule : MonoBehaviour
@@ -46,7 +47,7 @@ namespace SocketIt
             }
         }
 
-        public void Start()
+        public void Awake()
         {
             module = GetComponent<Module>();
             module.OnConnect += OnConnect;
@@ -56,7 +57,7 @@ namespace SocketIt
         private void OnConnect(Connection connection)
         {
             NodeModule otherNode = connection.SocketB.Module.GetComponent<NodeModule>();
-        
+
             if (IsChildNode(otherNode))
             {
                 ConnectParent(otherNode);               

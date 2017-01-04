@@ -4,6 +4,7 @@ using UnityEditor;
 using UnityEngine;
 
 namespace SocketIt {
+    [DisallowMultipleComponent]
     [AddComponentMenu("SocketIt/Socket/Socket")]
     public class Socket : MonoBehaviour {
 
