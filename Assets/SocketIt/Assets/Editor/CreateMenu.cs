@@ -11,139 +11,76 @@ namespace SocketIt.Editor
         [MenuItem("SocketIt/Connect %&c")]
         static void ConnectSockets(MenuCommand menuCommand)
         {
-            Socket activeSocket = Selection.activeGameObject.GetComponent<Socket>();
-            Socket socket = null;
-            foreach (GameObject gameObject in Selection.gameObjects)
-            {
-                if (gameObject == Selection.activeGameObject)
-                {
-                    continue;
-                }
+            Socket activeSocket = GetActiveSocket();
+            Socket secondSocket = GetSecondSocket();
 
-                socket = gameObject.GetComponent<Socket>();
-            }
-
-            if(IsConnected(activeSocket) || IsConnected(socket))
+            if (IsConnected(activeSocket) || IsConnected(secondSocket))
             {
                 return;
             }
 
-            if(GetConnection(activeSocket, socket) == null)
+            if (GetConnection(activeSocket, secondSocket) == null)
             {
-                AddConnection(activeSocket, socket, socket);
+                AddConnection(activeSocket, secondSocket, secondSocket);
             }
 
-            if (GetConnection(socket, activeSocket) == null)
+            if (GetConnection(secondSocket, activeSocket) == null)
             {
-                AddConnection(socket, activeSocket, socket);
+                AddConnection(secondSocket, activeSocket, secondSocket);
             }
-            
-        }
-
-        private static void AddConnection(Socket socketA, Socket socketB, Socket initiator)
-        {
-            Connection connection = new Connection();
-            connection.SocketA = socketA;
-            connection.SocketB = socketB;
-            connection.Initiator = initiator;
-            Undo.RecordObject(socketA.Module, "Add Connection to " + socketA.Module.name);
-            socketA.Module.Connections.Add(connection);
         }
 
         [MenuItem("SocketIt/Disconnect %&x")]
         static void DisconnectSockets(MenuCommand menuCommand)
         {
-            Socket activeSocket = Selection.activeGameObject.GetComponent<Socket>();
-            Socket socket = null;
-            foreach (GameObject gameObject in Selection.gameObjects)
-            {
-                if (gameObject == Selection.activeGameObject)
-                {
-                    continue;
-                }
+            Socket activeSocket = GetActiveSocket();
+            Socket secondSocket = GetSecondSocket();
 
-                socket = gameObject.GetComponent<Socket>();
-            }
-
-            Connection connection = GetConnection(activeSocket, socket);
+            Connection connection = GetConnection(activeSocket, secondSocket);
 
             if(connection != null)
             {
                 RemoveConnection(activeSocket, connection);
             }
 
-            connection = GetConnection(socket, activeSocket);
+            connection = GetConnection(secondSocket, activeSocket);
 
             if (connection != null)
             {
-                RemoveConnection(socket, connection);
+                RemoveConnection(secondSocket, connection);
             }
-        }
-
-        private static void RemoveConnection(Socket socket, Connection connection)
-        {
-            Undo.RecordObject(socket.Module, "Remove Connection from " + socket.Module.name);
-            socket.Module.Connections.Remove(connection);
         }
 
         [MenuItem("SocketIt/Snap/Position %&i")]
         static void SnapSocketPosition(MenuCommand menuCommand)
         {
-            Socket activeSnapSocket = Selection.activeGameObject.GetComponent<Socket>();
+            Socket activeSocket = GetActiveSocket();
+            Socket secondSocket = GetSecondSocket();
 
-            foreach (GameObject gameObject in Selection.gameObjects)
-            {
-                if(gameObject == Selection.activeGameObject)
-                {
-                    continue;
-                }
-
-                Socket snapSocket = gameObject.GetComponent<Socket>();
-
-				Undo.RecordObject(snapSocket.Module.transform, "Snap position to " + activeSnapSocket.name);
-                SnapPosition(snapSocket, activeSnapSocket);
-
-            }
+            Undo.RecordObject(secondSocket.Module.transform, "Snap position to " + activeSocket.name);
+            SnapPosition(secondSocket, activeSocket);
         }
 
         [MenuItem("SocketIt/Snap/Rotation %&o")]
         static void SnapSocketRotation(MenuCommand menuCommand)
         {
-            Socket activeSnapSocket = Selection.activeGameObject.GetComponent<Socket>();
+            Socket activeSocket = GetActiveSocket();
+            Socket secondSocket = GetSecondSocket();
 
-            foreach (GameObject gameObject in Selection.gameObjects)
-            {
-                if (gameObject == Selection.activeGameObject)
-                {
-                    continue;
-                } 
-
-                Socket snapSocket = gameObject.GetComponent<Socket>();
-
-				Undo.RecordObject(snapSocket.Module.transform, "Snap rotation to " + activeSnapSocket.name);
-                SnapRotation(snapSocket, activeSnapSocket);
-            }
+            Undo.RecordObject(secondSocket.Module.transform, "Snap rotation to " + activeSocket.name);
+            SnapRotation(secondSocket, activeSocket);
         }
 
 
-        [MenuItem("SocketIt/Snap/Position Rotation %&p")]
+        [MenuItem("SocketIt/Snap/Position Rotation %&u")]
         static void SnapSocketPositionAndRotation(MenuCommand menuCommand)
         {
-            Socket activeSnapSocket = Selection.activeGameObject.GetComponent<Socket>();
+            Socket activeSocket = GetActiveSocket();
+            Socket secondSocket = GetSecondSocket();
 
-            foreach (GameObject gameObject in Selection.gameObjects)
-            {
-                if (gameObject == Selection.activeGameObject)
-                {
-                    continue;
-                }
-
-                Socket snapSocket = gameObject.GetComponent<Socket>();
-
-				Undo.RecordObject(snapSocket.Module.transform, "Snap position and rotation to " + activeSnapSocket.name);
-                SnapRotation(snapSocket, activeSnapSocket);
-                SnapPosition(snapSocket, activeSnapSocket);
-            }
+            Undo.RecordObject(secondSocket.Module.transform, "Snap position and rotation to " + activeSocket.name);
+            SnapRotation(secondSocket, activeSocket);
+            SnapPosition(secondSocket, activeSocket);
         }
 
 
@@ -151,7 +88,7 @@ namespace SocketIt.Editor
         [MenuItem("SocketIt/Disconnect %&x", true)]
         [MenuItem("SocketIt/Snap/Position %&i", true)]
         [MenuItem("SocketIt/Snap/Rotation %&o", true)]
-        [MenuItem("SocketIt/Snap/Position Rotation %&p", true)]
+        [MenuItem("SocketIt/Snap/Position Rotation %&u", true)]
         static bool ValidateSocketItAction()
         {
             if (Selection.activeGameObject == null || Selection.gameObjects.Length != 2)
@@ -235,6 +172,43 @@ namespace SocketIt.Editor
             }
 
             return null;
+        }
+
+        private static Socket GetSecondSocket()
+        {
+            Socket secondSocket = null;
+            foreach (GameObject gameObject in Selection.gameObjects)
+            {
+                if (gameObject == Selection.activeGameObject)
+                {
+                    continue;
+                }
+
+                secondSocket = gameObject.GetComponent<Socket>();
+            }
+
+            return secondSocket;
+        }
+
+        private static Socket GetActiveSocket()
+        {
+            return Selection.activeGameObject.GetComponent<Socket>();
+        }
+
+        private static void AddConnection(Socket socketA, Socket socketB, Socket initiator)
+        {
+            Connection connection = new Connection();
+            connection.SocketA = socketA;
+            connection.SocketB = socketB;
+            connection.Initiator = initiator;
+            Undo.RecordObject(socketA.Module, "Add Connection to " + socketA.Module.name);
+            socketA.Module.Connections.Add(connection);
+        }
+
+        private static void RemoveConnection(Socket socket, Connection connection)
+        {
+            Undo.RecordObject(socket.Module, "Remove Connection from " + socket.Module.name);
+            socket.Module.Connections.Remove(connection);
         }
     }
 }
