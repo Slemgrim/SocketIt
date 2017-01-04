@@ -30,24 +30,24 @@ namespace SocketIt.Editor
 
             if(GetConnection(activeSocket, socket) == null)
             {
-				Connection connection = new Connection ();
-                connection.SocketA = activeSocket;
-                connection.SocketB = socket;
-                connection.Initiator = socket;
-				Undo.RecordObject(activeSocket.Module, "Add Connection to " + activeSocket.Module.name );
-				activeSocket.Module.Connections.Add (connection);
+                AddConnection(activeSocket, socket, socket);
             }
 
             if (GetConnection(socket, activeSocket) == null)
             {
-				Connection connection = new Connection ();
-				connection.SocketA = socket;
-                connection.SocketB = activeSocket;
-                connection.Initiator = socket;
-				Undo.RecordObject(socket.Module, "Add Connection to " + socket.Module.name);
-				socket.Module.Connections.Add (connection);
+                AddConnection(socket, activeSocket, socket);
             }
             
+        }
+
+        private static void AddConnection(Socket socketA, Socket socketB, Socket initiator)
+        {
+            Connection connection = new Connection();
+            connection.SocketA = socketA;
+            connection.SocketB = socketB;
+            connection.Initiator = initiator;
+            Undo.RecordObject(socketA.Module, "Add Connection to " + socketA.Module.name);
+            socketA.Module.Connections.Add(connection);
         }
 
         [MenuItem("SocketIt/Disconnect %&x")]
@@ -69,17 +69,21 @@ namespace SocketIt.Editor
 
             if(connection != null)
             {
-				Undo.RecordObject(activeSocket.Module, "Remove Connection from " + activeSocket.Module.name);
-				activeSocket.Module.Connections.Remove (connection);
+                RemoveConnection(activeSocket, connection);
             }
 
             connection = GetConnection(socket, activeSocket);
 
             if (connection != null)
             {
-				Undo.RecordObject(socket.Module, "Remove Connection from " + socket.Module.name);
-				socket.Module.Connections.Remove (connection);
+                RemoveConnection(socket, connection);
             }
+        }
+
+        private static void RemoveConnection(Socket socket, Connection connection)
+        {
+            Undo.RecordObject(socket.Module, "Remove Connection from " + socket.Module.name);
+            socket.Module.Connections.Remove(connection);
         }
 
         [MenuItem("SocketIt/Snap/Position %&i")]

@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace SocketIt.Editor
 {
-    public class Components : MonoBehaviour
+    public class ComponentsMenu : MonoBehaviour
     {
         [MenuItem("GameObject/SocketIt/Module", false, 10)]
         static void CreateModule(MenuCommand menuCommand)
