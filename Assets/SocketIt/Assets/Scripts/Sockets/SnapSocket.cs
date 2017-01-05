@@ -12,38 +12,14 @@ namespace SocketIt
         public delegate void SnapSocketEvent(Snap snap);
         public event SnapSocketEvent OnSnap;
 
-        private SnapModule snapModule;
+        public SnapModule SnapModule;
 
-        private Socket socket;
+        public Socket Socket;
 
-        private Module module;
+        public Module Module;
 
         [Range(0.0f, 180.0f)]
         public float AngleLimit = 180;
-
-        public Socket Socket
-        {
-            get
-            {
-                return socket;
-            }
-        }
-
-        public Module Module
-        {
-            get
-            {
-                return module;
-            }
-        }
-
-        public SnapModule SnapModule
-        {
-            get
-            {
-                return snapModule;
-            }
-        }
 
         public void Reset()
         {
@@ -51,21 +27,25 @@ namespace SocketIt
             {
                 GetComponent<Socket>().Module.gameObject.AddComponent<SnapModule>();
             }
+
+            Socket = GetComponent<Socket>();
+            Module = Socket.Module;
+            SnapModule = Socket.Module.GetComponent<SnapModule>();
         }
 
         public void Awake()
         {
-            socket = GetComponent<Socket>();
             if(Socket == null)
             {
                 throw new SocketException("SnapSocket needs a Socket component");
             }
 
-            module = socket.Module;
+            if (Module == null)
+            {
+                throw new SocketException("SnapSocket needs to a SnapModule component");
+            }
 
-            snapModule = socket.Module.GetComponent<SnapModule>();
-
-            if (snapModule == null)
+            if (SnapModule == null)
             {
                 throw new SocketException("SnapSocket is not connected to a SnapModule");
             }
@@ -83,7 +63,7 @@ namespace SocketIt
                 OnSnap(new Snap(this, OtherSnapSocket));
             }
 
-            snapModule.OnSocketSnap(this, OtherSnapSocket);
+            SnapModule.OnSocketSnap(this, OtherSnapSocket);
         }
 
         private bool isValidSocket(SnapSocket otherSnapSocket)
@@ -93,7 +73,7 @@ namespace SocketIt
                 return false;
             }
 
-            if (socket.Module == otherSnapSocket.Socket.Module)
+            if (Socket.Module == otherSnapSocket.Socket.Module)
             {
                 return false;
             }

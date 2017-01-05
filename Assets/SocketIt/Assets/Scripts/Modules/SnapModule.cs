@@ -15,17 +15,17 @@ namespace SocketIt
         public bool IsStatic = true;
         public bool IsLocked = false;
 
-        private List<SnapSocket> Sockets;
+        public List<SnapSocket> SnapSockets;
 
         public delegate void SnapModuleEvent(Snap snap);
         public event SnapModuleEvent OnSnap;
 
-        private List<ISnapValidator> validators;
+        public List<ISnapValidator> Validators;
 
-        public void Awake()
+        public void Reset()
         {
-            Sockets = new List<SnapSocket>(GetComponentsInChildren<SnapSocket>());
-            validators = new List<ISnapValidator>(GetComponents<ISnapValidator>());
+            SnapSockets = new List<SnapSocket>(GetComponentsInChildren<SnapSocket>());
+            Validators = new List<ISnapValidator>(GetComponents<ISnapValidator>());
         }
 
         /**
@@ -47,12 +47,12 @@ namespace SocketIt
 
         public void RemoveSocket(SnapSocket socketToRemove)
         {
-            if (!Sockets.Contains(socketToRemove))
+            if (!SnapSockets.Contains(socketToRemove))
             {
                 return;
             }
 
-            Sockets.Remove(socketToRemove);
+            SnapSockets.Remove(socketToRemove);
         }
 
         private void Snap(SnapSocket callingSocket, SnapSocket otherSocket)
@@ -71,7 +71,7 @@ namespace SocketIt
 
         private bool validateSnap(Snap snap)
         {
-            foreach(ISnapValidator validator in validators)
+            foreach(ISnapValidator validator in Validators)
             {
                 if (!validator.Validate(snap))
                 {
