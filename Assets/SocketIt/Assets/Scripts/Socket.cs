@@ -43,6 +43,11 @@ namespace SocketIt {
             {
                 Debug.LogWarning("No Module component found in parent objects. Manual allocation is required");
             }
+
+            if (!Module.Sockets.Contains(this))
+            {
+                Module.Sockets.Add(this);
+            }
         }
 
         public void Disconnect(Socket socket, bool callOther = true)

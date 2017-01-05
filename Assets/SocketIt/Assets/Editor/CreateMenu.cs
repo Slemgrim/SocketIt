@@ -14,9 +14,27 @@ namespace SocketIt.Editor
             Socket activeSocket = GetActiveSocket();
             Socket secondSocket = GetSecondSocket();
 
-            if (IsConnected(activeSocket) || IsConnected(secondSocket))
+            Connect(activeSocket, secondSocket);
+        }
+
+        private static void Connect(Socket activeSocket, Socket secondSocket)
+        {
+            Connection existingConnection = GetConnection(activeSocket);
+            if (existingConnection != null)
             {
-                return;
+                Disconnect(existingConnection.SocketA, existingConnection.SocketB);
+            }
+
+            existingConnection = GetConnection(secondSocket);
+            if (existingConnection != null)
+            {
+                Disconnect(existingConnection.SocketA, existingConnection.SocketB);
+            }
+
+            existingConnection = GetConnection(activeSocket.Module, secondSocket.Module);
+            if (existingConnection != null)
+            {
+                Disconnect(existingConnection.SocketA, existingConnection.SocketB);
             }
 
             if (GetConnection(activeSocket, secondSocket) == null)
@@ -28,6 +46,88 @@ namespace SocketIt.Editor
             {
                 AddConnection(secondSocket, activeSocket, secondSocket);
             }
+
+            AddNodes(activeSocket, secondSocket);
+        }
+
+        private static void AddNodes(Socket activeSocket, Socket secondSocket)
+        {
+            NodeModule activeNode = activeSocket.Module.GetComponent<NodeModule>();
+            NodeModule secondNode = secondSocket.Module.GetComponent<NodeModule>();
+
+            Undo.RecordObject(activeNode, "Set Nodes on" + activeNode.name);
+            Undo.RecordObject(secondNode, "Set Nodes on" + secondNode.name);
+
+            if (activeNode == null || secondNode == null)
+            {
+                return;
+            }
+
+            if (activeNode.ChildNodes.Contains(secondNode))
+            {
+                return;
+            }
+
+            if (secondNode.ParentNode == activeNode) {
+                return;
+            }
+
+            //We remove old parent Nodes from the second module and replace it with the requested connection
+            if (secondNode.ParentNode != null)
+            {
+                Connection connecton = GetConnection(secondNode.Module, secondNode.ParentNode.Module);
+                if (connecton != null)
+                {
+                    Disconnect(connecton.SocketA, connecton.SocketB);
+                    Connect(activeSocket, secondSocket);
+                }
+            }
+
+            secondNode.ParentNode = activeNode;
+
+            if (!activeNode.ChildNodes.Contains(secondNode))
+            {
+                activeNode.ChildNodes.Add(secondNode);
+            }
+
+            if (DetectCircleReference(activeNode)){
+                Disconnect(activeSocket, secondSocket);
+                Debug.LogWarningFormat("Can't connect {0} to {1}. Circle referenced NodeModules are not allowed", secondNode.name, activeNode.name);
+            }
+        }
+
+        private static void RemoveNodes(Socket activeSocket, Socket secondSocket)
+        {
+            NodeModule activeNode = activeSocket.Module.GetComponent<NodeModule>();
+            NodeModule secondNode = secondSocket.Module.GetComponent<NodeModule>();
+
+            Undo.RecordObject(activeNode, "Remove Nodes on" + activeNode.name);
+            Undo.RecordObject(secondNode, "Remove Nodes on" + secondNode.name);
+
+            if (activeNode == null || secondNode == null)
+            {
+                return;
+            }
+            
+            if(activeNode.ParentNode == secondNode)
+            {
+                activeNode.ParentNode = null;
+            }
+
+            if (secondNode.ParentNode == activeNode)
+            {
+                secondNode.ParentNode = null;
+            }
+
+            if (activeNode.ChildNodes.Contains(secondNode))
+            {
+                activeNode.ChildNodes.Remove(secondNode);
+            }
+
+            if (secondNode.ChildNodes.Contains(activeNode))
+            {
+                secondNode.ChildNodes.Remove(activeNode);
+            }
         }
 
         [MenuItem("SocketIt/Disconnect %&x")]
@@ -36,18 +136,65 @@ namespace SocketIt.Editor
             Socket activeSocket = GetActiveSocket();
             Socket secondSocket = GetSecondSocket();
 
-            Connection connection = GetConnection(activeSocket, secondSocket);
+            Module activeModule = GetActiveModule();
+            Module secondModule = GetSecondModule();
 
-            if(connection != null)
+            if(activeSocket != null && secondSocket == null)
             {
-                RemoveConnection(activeSocket, connection);
+                Disconnect(activeSocket, GetConnectedSocket(activeSocket));
             }
 
-            connection = GetConnection(secondSocket, activeSocket);
+            else if (activeSocket != null && secondSocket != null)
+            {
+                Disconnect(activeSocket, secondSocket);
+            }
+
+            else if(activeModule != null && secondModule == null)
+            {
+                foreach(Connection connection in new List<Connection>(activeModule.Connections))
+                {
+                    Disconnect(connection.SocketA, connection.SocketB);
+                }
+            } else if (activeModule != null && secondModule != null)
+            {
+                Connection connection = GetConnection(activeModule, secondModule);
+                if(connection != null)
+                {
+                    Disconnect(connection.SocketA, connection.SocketB);
+                }
+            }
+        }
+
+        private static void Disconnect(Socket activeSocket, Socket secondSocket)
+        {
+            RemoveNodes(activeSocket, secondSocket);
+            RemoveConnection(activeSocket, secondSocket);
+            RemoveConnection(secondSocket, activeSocket);
+
+        }
+
+        private static Socket GetConnectedSocket(Socket socket)
+        {
+            List<Connection> connections = socket.Module.Connections;
+            foreach(Connection connection in connections)
+            {
+                if(connection.SocketA == socket)
+                {
+                    return connection.SocketB;
+                }
+            }
+
+            return null;
+        }
+
+        private static void RemoveConnection(Socket activeSocket, Socket secondSocket)
+        {
+            Connection connection = GetConnection(activeSocket, secondSocket);
 
             if (connection != null)
             {
-                RemoveConnection(secondSocket, connection);
+                Undo.RecordObject(activeSocket.Module, "Remove Connection from " + activeSocket.Module.name);
+                activeSocket.Module.Connections.Remove(connection);
             }
         }
 
@@ -85,7 +232,6 @@ namespace SocketIt.Editor
 
 
         [MenuItem("SocketIt/Connect %&c", true)]
-        [MenuItem("SocketIt/Disconnect %&x", true)]
         [MenuItem("SocketIt/Snap/Position %&i", true)]
         [MenuItem("SocketIt/Snap/Rotation %&o", true)]
         [MenuItem("SocketIt/Snap/Position Rotation %&u", true)]
@@ -115,6 +261,25 @@ namespace SocketIt.Editor
                 {
                     return false;
                 }
+            }
+
+            return true;
+        }
+
+        [MenuItem("SocketIt/Disconnect %&x", true)]
+        static bool ValidateDisconnect()
+        {
+            if (Selection.activeGameObject == null)
+            {
+                return false;
+            }
+
+            Socket activeSocket = Selection.activeGameObject.GetComponent<Socket>();
+            Module activeModule = Selection.activeGameObject.GetComponent<Module>();
+
+            if (activeSocket == null && activeModule == null)
+            {
+                return false;
             }
 
             return true;
@@ -174,6 +339,36 @@ namespace SocketIt.Editor
             return null;
         }
 
+        private static Connection GetConnection(Socket socketA)
+        {
+            List<Connection> connections = socketA.Module.Connections;
+
+            foreach (Connection connection in connections)
+            {
+                if (connection.SocketA == socketA)
+                {
+                    return connection;
+                }
+            }
+
+            return null;
+        }
+
+        private static Connection GetConnection(Module moduleA, Module moduleB)
+        {
+            List<Connection> connections = moduleA.Connections;
+            
+            foreach (Connection connection in connections)
+            {
+                if (connection.SocketB.Module == moduleB)
+                {
+                    return connection;
+                }
+            }
+
+            return null;
+        }
+
         private static Socket GetSecondSocket()
         {
             Socket secondSocket = null;
@@ -195,6 +390,27 @@ namespace SocketIt.Editor
             return Selection.activeGameObject.GetComponent<Socket>();
         }
 
+        private static Module GetSecondModule()
+        {
+            Module secondModule = null;
+            foreach (GameObject gameObject in Selection.gameObjects)
+            {
+                if (gameObject == Selection.activeGameObject)
+                {
+                    continue;
+                }
+
+                secondModule = gameObject.GetComponent<Module>();
+            }
+
+            return secondModule;
+        }
+
+        private static Module GetActiveModule()
+        {
+            return Selection.activeGameObject.GetComponent<Module>();
+        }
+
         private static void AddConnection(Socket socketA, Socket socketB, Socket initiator)
         {
             Connection connection = new Connection();
@@ -205,10 +421,22 @@ namespace SocketIt.Editor
             socketA.Module.Connections.Add(connection);
         }
 
-        private static void RemoveConnection(Socket socket, Connection connection)
+        private static bool DetectCircleReference(NodeModule module, NodeModule startModule = null)
         {
-            Undo.RecordObject(socket.Module, "Remove Connection from " + socket.Module.name);
-            socket.Module.Connections.Remove(connection);
+            if (module.ParentNode == null)
+            {
+                return false;
+            } else if (module.ParentNode == startModule)
+            {
+                return true;
+            } else
+            {
+                if(startModule == null)
+                {
+                    startModule = module;
+                }
+                return DetectCircleReference(module.ParentNode, startModule);
+            }
         }
     }
 }

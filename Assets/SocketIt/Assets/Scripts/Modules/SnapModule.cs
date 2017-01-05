@@ -33,6 +33,7 @@ namespace SocketIt
          */
         public void OnSocketSnap(SnapSocket callingSocket, SnapSocket otherSocket)
         {
+
             Snap(callingSocket, otherSocket);
         }
 

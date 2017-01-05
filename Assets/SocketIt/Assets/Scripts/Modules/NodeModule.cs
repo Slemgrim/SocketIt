@@ -12,10 +12,10 @@ namespace SocketIt
     {
         public bool IsRootNode = false;
 
-        private NodeModule parentNode;
-        private List<NodeModule> childNodes = new List<NodeModule>();
+        public NodeModule ParentNode;
+        public List<NodeModule> ChildNodes = new List<NodeModule>();
 
-        private Module module;
+        public Module Module;
 
         public delegate void ModuleNodeEvent(NodeModule node);
         public event ModuleNodeEvent OnConnectParent;
@@ -23,35 +23,16 @@ namespace SocketIt
         public event ModuleNodeEvent OnConnectChild;
         public event ModuleNodeEvent OnDisconnectChild;
 
-        public NodeModule ParentNode
-        {
-            get
-            {
-                return parentNode;
-            }
-        }
-
-        public List<NodeModule> ChildNodes
-        {
-            get
-            {
-                return childNodes;
-            }
-        }
-
-        public Module Module
-        {
-            get
-            {
-                return module;
-            }
-        }
-
+   
         public void Awake()
         {
-            module = GetComponent<Module>();
-            module.OnConnect += OnConnect;
-            module.OnDisconnect += OnDisconnect;
+            Module.OnConnect += OnConnect;
+            Module.OnDisconnect += OnDisconnect;
+        }
+
+        public void Reset()
+        {
+            Module = GetComponent<Module>();
         }
 
         private void OnConnect(Connection connection)
@@ -96,7 +77,7 @@ namespace SocketIt
 
         private bool IsChildNode(NodeModule otherNode)
         {
-            if (parentNode == null && !IsRootNode && (otherNode.IsRootNode || otherNode.parentNode != null))
+            if (ParentNode == null && !IsRootNode && (otherNode.IsRootNode || otherNode.ParentNode != null))
             {
                 return true;
             }
@@ -106,7 +87,7 @@ namespace SocketIt
 
         private void ConnectChild(NodeModule otherNode)
         {
-            if (childNodes.Contains(otherNode))
+            if (ChildNodes.Contains(otherNode))
             {
                 throw new ModuleNodeException("Node is already connected to this node");
             }
@@ -119,7 +100,7 @@ namespace SocketIt
                 OnConnectChild(otherNode);
             }
 
-            childNodes.Add(otherNode);
+            ChildNodes.Add(otherNode);
         }
 
         private void DisconnectChild(NodeModule otherNode)
@@ -142,7 +123,7 @@ namespace SocketIt
                 OnConnectParent(otherNode);
             }
 
-            parentNode = otherNode;
+            ParentNode = otherNode;
         }
 
         private void DisconnectParent(NodeModule otherNode)
@@ -152,7 +133,7 @@ namespace SocketIt
                 OnDisconnectParent(otherNode);
             }
 
-            parentNode = null;
+            ParentNode = null;
         }
 
         private void BroadcastChildConnect(NodeModule otherNode)

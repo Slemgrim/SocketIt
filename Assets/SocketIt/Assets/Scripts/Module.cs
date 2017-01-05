@@ -12,7 +12,7 @@ namespace SocketIt
         public event ModuleEvent OnConnect;
         public event ModuleEvent OnDisconnect;
 
-        private List<Socket> Sockets = new List<Socket>();
+        public List<Socket> Sockets = new List<Socket>();
 
         public List<Connection> Connections = new List<Connection>();
 
@@ -34,14 +34,10 @@ namespace SocketIt
 			
         public void Reset()
         {
-            Socket[] sockets = GetComponentsInChildren<Socket>();
-            foreach(Socket socket in sockets)
+            Sockets = new List<Socket>(GetComponentsInChildren<Socket>());
+            foreach(Socket socket in Sockets)
             {
-                Sockets.Add(socket);
-                if(socket.Module == null)
-                {
-                    socket.Module = this;
-                }
+                socket.Module = this;
             }
         }
 
