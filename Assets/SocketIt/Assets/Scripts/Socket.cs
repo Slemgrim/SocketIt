@@ -82,7 +82,10 @@ namespace SocketIt {
                     continue;
                 }
 
-                SocketItGizmo.DrawConnection(connection);
+                if (connection.Initiator == this)
+                {
+                    SocketItGizmo.DrawConnection(connection);
+                }
             }
         }
 

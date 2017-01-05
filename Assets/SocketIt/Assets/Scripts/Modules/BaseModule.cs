@@ -19,16 +19,17 @@ namespace SocketIt
         public event BaseEvent OnNodeDisconnected;
         public event BaseEvent OnNodeDisconnectedIndirect;
 
-        private NodeModule Node;
+        public NodeModule Node;
+
+        public void Reset()
+        {
+            Node = GetComponent<NodeModule>();
+        }
 
         public void Awake()
         {
-            Node = GetComponent<NodeModule>();
-            if (Node != null)
-            {
-                Node.OnConnectChild += OnConnectChild;
-                Node.OnDisconnectChild += OnDisconnectChild;
-            }
+            Node.OnConnectChild += OnConnectChild;
+            Node.OnDisconnectChild += OnDisconnectChild;
         }
 
         private void OnConnectChild(NodeModule node)

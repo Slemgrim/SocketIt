@@ -9,25 +9,19 @@ namespace SocketIt
     public class RaySocket : MonoBehaviour
     {
 
-        public Camera cam;
-        private SnapSocket socket;
+        public Camera Cam;
+        public SnapSocket Socket;
 
         public bool RaysActive = false;
         private RaySocket current;
 
-        void Awake()
-        {
-            socket = GetComponent<SnapSocket>();
-
-            if(cam == null)
-            {
-                cam = Camera.main;
-            }
+        public void Reset() {
+            Socket = GetComponent<SnapSocket>();
+            Cam = Camera.main;
         }
 
-        public void Reset()
+        public void Clear()
         {
-            cam = Camera.main;
             current = null;
         }
 
@@ -38,13 +32,13 @@ namespace SocketIt
                 return;
             }
 
-            if(cam == null)
+            if(Cam == null)
             {
                 return;
             }
 
-            Vector3 origin = cam.transform.position;
-            Vector3 direction = (transform.position - cam.transform.position) ;
+            Vector3 origin = Cam.transform.position;
+            Vector3 direction = (transform.position - Cam.transform.position) ;
 
             Debug.DrawRay(origin, direction * 2, Color.green);
 
@@ -73,7 +67,7 @@ namespace SocketIt
                 }
 
                 current = raySocket;
-                socket.Snap(raySocket.socket);
+                Socket.Snap(raySocket.Socket);
             }
         }
     }

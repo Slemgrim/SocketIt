@@ -40,7 +40,7 @@ namespace SocketIt.Example05
             List<RaySocket> raySockets = new List<RaySocket>(follower.GetComponentsInChildren<RaySocket>());
             foreach (RaySocket raySocket in raySockets)
             {
-                raySocket.Reset();
+                raySocket.Clear();
             }
         }
 

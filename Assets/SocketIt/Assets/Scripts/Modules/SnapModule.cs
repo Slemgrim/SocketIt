@@ -25,6 +25,10 @@ namespace SocketIt
         public void Reset()
         {
             SnapSockets = new List<SnapSocket>(GetComponentsInChildren<SnapSocket>());
+        }
+
+        public void Awake()
+        {
             Validators = new List<ISnapValidator>(GetComponents<ISnapValidator>());
         }
 
@@ -71,7 +75,7 @@ namespace SocketIt
 
         private bool validateSnap(Snap snap)
         {
-            foreach(ISnapValidator validator in Validators)
+            foreach (ISnapValidator validator in Validators)
             {
                 if (!validator.Validate(snap))
                 {
