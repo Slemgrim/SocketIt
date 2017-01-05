@@ -64,14 +64,11 @@ namespace SocketIt {
             Module.RemoveSocket(this);
         }
 
-        public void OnDrawGizmos()
+        void OnDrawGizmos()
         {
             Gizmos.DrawIcon(transform.position, "Socket.png", true);
-        }
 
-        void OnDrawGizmosSelected()
-        {
-            if(Module == null)
+            if (Module == null)
             {
                 return;
             }
