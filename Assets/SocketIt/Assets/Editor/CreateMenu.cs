@@ -55,6 +55,11 @@ namespace SocketIt.Editor
             NodeModule activeNode = activeSocket.Module.GetComponent<NodeModule>();
             NodeModule secondNode = secondSocket.Module.GetComponent<NodeModule>();
 
+            if(activeNode == null || secondNode == null)
+            {
+                return;
+            }
+
             Undo.RecordObject(activeNode, "Set Nodes on" + activeNode.name);
             Undo.RecordObject(secondNode, "Set Nodes on" + secondNode.name);
 
@@ -100,6 +105,11 @@ namespace SocketIt.Editor
         {
             NodeModule activeNode = activeSocket.Module.GetComponent<NodeModule>();
             NodeModule secondNode = secondSocket.Module.GetComponent<NodeModule>();
+
+            if (activeNode == null || secondNode == null)
+            {
+                return;
+            }
 
             Undo.RecordObject(activeNode, "Remove Nodes on" + activeNode.name);
             Undo.RecordObject(secondNode, "Remove Nodes on" + secondNode.name);

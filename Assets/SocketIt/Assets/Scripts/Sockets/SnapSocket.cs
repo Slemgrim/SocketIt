@@ -33,6 +33,11 @@ namespace SocketIt
             SnapModule = Socket.Module.GetComponent<SnapModule>();
         }
 
+        void OnDrawGizmos()
+        {
+            SocketItGizmo.DrawSocketAngle(this, AngleLimit);
+        }
+
         public void Awake()
         {
             if(Socket == null)
