@@ -56,8 +56,8 @@ namespace SocketIt.Example00
 
         private void OnDisconnect(Connection connection)
         {
-            List<HingeJoint> joints = new List<HingeJoint>(GetComponents<HingeJoint>());
-            foreach (HingeJoint joint in joints)
+            List<CharacterJoint> joints = new List<CharacterJoint>(GetComponents<CharacterJoint>());
+            foreach (CharacterJoint joint in joints)
             {
                 if (joint.connectedBody == connection.SocketB.Module.GetComponent<Rigidbody>())
                 {

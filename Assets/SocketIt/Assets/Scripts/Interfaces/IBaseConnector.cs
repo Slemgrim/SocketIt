@@ -5,7 +5,7 @@ namespace SocketIt
 {
     public interface IBaseConnector
     {
-        void Connect(BaseModule baseModule);
-        void Disconnect(BaseModule baseModule);
+        void Connect(MasterModule baseModule);
+        void Disconnect(MasterModule baseModule);
     }
 }

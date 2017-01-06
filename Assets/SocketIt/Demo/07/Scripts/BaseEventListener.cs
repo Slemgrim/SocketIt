@@ -7,11 +7,11 @@ namespace SocketIt.Example07
 {
     public class BaseEventListener : MonoBehaviour
     {
-        private BaseModule baseModule;
+        private MasterModule baseModule;
 
         public void Awake()
         {
-            baseModule = GetComponent<BaseModule>();
+            baseModule = GetComponent<MasterModule>();
             baseModule.OnNodeConnected += OnNodeConnected;
             baseModule.OnNodeConnectedIndirect += OnNodeConnectedIndirect;
             baseModule.OnNodeDisconnected += OnNodeDisconnected;

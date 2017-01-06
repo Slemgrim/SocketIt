@@ -7,8 +7,8 @@ namespace SocketIt
 {
     [DisallowMultipleComponent]
     [RequireComponent(typeof(NodeModule))]
-    [AddComponentMenu("SocketIt/Module/Base Module")]
-    public class BaseModule : MonoBehaviour
+    [AddComponentMenu("SocketIt/Module/Master Module")]
+    public class MasterModule : MonoBehaviour
     {
         public List<NodeModule> ConnectedModules = new List<NodeModule>();
 

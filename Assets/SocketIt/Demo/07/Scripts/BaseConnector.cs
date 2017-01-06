@@ -13,12 +13,12 @@ namespace SocketIt.Example07
             rend = GetComponent<Renderer>();
         }
 
-        public void Connect(BaseModule baseModule)
+        public void Connect(MasterModule baseModule)
         {
             ChangeEmissionColor(Color.green);
         }
 
-        public void Disconnect(BaseModule baseModule)
+        public void Disconnect(MasterModule baseModule)
         {
             ChangeEmissionColor(Color.black);
         }
