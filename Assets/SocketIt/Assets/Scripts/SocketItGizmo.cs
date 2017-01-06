@@ -6,14 +6,17 @@ namespace SocketIt
     public class SocketItGizmo
     {
         private static Color ConnectionColor = Color.green;
-        private static Color NodeColor = Color.red;
+        private static Color NodeColor = Color.cyan;
 
         public static void DrawConnection(Connection connection)
         {
+            bool isNode = false;
+
             Color color = ConnectionColor;
             if(connection.SocketA.Module.GetComponent<NodeModule>() != null && connection.SocketB.Module.GetComponent<NodeModule>() != null)
             {
                 color = NodeColor;
+                isNode = true;
             }
 
             Handles.color = color;
@@ -23,17 +26,21 @@ namespace SocketIt
                 Vector3 startPoint = connection.SocketA.transform.position;
                 Vector3 endPoint = connection.SocketB.transform.position;
 
-                float handleLength = Vector3.Distance(startPoint, endPoint) / 2;
-
-                Vector3 startTangent = connection.SocketA.transform.position + connection.SocketA.transform.forward * handleLength;
-                Vector3 endTangent = connection.SocketB.transform.position + connection.SocketB.transform.forward * handleLength;
+                Vector3 startTangent = connection.SocketA.transform.position + connection.SocketA.transform.forward;
+                Vector3 endTangent = connection.SocketB.transform.position + connection.SocketB.transform.forward;
 
                 Handles.DrawBezier(startPoint, endPoint, startTangent, endTangent, color, null, 5);
 
                 Bezier bezier = new Bezier(startPoint, endPoint, startTangent, endTangent);
 
+                if (isNode)
+                {
+                    DrawArrow(bezier.GetPointAtTime(0.5f), bezier.GetPointAtTime(0.51f));
+                    DrawArrow(bezier.GetPointAtTime(0.2f), bezier.GetPointAtTime(0.21f));
+                    DrawArrow(bezier.GetPointAtTime(0.8f), bezier.GetPointAtTime(0.81f));
+                }
+    
 
-                DrawArrow(bezier.GetPointAtTime(0.5f), bezier.GetPointAtTime(0.55f));
             }
 
             Handles.DrawWireDisc(connection.Initiator.transform.position, Vector3.forward, .1f);
@@ -73,9 +80,7 @@ namespace SocketIt
 
         private static void DrawArrow(Vector3 position, Vector3 target)
         {
-            Handles.color = Color.green;
-            Handles.DrawSolidDisc(position, Vector3.forward, .05f * HandleUtility.GetHandleSize(position));
-            Handles.DrawLine(position, target);
+            Handles.ConeCap(0, position, Quaternion.LookRotation(target - position), .2f);
         }
     }
 }
