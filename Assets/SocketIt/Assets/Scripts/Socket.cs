@@ -27,12 +27,16 @@ namespace SocketIt {
             return Module.GetConnectedSocket(this);
         }
 
-        public void Connect(Socket socket, bool callOther = true)
+        public void Connect(Socket socket, Socket initiator = null, bool callOther = true)
         {
-            ConnectSocket(socket, this);
+            if(initiator == null)
+            {
+                initiator = this;
+            }
+            ConnectSocket(socket, initiator);
             if (callOther)
             {
-                socket.Connect(this, false);
+                socket.Connect(this, initiator, false);
             }
         }
 

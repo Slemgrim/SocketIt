@@ -47,10 +47,84 @@ namespace SocketIt.Editor
                 AddConnection(secondSocket, activeSocket, secondSocket);
             }
 
-            AddNodes(activeSocket, secondSocket);
+            AddNodeConnection(activeSocket, secondSocket);
+
+    
+            //AddMasterSlaveConnection(activeSocket, secondSocket);
+            
+        }
+        private static void AddMasterSlaveConnection(Socket activeSocket, Socket secondSocket)
+        {
+            MasterModule activeMaster = activeSocket.Module.GetComponent<MasterModule>();
+            MasterModule secondMaster = secondSocket.Module.GetComponent<MasterModule>();
+
+            SlaveModule activeSlave = activeSocket.Module.GetComponent<SlaveModule>();
+            SlaveModule secondSlave = secondSocket.Module.GetComponent<SlaveModule>();
+
+            if (activeMaster != null && secondSlave != null)
+            {
+                Undo.RecordObject(activeMaster, "Set Master/Slave Connection");
+                Undo.RecordObject(secondSlave, "Set Master/Slave Connection");
+                ConnectMasterSlave(activeMaster, secondSlave);
+            }
+            else if (secondMaster != null && activeSlave != null)
+            {
+                Undo.RecordObject(secondMaster, "Set Master/Slave Connection");
+                Undo.RecordObject(activeSlave, "Set Master/Slave Connection");
+                ConnectMasterSlave(secondMaster, activeSlave);
+            }
+            else if (activeSlave != null && secondSlave != null && activeSlave.Master != null)
+            {
+                Undo.RecordObject(activeSlave, "Set Master/Slave Connection");
+                Undo.RecordObject(secondSlave, "Set Master/Slave Connection");
+                ConnectSlaveSlave(activeSlave, secondSlave);
+            }
+            else if (activeSlave != null && secondSlave != null && secondSlave.Master != null)
+            {
+                Undo.RecordObject(activeSlave, "Set Master/Slave Connection");
+                Undo.RecordObject(secondSlave, "Set Master/Slave Connection");
+                ConnectSlaveSlave(secondSlave, activeSlave);
+            }
         }
 
-        private static void AddNodes(Socket activeSocket, Socket secondSocket)
+        private static void ConnectSlaveSlave(SlaveModule slaveWithMaster, SlaveModule slave)
+        {
+            slave.Master = slaveWithMaster.Master;
+        }
+
+        private static void ConnectMasterSlave(MasterModule master, SlaveModule slave)
+        {
+            NodeModule slaveNode = slave.GetComponent<NodeModule>();
+            List<NodeModule> slaveNodes = GetAllConnectedSlaves(slaveNode);
+            slaveNodes.Add(slaveNode);
+
+            foreach (NodeModule node in slaveNodes)
+            {
+                slave = node.GetComponent<SlaveModule>();
+                if (!master.ConnectedSlaves.Contains(slave))
+                {
+                    master.ConnectedSlaves.Add(slave);
+                }
+
+                slave.Master = master;
+            }
+        }
+
+        private static List<NodeModule> GetAllConnectedSlaves(NodeModule node)
+        {
+            List<NodeModule> childs = new List<NodeModule>();
+
+            childs = new List<NodeModule>(node.ChildNodes);
+
+            foreach (NodeModule child in node.ChildNodes)
+            {
+                childs.AddRange(GetAllConnectedSlaves(child));
+            }
+
+            return childs;
+        }
+
+        private static void AddNodeConnection(Socket activeSocket, Socket secondSocket)
         {
             NodeModule activeNode = activeSocket.Module.GetComponent<NodeModule>();
             NodeModule secondNode = secondSocket.Module.GetComponent<NodeModule>();
@@ -101,7 +175,7 @@ namespace SocketIt.Editor
             }
         }
 
-        private static void RemoveNodes(Socket activeSocket, Socket secondSocket)
+        private static void RemoveNodeConnection(Socket activeSocket, Socket secondSocket)
         {
             NodeModule activeNode = activeSocket.Module.GetComponent<NodeModule>();
             NodeModule secondNode = secondSocket.Module.GetComponent<NodeModule>();
@@ -177,7 +251,7 @@ namespace SocketIt.Editor
 
         private static void Disconnect(Socket activeSocket, Socket secondSocket)
         {
-            RemoveNodes(activeSocket, secondSocket);
+            RemoveNodeConnection(activeSocket, secondSocket);
             RemoveConnection(activeSocket, secondSocket);
             RemoveConnection(secondSocket, activeSocket);
 

@@ -13,6 +13,7 @@ namespace SocketIt
         public event ModuleEvent OnDisconnect;
 
         public List<Socket> Sockets = new List<Socket>();
+        public Construct Construct = null;
 
         public List<Connection> Connections = new List<Connection>();
 
@@ -129,17 +130,35 @@ namespace SocketIt
 
         private bool AddConnection(Socket callingSocket, Socket otherSocket, Socket initiator)
         {
-			Connection oldConnection = GetConnection (otherSocket.Module);
-			if(oldConnection != null){
-				Debug.LogWarningFormat ("Module {0} already connected to module {1}", callingSocket.Module.name, otherSocket.Module.name);
-				return false;
-			}	
+            Connection oldConnection = GetConnection(otherSocket.Module);
+            if (oldConnection != null)
+            {
+                Debug.LogWarningFormat("Module {0} already connected to module {1}", callingSocket.Module.name, otherSocket.Module.name);
+                return false;
+            }
 
-			Connection connection = new Connection ();
-			connection.SocketA = callingSocket;
-			connection.SocketB = otherSocket; 
-			connection.Initiator = initiator;
+            Connection connection = new Connection();
+            connection.SocketA = callingSocket;
+            connection.SocketB = otherSocket;
+            connection.Initiator = initiator;
             Connections.Add(connection);
+
+            if (Construct != null && initiator.Module == this)
+            {
+                Construct.Delete();
+            }
+
+            if (Construct == null && otherSocket.Module.Construct == null)
+            {
+                Construct = Construct.CreateNew(otherSocket.Module);
+            }
+
+            else if (otherSocket.Module.Construct != null)
+            {
+                Construct = otherSocket.Module.Construct;
+            }
+
+            AddToConstruct();
 
             if (OnConnect != null)
             {
@@ -157,13 +176,49 @@ namespace SocketIt
             }
 
             Connections.Remove(connection);
-            
+
+            RemoveFromConstruct();
+           
             if (OnDisconnect != null)
             {
                 OnDisconnect(connection);
             }
 
             return true;
+        }
+
+        private void AddToConstruct()
+        {
+            Construct.AddModule(this);
+            List<Module> modules = Construct.GetConnected(this);
+            foreach (Module module in modules)
+            {
+                Construct.AddModule(module);
+                module.Construct = Construct;
+            }
+        }
+
+        private void RemoveFromConstruct()
+        {
+            if (Construct == null)
+            {
+                return;
+            }
+
+            List<Module> modules = new List<Module>();
+            if (!Construct.IsConnected(this, modules))
+            {
+                foreach (Module module in modules)
+                {
+                    Construct.RemoveModule(module);
+                }
+
+                if(modules.Count >= 2)
+                {
+                    Construct = Construct.CreateNew(this);
+                    AddToConstruct();
+                }
+            }
         }
 
         public Connection GetConnection(Module module)

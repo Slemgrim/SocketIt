@@ -29,18 +29,25 @@ namespace SocketIt
                 Vector3 startTangent = connection.SocketA.transform.position + connection.SocketA.transform.forward;
                 Vector3 endTangent = connection.SocketB.transform.position + connection.SocketB.transform.forward;
 
-                Handles.DrawBezier(startPoint, endPoint, startTangent, endTangent, color, null, 5);
+                float distance = Vector3.Distance(startPoint, endPoint);
 
-                Bezier bezier = new Bezier(startPoint, endPoint, startTangent, endTangent);
+                if (distance > 0.1) {
 
-                if (isNode)
-                {
-                    DrawArrow(bezier.GetPointAtTime(0.5f), bezier.GetPointAtTime(0.51f));
-                    DrawArrow(bezier.GetPointAtTime(0.2f), bezier.GetPointAtTime(0.21f));
-                    DrawArrow(bezier.GetPointAtTime(0.8f), bezier.GetPointAtTime(0.81f));
+                    Handles.DrawBezier(startPoint, endPoint, startTangent, endTangent, color, null, 5);
+
+                    Bezier bezier = new Bezier(startPoint, endPoint, startTangent, endTangent);
+
+                    if (isNode)
+                    {
+                        DrawArrow(bezier.GetPointAtTime(0.5f), bezier.GetPointAtTime(0.51f));
+
+                        if(distance > 0.5)
+                        {
+                            DrawArrow(bezier.GetPointAtTime(0.2f), bezier.GetPointAtTime(0.21f));
+                            DrawArrow(bezier.GetPointAtTime(0.8f), bezier.GetPointAtTime(0.81f));
+                        } 
+                    }
                 }
-    
-
             }
 
             Handles.DrawWireDisc(connection.Initiator.transform.position, Vector3.forward, .1f);
@@ -81,6 +88,23 @@ namespace SocketIt
         private static void DrawArrow(Vector3 position, Vector3 target)
         {
             Handles.ConeCap(0, position, Quaternion.LookRotation(target - position), .2f);
+        }
+
+        public static void DrawConstruct(Construct construct)
+        {
+            Vector3 labelPosition = construct.Center.transform.position + Vector3.up * 2 + Vector3.right * 2;
+
+            Handles.Label(labelPosition, construct.name);
+
+            Vector3 startPoint = construct.Center.transform.position;
+            Handles.color = Color.white;
+            Handles.DrawLine(labelPosition, startPoint);
+
+            foreach (Module module in construct.Modules)
+            {
+                Vector3 endPoint = module.transform.position;
+                Handles.DrawLine(startPoint, endPoint);
+            }
         }
     }
 }

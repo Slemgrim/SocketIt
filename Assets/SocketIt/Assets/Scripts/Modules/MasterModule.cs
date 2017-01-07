@@ -8,9 +8,9 @@ namespace SocketIt
     [DisallowMultipleComponent]
     [RequireComponent(typeof(NodeModule))]
     [AddComponentMenu("SocketIt/Module/Master Module")]
-    public class MasterModule : MonoBehaviour
+    public class MasterModule : MonoBehaviour, ISnapValidator
     {
-        public List<NodeModule> ConnectedModules = new List<NodeModule>();
+        public List<SlaveModule> ConnectedSlaves = new List<SlaveModule>();
 
         public delegate void BaseEvent(NodeModule node);
 
@@ -40,7 +40,9 @@ namespace SocketIt
             foreach (NodeModule affectedNode in affectedNodes)
             {
                 Activate(affectedNode);
-                AddToConnectedModules(affectedNode);
+                SlaveModule slave = affectedNode.GetComponent<SlaveModule>();
+                slave.Master = this;
+                AddToConnectedModules(slave);
 
                 if(affectedNode == node)
                 {
@@ -65,8 +67,10 @@ namespace SocketIt
             
             foreach(NodeModule affectedNode in affectedNodes)
             {
+                SlaveModule slave = affectedNode.GetComponent<SlaveModule>();
+                slave.Master = null;
                 Deactivate(affectedNode);
-                RemoveFromConnectedModules(affectedNode);
+                RemoveFromConnectedModules(slave);
 
                 if (affectedNode == node)
                 {
@@ -99,19 +103,19 @@ namespace SocketIt
             return childs;
         }
 
-        private void AddToConnectedModules(NodeModule node)
+        private void AddToConnectedModules(SlaveModule slave)
         {
-            if (!ConnectedModules.Contains(node))
+            if (!ConnectedSlaves.Contains(slave))
             {
-                ConnectedModules.Add(node);
+                ConnectedSlaves.Add(slave);
             }
         }
 
-        private void RemoveFromConnectedModules(NodeModule node)
+        private void RemoveFromConnectedModules(SlaveModule slave)
         {
-            if (ConnectedModules.Contains(node))
+            if (ConnectedSlaves.Contains(slave))
             {
-                ConnectedModules.Remove(node);
+                ConnectedSlaves.Remove(slave);
             }
         }
 
@@ -131,6 +135,14 @@ namespace SocketIt
             {
                 connector.Disconnect(this);
             }
+        }
+
+        public bool Validate(Snap snap)
+        {
+            MasterModule master = snap.SocketB.Module.GetComponent<MasterModule>();
+            SlaveModule slave = snap.SocketA.Module.GetComponent<SlaveModule>();
+
+            return master == null || (slave != null && slave.Master == null);
         }
     }   
 }

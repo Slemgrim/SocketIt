@@ -32,6 +32,11 @@ namespace SocketIt.Example00
 
         private void OnPickUp(GameObject follower)
         {
+            if (follower.GetComponent<MasterModule>() != null)
+            {
+                return;
+            }
+
             if (follower.GetComponent<NodeModule>().ParentNode != null)
             {
                 follower.GetComponent<Module>().DisconnectModule(follower.GetComponent<NodeModule>().ParentNode.Module);
