@@ -13,7 +13,7 @@ namespace SocketIt
         public event ModuleEvent OnDisconnect;
 
         public List<Socket> Sockets = new List<Socket>();
-        public Construct Construct = null;
+        public Composition Composition = null;
 
         public List<Connection> Connections = new List<Connection>();
 
@@ -143,22 +143,22 @@ namespace SocketIt
             connection.Initiator = initiator;
             Connections.Add(connection);
 
-            if (Construct != null && initiator.Module == this)
+            if (Composition != null && initiator.Module == this)
             {
-                Construct.Delete();
+                Composition.Delete();
             }
 
-            if (Construct == null && otherSocket.Module.Construct == null)
+            if (Composition == null && otherSocket.Module.Composition == null)
             {
-                Construct = Construct.CreateNew(otherSocket.Module);
+                Composition = Composition.CreateNew(otherSocket.Module);
             }
 
-            else if (otherSocket.Module.Construct != null)
+            else if (otherSocket.Module.Composition != null)
             {
-                Construct = otherSocket.Module.Construct;
+                Composition = otherSocket.Module.Composition;
             }
 
-            AddToConstruct();
+            AddToComposition();
 
             if (OnConnect != null)
             {
@@ -177,7 +177,7 @@ namespace SocketIt
 
             Connections.Remove(connection);
 
-            RemoveFromConstruct();
+            RemoveFromComposition();
            
             if (OnDisconnect != null)
             {
@@ -187,36 +187,36 @@ namespace SocketIt
             return true;
         }
 
-        private void AddToConstruct()
+        private void AddToComposition()
         {
-            Construct.AddModule(this);
-            List<Module> modules = Construct.GetConnected(this);
+            Composition.AddModule(this);
+            List<Module> modules = Composition.GetConnected(this);
             foreach (Module module in modules)
             {
-                Construct.AddModule(module);
-                module.Construct = Construct;
+                Composition.AddModule(module);
+                module.Composition = Composition;
             }
         }
 
-        private void RemoveFromConstruct()
+        private void RemoveFromComposition()
         {
-            if (Construct == null)
+            if (Composition == null)
             {
                 return;
             }
 
             List<Module> modules = new List<Module>();
-            if (!Construct.IsConnected(this, modules))
+            if (!Composition.IsConnected(this, modules))
             {
                 foreach (Module module in modules)
                 {
-                    Construct.RemoveModule(module);
+                    Composition.RemoveModule(module);
                 }
 
                 if(modules.Count >= 2)
                 {
-                    Construct = Construct.CreateNew(this);
-                    AddToConstruct();
+                    Composition = Composition.CreateNew(this);
+                    AddToComposition();
                 }
             }
         }

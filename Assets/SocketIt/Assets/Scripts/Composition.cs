@@ -5,12 +5,13 @@ using System;
 
 namespace SocketIt
 {
-    public class Construct : MonoBehaviour
+    [DisallowMultipleComponent]
+    public class Composition : MonoBehaviour
     {
         public List<Module> Modules = new List<Module>();
         public Module Center = null;
 
-        private static int MaxConstructId = 0;
+        private static int MaxCompositionId = 0;
 
         public void AddModule(Module module)
         {
@@ -36,32 +37,32 @@ namespace SocketIt
             
             if (Modules.Count < 2)
             {
-                Center.Construct = null;
+                Center.Composition = null;
                 Destroy(gameObject);
             }
         }
 
         void OnDrawGizmos()
         {
-            SocketItGizmo.DrawConstruct(this);
+            SocketItGizmo.DrawComposition(this);
         }
 
-        public static Construct CreateNew(Module center)
+        public static Composition CreateNew(Module center)
         {
-            int newId = ++MaxConstructId;
-            GameObject gameObject = new GameObject("Construct " + newId);
-            Construct construct = gameObject.AddComponent<Construct>();
-            construct.Center = center;
+            int newId = ++MaxCompositionId;
+            GameObject gameObject = new GameObject("Composition " + newId);
+            Composition composition = gameObject.AddComponent<Composition>();
+            composition.Center = center;
 
             List<Module> modules = new List<Module>();
-            construct.IsConnected(center);
+            composition.IsConnected(center);
 
             foreach (Module module in modules)
             {
-                construct.AddModule(module);
+                composition.AddModule(module);
             } 
 
-            return construct;
+            return composition;
         }
 
         public List<Module> GetConnected(Module startModule, List<Module> reached = null)
@@ -124,7 +125,7 @@ namespace SocketIt
         {
             foreach(Module module in Modules)
             {
-                module.Construct = null;
+                module.Composition = null;
             }
 
             Destroy(gameObject);

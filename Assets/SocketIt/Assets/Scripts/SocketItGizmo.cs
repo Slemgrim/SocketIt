@@ -90,7 +90,7 @@ namespace SocketIt
             Handles.ConeCap(0, position, Quaternion.LookRotation(target - position), .2f);
         }
 
-        public static void DrawConstruct(Construct construct)
+        public static void DrawComposition(Composition construct)
         {
             Vector3 labelPosition = construct.Center.transform.position + Vector3.up * 2 + Vector3.right * 2;
 
