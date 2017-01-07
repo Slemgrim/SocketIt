@@ -42,11 +42,23 @@ namespace SocketIt.Examples
         private void Connect(Snap snap)
         {
             snap.SocketA.Socket.Connect(snap.SocketB.Socket);
+            snap.SocketA.Module.transform.SetParent(snap.SocketB.Module.transform);
         }
 
         private void OnPickUp(GameObject follower)
         {
-            ClearParentConnection(follower);
+            if (follower.transform.parent == null)
+            {
+                return;
+            }
+
+            Module parent = follower.transform.parent.GetComponent<Module>();
+
+            parent.DisconnectModule(follower.GetComponent<Module>());
+
+            //ClearParentConnection(follower);
+            follower.transform.SetParent(null);
+
             snap = null;
         }
 
