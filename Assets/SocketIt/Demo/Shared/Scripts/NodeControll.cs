@@ -55,29 +55,9 @@ namespace SocketIt.Examples
             Module parent = follower.transform.parent.GetComponent<Module>();
 
             parent.DisconnectModule(follower.GetComponent<Module>());
-
-            //ClearParentConnection(follower);
             follower.transform.SetParent(null);
 
             snap = null;
-        }
-
-        private void ClearParentConnection(GameObject follower)
-        {
-            follower.transform.parent = null;
-            NodeModule node = follower.GetComponent<NodeModule>();
-
-            if(node.ParentNode == null)
-            {
-                return;
-            }
-
-            Connection connection = node.Module.GetConnection(node.ParentNode.Module);
-
-            if (connection != null)
-            {
-                connection.SocketA.Disconnect(connection.SocketB);
-            }
         }
     }
 }

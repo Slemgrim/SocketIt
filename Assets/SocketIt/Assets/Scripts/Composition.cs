@@ -11,6 +11,10 @@ namespace SocketIt
         public List<Module> Modules = new List<Module>();
         public Module Center = null;
 
+        public delegate void CompositionEvent(Module module);
+        public event CompositionEvent OnModuleConnect;
+        public event CompositionEvent OnModuleDisconnect;
+
         private static int MaxCompositionId = 0;
 
         public void AddModule(Module module)
@@ -20,6 +24,11 @@ namespace SocketIt
             if (!Modules.Contains(module))
             {
                 Modules.Add(module);
+                //Debug.Log(name + " Add " + module.name);
+                if (OnModuleConnect != null)
+                {
+                    OnModuleConnect(module);
+                }
             }
         }
 
@@ -33,6 +42,12 @@ namespace SocketIt
             if (Modules.Contains(module))
             {
                 Modules.Remove(module);
+                //Debug.Log(name + " Remove " + module.name);
+
+                if (OnModuleDisconnect != null)
+                {
+                    OnModuleDisconnect(module);
+                }
             }
             
             if (Modules.Count < 2)
@@ -53,14 +68,6 @@ namespace SocketIt
             GameObject gameObject = new GameObject("Composition " + newId);
             Composition composition = gameObject.AddComponent<Composition>();
             composition.Center = center;
-
-            List<Module> modules = new List<Module>();
-            composition.IsConnected(center);
-
-            foreach (Module module in modules)
-            {
-                composition.AddModule(module);
-            } 
 
             return composition;
         }

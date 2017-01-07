@@ -6,18 +6,11 @@ namespace SocketIt
     public class SocketItGizmo
     {
         private static Color ConnectionColor = Color.green;
-        private static Color NodeColor = Color.cyan;
 
         public static void DrawConnection(Connection connection)
         {
             bool isNode = false;
-
             Color color = ConnectionColor;
-            if(connection.SocketA.Module.GetComponent<NodeModule>() != null && connection.SocketB.Module.GetComponent<NodeModule>() != null)
-            {
-                color = NodeColor;
-                isNode = true;
-            }
 
             Handles.color = color;
 

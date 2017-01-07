@@ -46,172 +46,6 @@ namespace SocketIt.Editor
             {
                 AddConnection(secondSocket, activeSocket, secondSocket);
             }
-
-            AddNodeConnection(activeSocket, secondSocket);
-
-    
-            //AddMasterSlaveConnection(activeSocket, secondSocket);
-            
-        }
-        private static void AddMasterSlaveConnection(Socket activeSocket, Socket secondSocket)
-        {
-            MasterModule activeMaster = activeSocket.Module.GetComponent<MasterModule>();
-            MasterModule secondMaster = secondSocket.Module.GetComponent<MasterModule>();
-
-            SlaveModule activeSlave = activeSocket.Module.GetComponent<SlaveModule>();
-            SlaveModule secondSlave = secondSocket.Module.GetComponent<SlaveModule>();
-
-            if (activeMaster != null && secondSlave != null)
-            {
-                Undo.RecordObject(activeMaster, "Set Master/Slave Connection");
-                Undo.RecordObject(secondSlave, "Set Master/Slave Connection");
-                ConnectMasterSlave(activeMaster, secondSlave);
-            }
-            else if (secondMaster != null && activeSlave != null)
-            {
-                Undo.RecordObject(secondMaster, "Set Master/Slave Connection");
-                Undo.RecordObject(activeSlave, "Set Master/Slave Connection");
-                ConnectMasterSlave(secondMaster, activeSlave);
-            }
-            else if (activeSlave != null && secondSlave != null && activeSlave.Master != null)
-            {
-                Undo.RecordObject(activeSlave, "Set Master/Slave Connection");
-                Undo.RecordObject(secondSlave, "Set Master/Slave Connection");
-                ConnectSlaveSlave(activeSlave, secondSlave);
-            }
-            else if (activeSlave != null && secondSlave != null && secondSlave.Master != null)
-            {
-                Undo.RecordObject(activeSlave, "Set Master/Slave Connection");
-                Undo.RecordObject(secondSlave, "Set Master/Slave Connection");
-                ConnectSlaveSlave(secondSlave, activeSlave);
-            }
-        }
-
-        private static void ConnectSlaveSlave(SlaveModule slaveWithMaster, SlaveModule slave)
-        {
-            slave.Master = slaveWithMaster.Master;
-        }
-
-        private static void ConnectMasterSlave(MasterModule master, SlaveModule slave)
-        {
-            NodeModule slaveNode = slave.GetComponent<NodeModule>();
-            List<NodeModule> slaveNodes = GetAllConnectedSlaves(slaveNode);
-            slaveNodes.Add(slaveNode);
-
-            foreach (NodeModule node in slaveNodes)
-            {
-                slave = node.GetComponent<SlaveModule>();
-                if (!master.ConnectedSlaves.Contains(slave))
-                {
-                    master.ConnectedSlaves.Add(slave);
-                }
-
-                slave.Master = master;
-            }
-        }
-
-        private static List<NodeModule> GetAllConnectedSlaves(NodeModule node)
-        {
-            List<NodeModule> childs = new List<NodeModule>();
-
-            childs = new List<NodeModule>(node.ChildNodes);
-
-            foreach (NodeModule child in node.ChildNodes)
-            {
-                childs.AddRange(GetAllConnectedSlaves(child));
-            }
-
-            return childs;
-        }
-
-        private static void AddNodeConnection(Socket activeSocket, Socket secondSocket)
-        {
-            NodeModule activeNode = activeSocket.Module.GetComponent<NodeModule>();
-            NodeModule secondNode = secondSocket.Module.GetComponent<NodeModule>();
-
-            if(activeNode == null || secondNode == null)
-            {
-                return;
-            }
-
-            Undo.RecordObject(activeNode, "Set Nodes on" + activeNode.name);
-            Undo.RecordObject(secondNode, "Set Nodes on" + secondNode.name);
-
-            if (activeNode == null || secondNode == null)
-            {
-                return;
-            }
-
-            if (activeNode.ChildNodes.Contains(secondNode))
-            {
-                return;
-            }
-
-            if (secondNode.ParentNode == activeNode) {
-                return;
-            }
-
-            //We remove old parent Nodes from the second module and replace it with the requested connection
-            if (secondNode.ParentNode != null)
-            {
-                Connection connecton = GetConnection(secondNode.Module, secondNode.ParentNode.Module);
-                if (connecton != null)
-                {
-                    Disconnect(connecton.SocketA, connecton.SocketB);
-                    Connect(activeSocket, secondSocket);
-                }
-            }
-
-            secondNode.ParentNode = activeNode;
-
-            if (!activeNode.ChildNodes.Contains(secondNode))
-            {
-                activeNode.ChildNodes.Add(secondNode);
-            }
-
-            if (DetectCircleReference(activeNode)){
-                Disconnect(activeSocket, secondSocket);
-                Debug.LogWarningFormat("Can't connect {0} to {1}. Circle referenced NodeModules are not allowed", secondNode.name, activeNode.name);
-            }
-        }
-
-        private static void RemoveNodeConnection(Socket activeSocket, Socket secondSocket)
-        {
-            NodeModule activeNode = activeSocket.Module.GetComponent<NodeModule>();
-            NodeModule secondNode = secondSocket.Module.GetComponent<NodeModule>();
-
-            if (activeNode == null || secondNode == null)
-            {
-                return;
-            }
-
-            Undo.RecordObject(activeNode, "Remove Nodes on" + activeNode.name);
-            Undo.RecordObject(secondNode, "Remove Nodes on" + secondNode.name);
-
-            if (activeNode == null || secondNode == null)
-            {
-                return;
-            }
-            
-            if(activeNode.ParentNode == secondNode)
-            {
-                activeNode.ParentNode = null;
-            }
-
-            if (secondNode.ParentNode == activeNode)
-            {
-                secondNode.ParentNode = null;
-            }
-
-            if (activeNode.ChildNodes.Contains(secondNode))
-            {
-                activeNode.ChildNodes.Remove(secondNode);
-            }
-
-            if (secondNode.ChildNodes.Contains(activeNode))
-            {
-                secondNode.ChildNodes.Remove(activeNode);
-            }
         }
 
         [MenuItem("SocketIt/Disconnect %&x")]
@@ -251,10 +85,8 @@ namespace SocketIt.Editor
 
         private static void Disconnect(Socket activeSocket, Socket secondSocket)
         {
-            RemoveNodeConnection(activeSocket, secondSocket);
             RemoveConnection(activeSocket, secondSocket);
             RemoveConnection(secondSocket, activeSocket);
-
         }
 
         private static Socket GetConnectedSocket(Socket socket)
@@ -503,24 +335,6 @@ namespace SocketIt.Editor
             connection.Initiator = initiator;
             Undo.RecordObject(socketA.Module, "Add Connection to " + socketA.Module.name);
             socketA.Module.Connections.Add(connection);
-        }
-
-        private static bool DetectCircleReference(NodeModule module, NodeModule startModule = null)
-        {
-            if (module.ParentNode == null)
-            {
-                return false;
-            } else if (module.ParentNode == startModule)
-            {
-                return true;
-            } else
-            {
-                if(startModule == null)
-                {
-                    startModule = module;
-                }
-                return DetectCircleReference(module.ParentNode, startModule);
-            }
         }
     }
 }

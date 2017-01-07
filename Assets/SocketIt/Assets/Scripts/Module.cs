@@ -12,6 +12,10 @@ namespace SocketIt
         public event ModuleEvent OnConnect;
         public event ModuleEvent OnDisconnect;
 
+        public delegate void CompositionEvent(Composition composition);
+        public event CompositionEvent OnCompositionSet;
+        public event CompositionEvent OnCompositionRemoved;
+
         public List<Socket> Sockets = new List<Socket>();
         public Composition Composition = null;
 
@@ -53,10 +57,34 @@ namespace SocketIt
             }
         }
 
+        public void SetComposition(Composition composition)
+        {
+            if(Composition == composition)
+            {
+                return;
+            }
+            Composition = composition;
+
+            if(composition != null && OnCompositionSet != null)
+            {
+                OnCompositionSet(composition);
+            }
+        }
+
+        public void RemoveComposition()
+        {
+            Composition = null;
+
+            if (OnCompositionRemoved != null)
+            {
+                OnCompositionRemoved(null);
+            }
+        }
+
         /**
          * Gets called whenever a currently connected or possible connected module gets destroyed.
          * This is neccessary to cleanup references to the destroyed module and its sockets
-         */ 
+         */
         public void OnOtherModuleDestroyed(Module destoryedModule)
         {
             Connection connection = GetConnection(destoryedModule);
@@ -143,21 +171,7 @@ namespace SocketIt
             connection.Initiator = initiator;
             Connections.Add(connection);
 
-            if (Composition != null && initiator.Module == this)
-            {
-                Composition.Delete();
-            }
-
-            if (Composition == null && otherSocket.Module.Composition == null)
-            {
-                Composition = Composition.CreateNew(otherSocket.Module);
-            }
-
-            else if (otherSocket.Module.Composition != null)
-            {
-                Composition = otherSocket.Module.Composition;
-            }
-
+            UpdateComposition(otherSocket, initiator);
             AddToComposition();
 
             if (OnConnect != null)
@@ -165,6 +179,28 @@ namespace SocketIt
                 OnConnect(connection);
             }
             return true;
+        }
+
+        private void UpdateComposition(Socket otherSocket, Socket initiator)
+        {
+            //Destroy Composition if Module gets connected to other Composition.
+            if (Composition != null && initiator.Module == this)
+            {
+                Composition.Delete();
+            } else if (Composition != null)
+            {
+                return;
+            }
+
+            if (Composition == null && otherSocket.Module.Composition == null)
+            {
+                SetComposition(Composition.CreateNew(otherSocket.Module));
+            }
+             
+            else if (otherSocket.Module.Composition != null)
+            {
+                SetComposition(otherSocket.Module.Composition);
+            }
         }
 
         private bool RemoveConnection(Socket callingSocket, Socket otherSocket, Socket initiator)
@@ -193,8 +229,13 @@ namespace SocketIt
             List<Module> modules = Composition.GetConnected(this);
             foreach (Module module in modules)
             {
+                if(module == this)
+                {
+                    continue;
+                }
+
                 Composition.AddModule(module);
-                module.Composition = Composition;
+                module.SetComposition(Composition);
             }
         }
 
@@ -215,7 +256,7 @@ namespace SocketIt
 
                 if(modules.Count >= 2)
                 {
-                    Composition = Composition.CreateNew(this);
+                    SetComposition(Composition.CreateNew(this));
                     AddToComposition();
                 }
             }

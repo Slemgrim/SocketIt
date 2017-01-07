@@ -32,15 +32,15 @@ namespace SocketIt.Example00
 
         private void OnPickUp(GameObject follower)
         {
-            if (follower.GetComponent<MasterModule>() != null)
+            if (follower.transform.parent == null)
             {
                 return;
             }
 
-            if (follower.GetComponent<NodeModule>().ParentNode != null)
-            {
-                follower.GetComponent<Module>().DisconnectModule(follower.GetComponent<NodeModule>().ParentNode.Module);
-            }
+            Module parent = follower.transform.parent.GetComponent<Module>();
+
+            parent.DisconnectModule(follower.GetComponent<Module>());
+            follower.transform.SetParent(null);
         }
 
         private void OnConnect(Connection connection)
