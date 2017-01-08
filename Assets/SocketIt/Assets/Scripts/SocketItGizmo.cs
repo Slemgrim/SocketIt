@@ -83,17 +83,21 @@ namespace SocketIt
             Handles.ConeCap(0, position, Quaternion.LookRotation(target - position), .2f);
         }
 
-        public static void DrawComposition(Composition construct)
+        public static void DrawComposition(Composition composition)
         {
-            Vector3 labelPosition = construct.Origin.transform.position + Vector3.up * 2 + Vector3.right * 2;
+			if (composition.Origin == null) {
+				return;
+			}
 
-            Handles.Label(labelPosition, construct.name);
+            Vector3 labelPosition = composition.Origin.transform.position + Vector3.up * 2 + Vector3.right * 2;
 
-            Vector3 startPoint = construct.Origin.transform.position;
+            Handles.Label(labelPosition, composition.name);
+
+            Vector3 startPoint = composition.Origin.transform.position;
             Handles.color = Color.white;
             Handles.DrawLine(labelPosition, startPoint);
 
-            foreach (Module module in construct.Modules)
+            foreach (Module module in composition.Modules)
             {
                 Vector3 endPoint = module.transform.position;
                 Handles.DrawLine(startPoint, endPoint);
