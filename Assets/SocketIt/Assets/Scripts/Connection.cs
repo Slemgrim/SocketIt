@@ -4,8 +4,7 @@ namespace SocketIt {
 	[System.Serializable]
 	public class Connection
     {
-        public Socket SocketA;
-        public Socket SocketB;
-        public Socket Initiator;
+        public Socket Connector;
+        public Socket Connectee;
     }
 }

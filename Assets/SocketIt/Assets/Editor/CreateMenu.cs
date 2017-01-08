@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace SocketIt.Editor
 {
     public class SocketItMenu : MonoBehaviour
-    {
+    {   /*
         [MenuItem("SocketIt/Connect %&c")]
         static void ConnectSockets(MenuCommand menuCommand)
         {
@@ -22,29 +22,29 @@ namespace SocketIt.Editor
             Connection existingConnection = GetConnection(activeSocket);
             if (existingConnection != null)
             {
-                Disconnect(existingConnection.SocketA, existingConnection.SocketB);
+                Disconnect(existingConnection.Connector, existingConnection.Connectee);
             }
 
             existingConnection = GetConnection(secondSocket);
             if (existingConnection != null)
             {
-                Disconnect(existingConnection.SocketA, existingConnection.SocketB);
+                Disconnect(existingConnection.Connector, existingConnection.Connectee);
             }
 
             existingConnection = GetConnection(activeSocket.Module, secondSocket.Module);
             if (existingConnection != null)
             {
-                Disconnect(existingConnection.SocketA, existingConnection.SocketB);
+                Disconnect(existingConnection.Connector, existingConnection.Connectee);
             }
 
             if (GetConnection(activeSocket, secondSocket) == null)
             {
-                AddConnection(activeSocket, secondSocket, secondSocket);
+                AddConnection(activeSocket, secondSocket);
             }
 
             if (GetConnection(secondSocket, activeSocket) == null)
             {
-                AddConnection(secondSocket, activeSocket, secondSocket);
+                AddConnection(secondSocket, activeSocket);
             }
         }
 
@@ -71,14 +71,14 @@ namespace SocketIt.Editor
             {
                 foreach(Connection connection in new List<Connection>(activeModule.Connections))
                 {
-                    Disconnect(connection.SocketA, connection.SocketB);
+                    Disconnect(connection.Connector, connection.Connectee);
                 }
             } else if (activeModule != null && secondModule != null)
             {
                 Connection connection = GetConnection(activeModule, secondModule);
                 if(connection != null)
                 {
-                    Disconnect(connection.SocketA, connection.SocketB);
+                    Disconnect(connection.Connector, connection.Connectee);
                 }
             }
         }
@@ -94,9 +94,9 @@ namespace SocketIt.Editor
             List<Connection> connections = socket.Module.Connections;
             foreach(Connection connection in connections)
             {
-                if(connection.SocketA == socket)
+                if(connection.Connector == socket)
                 {
-                    return connection.SocketB;
+                    return connection.Connectee;
                 }
             }
 
@@ -231,7 +231,7 @@ namespace SocketIt.Editor
 
             foreach (Connection connection in connections)
             {
-                if (connection.SocketA == socket)
+                if (connection.Connector == socket)
                 {
                     return true;
                 }
@@ -246,7 +246,7 @@ namespace SocketIt.Editor
 
             foreach (Connection connection in connections)
             {
-                if (connection.SocketA == socketA && connection.SocketB == socketB)
+                if (connection.Connector == socketA && connection.Connectee == socketB)
                 {
                     return connection;
                 }
@@ -261,7 +261,7 @@ namespace SocketIt.Editor
 
             foreach (Connection connection in connections)
             {
-                if (connection.SocketA == socketA)
+                if (connection.Connector == socketA)
                 {
                     return connection;
                 }
@@ -276,7 +276,7 @@ namespace SocketIt.Editor
             
             foreach (Connection connection in connections)
             {
-                if (connection.SocketB.Module == moduleB)
+                if (connection.Connectee.Module == moduleB)
                 {
                     return connection;
                 }
@@ -327,14 +327,13 @@ namespace SocketIt.Editor
             return Selection.activeGameObject.GetComponent<Module>();
         }
 
-        private static void AddConnection(Socket socketA, Socket socketB, Socket initiator)
+        private static void AddConnection(Socket socketA, Socket socketB)
         {
             Connection connection = new Connection();
-            connection.SocketA = socketA;
-            connection.SocketB = socketB;
-            connection.Initiator = initiator;
+            connection.Connector = socketA;
+            connection.Connectee = socketB;
             Undo.RecordObject(socketA.Module, "Add Connection to " + socketA.Module.name);
             socketA.Module.Connections.Add(connection);
-        }
+        }*/
     }
 }

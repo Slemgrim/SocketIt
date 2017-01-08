@@ -24,11 +24,11 @@ namespace SocketIt.Example01
             socketB.OnConnect += OnSocketConnect;
             socketB.OnDisconnect += OnSocketDisconnect;
 
-            moduleA.OnConnect += OnModuleConnect;
-            moduleA.OnDisconnect += OnModuleDisconnect;
+            moduleA.OnModuleConnected += OnModuleConnect;
+            moduleA.OnModuleDisconnected += OnModuleDisconnect;
 
-            moduleB.OnConnect += OnModuleConnect;
-            moduleB.OnDisconnect += OnModuleDisconnect;
+            moduleB.OnModuleConnected += OnModuleConnect;
+            moduleB.OnModuleDisconnected += OnModuleDisconnect;
         }
 
         void Update()
@@ -50,11 +50,11 @@ namespace SocketIt.Example01
         {
             Debug.Log(string.Format(
                 "Module {0} Disconnected from {1}",
-                con.SocketA.Module.name,
-                con.SocketB.Module.name
+                con.Connector.Module.name,
+                con.Connectee.Module.name
             ));
 
-            ChangeEmissionColor(con.SocketA.Module.gameObject, Color.black);
+            ChangeEmissionColor(con.Connector.Module.gameObject, Color.black);
 
         }
 
@@ -62,14 +62,14 @@ namespace SocketIt.Example01
         {
             Debug.Log(string.Format(
                 "Module {0} connected to {1}",
-                con.SocketA.Module.name,
-                con.SocketB.Module.name
+                con.Connector.Module.name,
+                con.Connectee.Module.name
             ));
 
-            ChangeEmissionColor(con.SocketA.Module.gameObject, Color.green);
+            ChangeEmissionColor(con.Connector.Module.gameObject, Color.green);
         }
 
-		private void OnSocketConnect(Socket socketA, Socket socketB, Socket initiator)
+		private void OnSocketConnect(Socket socketA, Socket socketBr)
         {
             Debug.Log(string.Format(
                 "Socket {0}.{1} connected to {2}.{3}",
@@ -82,7 +82,7 @@ namespace SocketIt.Example01
             ChangeEmissionColor(socketA.gameObject, Color.green);
         }
 
-		private void OnSocketDisconnect(Socket socketA, Socket socketB, Socket initiator)
+		private void OnSocketDisconnect(Socket socketA, Socket socketB)
         {
             Debug.Log(string.Format(
                 "Socket {0}.{1} disconnected from {2}.{3}",

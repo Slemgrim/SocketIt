@@ -19,8 +19,8 @@ namespace SocketIt
         public void Start()
         {
             Module = GetComponent<Module>();
-            Module.OnConnect += Connect;
-            Module.OnDisconnect += Disconnect;
+            Module.OnModuleConnected += Connect;
+            Module.OnModuleDisconnected += Disconnect;
         }
 
         private void Connect(Connection connection)
@@ -30,9 +30,9 @@ namespace SocketIt
                 OnConnectStart(connection);
             }
 
-            if (connection.SocketB.Module.transform.parent != connection.SocketA.Module.transform)
+            if (connection.Connectee.Module.transform.parent != connection.Connector.Module.transform)
             {
-                connection.SocketA.Module.transform.SetParent(connection.SocketB.Module.transform);
+                connection.Connector.Module.transform.SetParent(connection.Connectee.Module.transform);
             }
 
             if (OnConnectEnd != null)
@@ -48,9 +48,9 @@ namespace SocketIt
                 OnDisconnectStart(connection);
             }
 
-            if (connection.SocketA.Module.transform.parent == connection.SocketB.Module.transform)
+            if (connection.Connector.Module.transform.parent == connection.Connectee.Module.transform)
             {
-                connection.SocketA.Module.transform.SetParent(null);
+                connection.Connector.Module.transform.SetParent(null);
             }
 
             if (OnDisconnectEnd != null)

@@ -8,7 +8,7 @@ namespace SocketIt {
     [AddComponentMenu("SocketIt/Socket/Socket")]
     public class Socket : MonoBehaviour {
 
-		public delegate void SocketEvent(Socket socketA, Socket socketB, Socket initiator);
+		public delegate void SocketEvent(Socket connector, Socket connectee);
         public event SocketEvent OnConnect;
         public event SocketEvent OnDisconnect;
 
@@ -27,16 +27,18 @@ namespace SocketIt {
             return Module.GetConnectedSocket(this);
         }
 
-        public void Connect(Socket socket, Socket initiator = null, bool callOther = true)
+        public void Connect(Socket socket)
         {
-            if(initiator == null)
+            if (!isValidSocket(socket))
             {
-                initiator = this;
+                throw new SocketException("Socket Already Connected");
             }
-            ConnectSocket(socket, initiator);
-            if (callOther)
+
+            bool isConnected = Module.ConnectSocket(this, socket);
+
+            if (isConnected && OnConnect != null)
             {
-                socket.Connect(this, initiator, false);
+                OnConnect(this, socket);
             }
         }
 
@@ -54,12 +56,19 @@ namespace SocketIt {
             }
         }
 
-        public void Disconnect(Socket socket, bool callOther = true)
+        public void Disconnect(Socket socket)
         {
-            DisconnectSocket(socket, this);
-            if (callOther)
+            Socket connectedSocket = GetConnectedSocket();
+            if (connectedSocket == null || socket != connectedSocket)
             {
-                socket.Disconnect(this, false);
+                return;
+            }
+
+            bool isDisconnected = Module.DisconnectSocket(this, socket);
+
+            if (isDisconnected && OnDisconnect != null)
+            {
+                OnDisconnect(this, socket);
             }
         }
 
@@ -68,74 +77,22 @@ namespace SocketIt {
             Module.RemoveSocket(this);
         }
 
-        void OnDrawGizmos()
-        {
-            Gizmos.DrawIcon(transform.position, "Socket.png", true);
-
-            if (Module == null)
-            {
-                return;
-            }
-
-			List<Connection> connections = Module.Connections;
-
-            foreach(Connection connection in connections)
-            {
-                if (connection.SocketA != this)
-                {
-                    continue;
-                }
-
-                if (connection.Initiator == this)
-                {
-                    SocketItGizmo.DrawConnection(connection);
-                }
-            }
-        }
-
-        private void ConnectSocket(Socket socket, Socket initiator)
-        {
-            if (!isValidSocket(socket))
-            {
-                throw new SocketException("Socket Already Connected");
-            }
-
-            bool isConnected = Module.ConnectSocket(this, socket, initiator);
-
-            if (isConnected && OnConnect != null)
-            {
-                OnConnect(this, socket, initiator);
-            }
-        }
-
-        private void DisconnectSocket(Socket socket, Socket initiator)
-        {
-            Socket connectedSocket = GetConnectedSocket();
-            if (connectedSocket == null || socket != connectedSocket)
-            {
-                return;
-            }
-
-            bool isDisconnected = Module.DisconnectSocket(this, socket, initiator);
-
-            if (isDisconnected && OnDisconnect != null)
-            {
-                OnDisconnect(this, socket, initiator);
-            }
-        }
-
         private bool isValidSocket(Socket socket)
         {
             if (socket == this)
             {
+                Debug.Log("Its me");
                 return false;
             }
 
             if (socket.Module == this)
             {
+                Debug.Log("Its same module");
+
                 return false;
             }
 
+            /*
             Socket otherConnectedSocket = socket.GetConnectedSocket();
             if (otherConnectedSocket != null && otherConnectedSocket != this)
             {
@@ -147,6 +104,7 @@ namespace SocketIt {
             {
                 return false;
             }
+            */
 
             return true;
         }

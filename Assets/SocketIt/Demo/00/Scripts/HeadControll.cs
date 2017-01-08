@@ -11,43 +11,38 @@ namespace SocketIt.Example00
         public Material activeMaterial;
         public Material inactiveMaterial;
 
-        public Composition composition;
+        public Composition Composition;
 
 	    void Awake() {
             Module = GetComponent<Module>();
-            Module.OnCompositionSet += OnCompositonSet;
-            Module.OnCompositionRemoved += OnCompositonRemoved;
+            Module.OnCompositionChanged += OnCompositonChanged;
         }
 
-        private void OnCompositonRemoved(Composition composition)
+        private void OnCompositonChanged(Composition composition)
         {
-            //Debug.Log("Remove Composition");
+            if(Composition != null)
+            {
+                Composition.OnModuleAdded -= OnModuleConnect;
+                Composition.OnModuleRemoved -= OnModuleDisconnect;
+            }
 
-            composition.OnModuleConnect -= OnModuleConnect;
-            composition.OnModuleDisconnect -= OnModuleDisconnect;
-            this.composition = null;
-        }
+            if (composition != null)
+            {
+                composition.OnModuleAdded += OnModuleConnect;
+                composition.OnModuleRemoved += OnModuleDisconnect;
+            } 
 
-        private void OnCompositonSet(Composition composition)
-        {
-            //Debug.Log("Set Composition");
-            this.composition = composition;
-            composition.OnModuleConnect += OnModuleConnect;
-            composition.OnModuleDisconnect += OnModuleDisconnect;
-
-            ActivateAll();
+            Composition = composition;
         }
 
         private void ActivateAll()
         {
-           if(composition == null)
+           if(Composition == null)
             {
                 return;
             }
 
-            //Debug.Log("activate all");
-
-            foreach (Module module in composition.Modules)
+            foreach (Module module in Composition.Modules)
             {
                 module.GetComponent<Renderer>().material = activeMaterial;
             }
@@ -55,13 +50,11 @@ namespace SocketIt.Example00
 
         private void OnModuleDisconnect(Module module)
         {
-            //Debug.Log("deactivate " + module.name);
             module.GetComponent<Renderer>().material = inactiveMaterial;
         }
 
         private void OnModuleConnect(Module module)
         {
-            //Debug.Log("activate " + module.name);
             module.GetComponent<Renderer>().material = activeMaterial;
         }
     }

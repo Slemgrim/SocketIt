@@ -10,14 +10,14 @@ namespace SocketIt.Example00
     {
         public MouseControll mouseControll;
 
-        private Module module;
+        private Module Module;
 
         public void Awake()
         {
-            module = GetComponent<Module>();
+            Module = GetComponent<Module>();
             mouseControll.OnDropOff += OnDrop;
-            module.OnConnect += OnConnect;
-            module.OnDisconnect += OnDisconnect;
+            Module.OnModuleConnected += OnConnect;
+            Module.OnModuleDisconnected += OnDisconnect;
 
             mouseControll.OnPickUp += OnPickUp;
         }
@@ -26,7 +26,7 @@ namespace SocketIt.Example00
         {
             if(follower == gameObject && mouseControll.CurrentSnap != null)
             {
-                mouseControll.CurrentSnap.SocketA.Socket.Connect(mouseControll.CurrentSnap.SocketB.Socket);
+                mouseControll.CurrentSnap.SocketB.Socket.Connect(mouseControll.CurrentSnap.SocketA.Socket);
             }
         }
 
@@ -37,40 +37,46 @@ namespace SocketIt.Example00
                 return;
             }
 
-            Module parent = follower.transform.parent.GetComponent<Module>();
+            Module disconnector = follower.transform.parent.GetComponent<Module>();
+            Module disconectee = follower.GetComponent<Module>();
 
-            parent.DisconnectModule(follower.GetComponent<Module>());
+            disconnector.DisconnectModule(disconectee);
             follower.transform.SetParent(null);
         }
 
         private void OnConnect(Connection connection)
         {
-            if(connection.Initiator.Module != module)
+            if (connection.Connectee.Module != Module)
             {
                 return;
             }
-
+            
             CharacterJoint joint = gameObject.AddComponent<CharacterJoint>();
 
-            joint.connectedBody = connection.SocketB.Module.GetComponent<Rigidbody>();
-            joint.anchor = connection.SocketA.transform.localPosition;
-
-            connection.SocketA.Module.transform.SetParent(connection.SocketB.Module.transform);
+            joint.connectedBody = connection.Connector.Module.GetComponent<Rigidbody>();
+            joint.anchor = connection.Connectee.transform.localPosition;
+            
+            connection.Connectee.Module.transform.SetParent(connection.Connector.Module.transform);
             
         }
 
         private void OnDisconnect(Connection connection)
         {
+            if (connection.Connectee.Module != Module)
+            {
+                return;
+            }
+
             List<CharacterJoint> joints = new List<CharacterJoint>(GetComponents<CharacterJoint>());
+
             foreach (CharacterJoint joint in joints)
             {
-                if (joint.connectedBody == connection.SocketB.Module.GetComponent<Rigidbody>())
+                if (joint.connectedBody == connection.Connector.Module.GetComponent<Rigidbody>())
                 {
                     Destroy(joint);
                 }
             }
-
-            connection.SocketA.Module.transform.SetParent(null);
+            connection.Connector.Module.transform.SetParent(null);
         }
     }
 }

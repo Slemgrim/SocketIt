@@ -14,13 +14,13 @@ namespace SocketIt
 
             Handles.color = color;
 
-            if (connection.SocketA != null && connection.SocketB != null)
+            if (connection.Connector != null && connection.Connectee != null)
             {
-                Vector3 startPoint = connection.SocketA.transform.position;
-                Vector3 endPoint = connection.SocketB.transform.position;
+                Vector3 startPoint = connection.Connector.transform.position;
+                Vector3 endPoint = connection.Connectee.transform.position;
 
-                Vector3 startTangent = connection.SocketA.transform.position + connection.SocketA.transform.forward;
-                Vector3 endTangent = connection.SocketB.transform.position + connection.SocketB.transform.forward;
+                Vector3 startTangent = connection.Connector.transform.position + connection.Connector.transform.forward;
+                Vector3 endTangent = connection.Connectee.transform.position + connection.Connectee.transform.forward;
 
                 float distance = Vector3.Distance(startPoint, endPoint);
 
@@ -43,19 +43,19 @@ namespace SocketIt
                 }
             }
 
-            Handles.DrawWireDisc(connection.Initiator.transform.position, Vector3.forward, .1f);
-            Handles.DrawWireDisc(connection.Initiator.transform.position, Vector3.forward, .08f);
+            //Handles.DrawWireDisc(connection.Initiator.transform.position, Vector3.forward, .1f);
+            //Handles.DrawWireDisc(connection.Initiator.transform.position, Vector3.forward, .08f);
             
-
-            if(connection.Initiator == connection.SocketA)
+            /*
+            if(connection.Initiator == connection.Conector)
             {
-                Handles.DrawSolidDisc(connection.SocketB.transform.position, Vector3.forward, .05f);
+                Handles.DrawSolidDisc(connection.Conectee.transform.position, Vector3.forward, .05f);
             }
             else
             {
-                Handles.DrawSolidDisc(connection.SocketA.transform.position, Vector3.forward, .05f);
+                Handles.DrawSolidDisc(connection.Conector.transform.position, Vector3.forward, .05f);
             }
-
+            */
 
         }
 
@@ -85,11 +85,11 @@ namespace SocketIt
 
         public static void DrawComposition(Composition construct)
         {
-            Vector3 labelPosition = construct.Center.transform.position + Vector3.up * 2 + Vector3.right * 2;
+            Vector3 labelPosition = construct.Origin.transform.position + Vector3.up * 2 + Vector3.right * 2;
 
             Handles.Label(labelPosition, construct.name);
 
-            Vector3 startPoint = construct.Center.transform.position;
+            Vector3 startPoint = construct.Origin.transform.position;
             Handles.color = Color.white;
             Handles.DrawLine(labelPosition, startPoint);
 
