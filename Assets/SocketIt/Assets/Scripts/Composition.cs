@@ -15,11 +15,14 @@ namespace SocketIt
 
         public delegate void ModuleEvent(Module module);
         public delegate void ConnectionEvent(Connection module);
+        public delegate void CompositionEvent(Composition composition);
 
         public event ModuleEvent OnModuleAdded;
         public event ModuleEvent OnModuleRemoved;
         public event ConnectionEvent OnConnectionAdded;
         public event ConnectionEvent OnConnectionRemoved;
+
+        public static event CompositionEvent OnCompositionCreated;
 
         private static int MaxCompositionId = 0;
 
@@ -349,6 +352,12 @@ namespace SocketIt
             Composition composition = go.AddComponent<Composition>();
             composition.Origin = origin;
             composition.AddModule(origin);
+
+            if(OnCompositionCreated != null)
+            {
+                OnCompositionCreated(composition);
+            }
+
             return composition;
         }
 
