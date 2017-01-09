@@ -24,8 +24,6 @@ namespace SocketIt
 
         public static event CompositionEvent OnCompositionCreated;
 
-        private static int MaxCompositionId = 0;
-
         public bool Connect(Socket connector, Socket conectee)
         {
             Module module = conectee.Module;
@@ -345,10 +343,9 @@ namespace SocketIt
             }
         }
 
-        private static Composition CreateComposition(Module origin)
+        public static Composition CreateComposition(Module origin)
         {
-            int newId = ++MaxCompositionId;
-            GameObject go = new GameObject("Composition " + newId);
+            GameObject go = new GameObject("Composition");
             Composition composition = go.AddComponent<Composition>();
             composition.Origin = origin;
             composition.AddModule(origin);
@@ -371,6 +368,24 @@ namespace SocketIt
             }
 
             Destroy(composition.gameObject);
+        }
+
+        public void OnDestroy()
+        {
+            FreeModules();
+        }
+
+        /**
+         * Remove all Modules and Connections from this Composition
+         */
+        public void FreeModules()
+        {
+            Connections.Clear();
+            foreach (Module module in Modules)
+            {
+                module.Composition = null;
+            }
+            Modules.Clear();
         }
     }
 }
