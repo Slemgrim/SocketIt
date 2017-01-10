@@ -24,6 +24,10 @@ namespace SocketIt {
 
         public Socket GetConnectedSocket()
         {
+            if (Module == null)
+            {
+                throw new SocketException("Socket needs a module");
+            }
             return Module.GetConnectedSocket(this);
         }
 
@@ -72,9 +76,51 @@ namespace SocketIt {
             }
         }
 
+        public void Disconnect()
+        {
+            Socket connectedSocket = GetConnectedSocket();
+            Disconnect(connectedSocket);
+        }
+
         public void OnDestroy()
         {
             Module.RemoveSocket(this);
+        }
+
+        public bool IsConnected()
+        {
+            if(Module == null || Module.Composition == null)
+            {
+                return false;
+            }
+
+            foreach (Connection connection in Module.Composition.Connections)
+            {
+                if (connection.ContainsSocket(this))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public Connection GetConnection()
+        {
+            if (Module == null || Module.Composition == null)
+            {
+                return null;
+            }
+
+            foreach (Connection connection in Module.Composition.Connections)
+            {
+                if (connection.ContainsSocket(this))
+                {
+                    return connection;
+                }
+            }
+
+            return null;
         }
 
         private bool isValidSocket(Socket socket)

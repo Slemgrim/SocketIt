@@ -16,6 +16,7 @@ namespace SocketIt
         public delegate void ModuleEvent(Module module);
         public delegate void ConnectionEvent(Connection module);
         public delegate void CompositionEvent(Composition composition);
+        public delegate void CompositionModuleEvent(Composition composition, Module module);
 
         public event ModuleEvent OnModuleAdded;
         public event ModuleEvent OnModuleRemoved;
@@ -23,6 +24,10 @@ namespace SocketIt
         public event ConnectionEvent OnConnectionRemoved;
 
         public static event CompositionEvent OnCompositionCreated;
+        public static event CompositionModuleEvent OnCompositionModuleAdded;
+        public static event CompositionModuleEvent OnCompositionModuleRemoved;
+
+        public bool DestroyWhenEmpty = false;
 
         public bool Connect(Socket connector, Socket conectee)
         {
@@ -130,6 +135,11 @@ namespace SocketIt
                 {
                     OnModuleAdded(module);
                 }
+
+                if (OnCompositionModuleAdded != null)
+                {
+                    OnCompositionModuleAdded(this, module);
+                }
             }
         }
 
@@ -152,9 +162,14 @@ namespace SocketIt
                 {
                     OnModuleRemoved(module);
                 }
+
+                if (OnCompositionModuleRemoved != null)
+                {
+                    OnCompositionModuleRemoved(this, module);
+                }
             }
             
-            if (Modules.Count < 2)
+            if (DestroyWhenEmpty && Modules.Count < 2)
             {
                 Origin.Composition = null;
                 Destroy(gameObject);
@@ -226,17 +241,6 @@ namespace SocketIt
             Connection connection = GetConnection(module1, module2);
             Disconnect(connection.Connector, connection.Connectee);
         }
-
-        public void Delete()
-        {
-            foreach(Module module in Modules)
-            {
-                module.Composition = null;
-            }
-
-            Destroy(gameObject);
-        }
-
         public List<Connection> GetConnections(Module module)
         {
             List<Connection> connections = new List<Connection>();
@@ -314,7 +318,7 @@ namespace SocketIt
                     connector.Composition.IntegrateOther(connectee.Composition);
                     connectee.SetComposition(compositon);
 
-                    DestroyComposition(oldComposition);
+                    oldComposition.FreeModules();
 
                 }
                 else if (connector.Composition != null && connectee.Composition != null)
@@ -322,7 +326,7 @@ namespace SocketIt
                     Composition oldComposition = connectee.Composition;
                     connector.Composition.IntegrateOther(connectee.Composition);
                     connectee.SetComposition(connector.Composition);
-                    DestroyComposition(oldComposition);
+                    oldComposition.FreeModules();
                 }
             }
         }
@@ -358,18 +362,6 @@ namespace SocketIt
             return composition;
         }
 
-        public static void DestroyComposition(Composition composition)
-        {
-            foreach(Module module in composition.Modules){
-                if(module.Composition == composition)
-                {
-                    //module.Composition = null;
-                }
-            }
-
-            Destroy(composition.gameObject);
-        }
-
         public void OnDestroy()
         {
             FreeModules();
@@ -383,7 +375,10 @@ namespace SocketIt
             Connections.Clear();
             foreach (Module module in Modules)
             {
-                module.Composition = null;
+                if(module.Composition == this)
+                {
+                    module.Composition = null;
+                }
             }
             Modules.Clear();
         }

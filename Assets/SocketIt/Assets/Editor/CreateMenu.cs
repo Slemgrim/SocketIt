@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace SocketIt.Editor
 {
     public class SocketItMenu : MonoBehaviour
-    {   /*
+    {   
         [MenuItem("SocketIt/Connect %&c")]
         static void ConnectSockets(MenuCommand menuCommand)
         {
@@ -19,35 +19,10 @@ namespace SocketIt.Editor
 
         private static void Connect(Socket activeSocket, Socket secondSocket)
         {
-            Connection existingConnection = GetConnection(activeSocket);
-            if (existingConnection != null)
-            {
-                Disconnect(existingConnection.Connector, existingConnection.Connectee);
-            }
-
-            existingConnection = GetConnection(secondSocket);
-            if (existingConnection != null)
-            {
-                Disconnect(existingConnection.Connector, existingConnection.Connectee);
-            }
-
-            existingConnection = GetConnection(activeSocket.Module, secondSocket.Module);
-            if (existingConnection != null)
-            {
-                Disconnect(existingConnection.Connector, existingConnection.Connectee);
-            }
-
-            if (GetConnection(activeSocket, secondSocket) == null)
-            {
-                AddConnection(activeSocket, secondSocket);
-            }
-
-            if (GetConnection(secondSocket, activeSocket) == null)
-            {
-                AddConnection(secondSocket, activeSocket);
-            }
+            activeSocket.Connect(secondSocket);
         }
 
+        
         [MenuItem("SocketIt/Disconnect %&x")]
         static void DisconnectSockets(MenuCommand menuCommand)
         {
@@ -59,60 +34,32 @@ namespace SocketIt.Editor
 
             if(activeSocket != null && secondSocket == null)
             {
-                Disconnect(activeSocket, GetConnectedSocket(activeSocket));
+                activeSocket.Disconnect();
             }
 
             else if (activeSocket != null && secondSocket != null)
             {
-                Disconnect(activeSocket, secondSocket);
+                activeSocket.Disconnect(secondSocket);
             }
 
             else if(activeModule != null && secondModule == null)
             {
-                foreach(Connection connection in new List<Connection>(activeModule.Connections))
+                foreach(Connection connection in new List<Connection>(activeModule.Composition.Connections))
                 {
-                    Disconnect(connection.Connector, connection.Connectee);
+                    connection.Connector.Disconnect(connection.Connectee);
                 }
             } else if (activeModule != null && secondModule != null)
             {
-                Connection connection = GetConnection(activeModule, secondModule);
+                Connection connection = activeModule.GetConnection(secondModule);
                 if(connection != null)
                 {
-                    Disconnect(connection.Connector, connection.Connectee);
+                    connection.Connector.Disconnect(connection.Connectee);
                 }
             }
         }
 
-        private static void Disconnect(Socket activeSocket, Socket secondSocket)
-        {
-            RemoveConnection(activeSocket, secondSocket);
-            RemoveConnection(secondSocket, activeSocket);
-        }
-
-        private static Socket GetConnectedSocket(Socket socket)
-        {
-            List<Connection> connections = socket.Module.Connections;
-            foreach(Connection connection in connections)
-            {
-                if(connection.Connector == socket)
-                {
-                    return connection.Connectee;
-                }
-            }
-
-            return null;
-        }
-
-        private static void RemoveConnection(Socket activeSocket, Socket secondSocket)
-        {
-            Connection connection = GetConnection(activeSocket, secondSocket);
-
-            if (connection != null)
-            {
-                Undo.RecordObject(activeSocket.Module, "Remove Connection from " + activeSocket.Module.name);
-                activeSocket.Module.Connections.Remove(connection);
-            }
-        }
+        
+        /*
 
         [MenuItem("SocketIt/Snap/Position %&i")]
         static void SnapSocketPosition(MenuCommand menuCommand)
@@ -224,65 +171,11 @@ namespace SocketIt.Editor
 
             fromSocket.Module.transform.rotation = upRot * fromSocket.Module.transform.rotation;
         }
-
-        private static bool IsConnected(Socket socket)
+        */
+  
+        private static Socket GetActiveSocket()
         {
-			List<Connection> connections = socket.Module.Connections;
-
-            foreach (Connection connection in connections)
-            {
-                if (connection.Connector == socket)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        private static Connection GetConnection(Socket socketA, Socket socketB)
-        {
-			List<Connection> connections = socketA.Module.Connections;
-
-            foreach (Connection connection in connections)
-            {
-                if (connection.Connector == socketA && connection.Connectee == socketB)
-                {
-                    return connection;
-                }
-            }
-
-            return null;
-        }
-
-        private static Connection GetConnection(Socket socketA)
-        {
-            List<Connection> connections = socketA.Module.Connections;
-
-            foreach (Connection connection in connections)
-            {
-                if (connection.Connector == socketA)
-                {
-                    return connection;
-                }
-            }
-
-            return null;
-        }
-
-        private static Connection GetConnection(Module moduleA, Module moduleB)
-        {
-            List<Connection> connections = moduleA.Connections;
-            
-            foreach (Connection connection in connections)
-            {
-                if (connection.Connectee.Module == moduleB)
-                {
-                    return connection;
-                }
-            }
-
-            return null;
+            return Selection.activeGameObject.GetComponent<Socket>();
         }
 
         private static Socket GetSecondSocket()
@@ -301,9 +194,9 @@ namespace SocketIt.Editor
             return secondSocket;
         }
 
-        private static Socket GetActiveSocket()
+        private static Module GetActiveModule()
         {
-            return Selection.activeGameObject.GetComponent<Socket>();
+            return Selection.activeGameObject.GetComponent<Module>();
         }
 
         private static Module GetSecondModule()
@@ -321,19 +214,5 @@ namespace SocketIt.Editor
 
             return secondModule;
         }
-
-        private static Module GetActiveModule()
-        {
-            return Selection.activeGameObject.GetComponent<Module>();
-        }
-
-        private static void AddConnection(Socket socketA, Socket socketB)
-        {
-            Connection connection = new Connection();
-            connection.Connector = socketA;
-            connection.Connectee = socketB;
-            Undo.RecordObject(socketA.Module, "Add Connection to " + socketA.Module.name);
-            socketA.Module.Connections.Add(connection);
-        }*/
     }
 }

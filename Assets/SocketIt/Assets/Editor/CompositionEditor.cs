@@ -24,7 +24,6 @@ namespace SocketIt.Editor {
 			EditorGUILayout.LabelField ("Active Composition: " + activeComposition.name);
 		}
 
-
 	 	void RenderEmpty(){
 			EditorGUILayout.LabelField ("Select a Composition or a Module/Socket connected to a Composition");
 		}

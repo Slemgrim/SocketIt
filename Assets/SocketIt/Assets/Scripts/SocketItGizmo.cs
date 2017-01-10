@@ -6,10 +6,10 @@ namespace SocketIt
     public class SocketItGizmo
     {
         private static Color ConnectionColor = Color.green;
+        private static Color CompositionColor = Color.red;
 
         public static void DrawConnection(Connection connection)
         {
-            bool isNode = false;
             Color color = ConnectionColor;
 
             Handles.color = color;
@@ -30,33 +30,40 @@ namespace SocketIt
 
                     Bezier bezier = new Bezier(startPoint, endPoint, startTangent, endTangent);
 
-                    if (isNode)
-                    {
-                        DrawArrow(bezier.GetPointAtTime(0.5f), bezier.GetPointAtTime(0.51f));
+                    DrawArrow(bezier.GetPointAtTime(0.5f), bezier.GetPointAtTime(0.51f));
 
-                        if(distance > 0.5)
-                        {
-                            DrawArrow(bezier.GetPointAtTime(0.2f), bezier.GetPointAtTime(0.21f));
-                            DrawArrow(bezier.GetPointAtTime(0.8f), bezier.GetPointAtTime(0.81f));
-                        } 
-                    }
+                    if(distance > 0.5)
+                    {
+                        DrawArrow(bezier.GetPointAtTime(0.2f), bezier.GetPointAtTime(0.21f));
+                        DrawArrow(bezier.GetPointAtTime(0.8f), bezier.GetPointAtTime(0.81f));
+                    } 
+                    
                 }
             }
 
-            //Handles.DrawWireDisc(connection.Initiator.transform.position, Vector3.forward, .1f);
-            //Handles.DrawWireDisc(connection.Initiator.transform.position, Vector3.forward, .08f);
-            
-            /*
-            if(connection.Initiator == connection.Conector)
-            {
-                Handles.DrawSolidDisc(connection.Conectee.transform.position, Vector3.forward, .05f);
-            }
-            else
-            {
-                Handles.DrawSolidDisc(connection.Conector.transform.position, Vector3.forward, .05f);
-            }
-            */
+            Handles.DrawWireDisc(connection.Connector.transform.position, Camera.current.transform.forward, .1f);
+            Handles.DrawWireDisc(connection.Connector.transform.position, Camera.current.transform.forward, .08f);
+            Handles.DrawSolidDisc(connection.Connectee.transform.position, Camera.current.transform.forward, .1f);
+        }
 
+        public static void ConnectModules(GameObject startObject, GameObject endObject)
+        {
+            Color color = CompositionColor;
+
+            Handles.color = color;
+
+            Vector3 startPoint = startObject.transform.position;
+            Vector3 endPoint = endObject.transform.position;
+
+            float distance = Vector3.Distance(startPoint, endPoint);
+
+            if (distance > 0.1)
+            {
+                Handles.DrawBezier(startPoint, endPoint, startPoint, endPoint, color, null, 5);               
+            }
+            
+            Handles.DrawSolidDisc(startObject.transform.position, Camera.current.transform.forward, .1f);
+            Handles.DrawSolidDisc(endObject.transform.position, Camera.current.transform.forward, .1f);
         }
 
         public static void DrawSocketAngle(SnapSocket socket, float angle)
@@ -97,10 +104,10 @@ namespace SocketIt
             Handles.color = Color.white;
             Handles.DrawLine(labelPosition, startPoint);
 
-            foreach (Module module in composition.Modules)
+            foreach (Connection connection in composition.Connections)
             {
-                Vector3 endPoint = module.transform.position;
-                Handles.DrawLine(startPoint, endPoint);
+                ConnectModules(connection.Connector.Module.gameObject, connection.Connectee.Module.gameObject);
+                DrawConnection(connection);
             }
         }
     }

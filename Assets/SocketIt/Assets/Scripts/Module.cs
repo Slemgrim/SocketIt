@@ -86,7 +86,18 @@ namespace SocketIt
 
             return null;
         }
-		
+
+        public Connection GetConnection(Module otherModule)
+        {
+            if (Composition == null || otherModule.Composition == null || Composition != otherModule.Composition)
+            {
+                return null;
+            }
+
+            return Composition.GetConnection(this, otherModule);
+        }
+
+
         public void Reset()
         {
             Sockets = new List<Socket>(GetComponentsInChildren<Socket>());
