@@ -16,11 +16,11 @@ namespace SocketIt
 
             if (connection.Connector != null && connection.Connectee != null)
             {
-                Vector3 startPoint = connection.Connector.transform.position;
-                Vector3 endPoint = connection.Connectee.transform.position;
+                Vector3 startPoint = connection.Connectee.transform.position;
+                Vector3 endPoint = connection.Connector.transform.position;
 
-                Vector3 startTangent = connection.Connector.transform.position + connection.Connector.transform.forward;
-                Vector3 endTangent = connection.Connectee.transform.position + connection.Connectee.transform.forward;
+                Vector3 startTangent = connection.Connectee.transform.position + connection.Connectee.transform.forward;
+                Vector3 endTangent = connection.Connector.transform.position + connection.Connector.transform.forward;
 
                 float distance = Vector3.Distance(startPoint, endPoint);
 

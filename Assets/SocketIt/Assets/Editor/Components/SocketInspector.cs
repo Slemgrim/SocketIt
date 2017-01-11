@@ -21,7 +21,7 @@ namespace SocketIt.Editor
                 return;
             }
 
-            if (IsConnected())
+            if (socketA.IsConnected())
             {
                 Disconnect();
             } else
@@ -30,27 +30,9 @@ namespace SocketIt.Editor
             }
         }
 
-        public bool IsConnected()
-        {
-            if(socketA.Module == null || socketA.Module.Composition == null)
-            {
-                return false;
-            }
-
-            foreach(Connection connection in socketA.Module.Composition.Connections)
-            {
-                if (connection.Connectee == socketA || connection.Connector == socketA)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
         public void Connect(string label, string buttonLabel)
         {
-            EditorGUILayout.BeginVertical("Button");
+            EditorGUILayout.BeginVertical("box");
             EditorGUILayout.LabelField(label);
             EditorGUILayout.BeginHorizontal();
 
@@ -61,13 +43,15 @@ namespace SocketIt.Editor
             if (GUILayout.Button(buttonLabel))
             {
                 RecordModules();
-
                 socketA.Connect(socketB);
-
+        
                 if (socketA.Module.Composition != null)
                 {
                     Undo.RegisterCreatedObjectUndo(socketA.Module.Composition.gameObject, "Create composition");
                 }
+
+                socketA = null;
+                socketB = null;
             }
 
             EditorGUI.EndDisabledGroup();
@@ -79,9 +63,7 @@ namespace SocketIt.Editor
        
             if (GUILayout.Button("Disconnect"))
             {
-
                 RecordModules();
-
                 socketA.Disconnect();
             }
         }

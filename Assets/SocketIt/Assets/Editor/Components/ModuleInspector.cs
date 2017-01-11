@@ -33,7 +33,7 @@ public class ModuleInspector : UnityEditor.Editor
 
     public void Connect(string label, string buttonLabel)
     {
-        EditorGUILayout.BeginVertical("Button");
+        EditorGUILayout.BeginVertical("box");
         EditorGUILayout.LabelField(label);
         EditorGUILayout.BeginHorizontal();
 
