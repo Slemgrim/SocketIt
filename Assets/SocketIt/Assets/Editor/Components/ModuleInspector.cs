@@ -48,11 +48,6 @@ public class ModuleInspector : UnityEditor.Editor
             Undo.RecordObject(socketB.Module, "Connect");
 
             socketA.Connect(socketB);
-
-            if (socketA.Module.Composition != null)
-            {
-                Undo.RegisterCreatedObjectUndo(socketA.Module.Composition.gameObject, "Create composition");
-            }
         }
 
         EditorGUI.EndDisabledGroup();

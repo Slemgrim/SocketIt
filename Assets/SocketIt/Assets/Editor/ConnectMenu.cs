@@ -19,18 +19,10 @@ namespace SocketIt.Editor
 
         private static void Connect(Socket activeSocket, Socket secondSocket)
         {
-            Composition compositionA = activeSocket.Module.Composition;
-            Composition compositionB = secondSocket.Module.Composition;
-
             RecordModule(activeSocket);
             RecordModule(secondSocket);
 
             secondSocket.Connect(activeSocket);
-
-            if(activeSocket.Module.Composition != compositionA || activeSocket.Module.Composition != compositionB)
-            {
-                Undo.RegisterCreatedObjectUndo(activeSocket.Module.Composition.gameObject, "Composition created:" + activeSocket.Module.Composition.name);
-            }
         }
 
         [MenuItem("SocketIt/Disconnect %&x")]

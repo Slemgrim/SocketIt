@@ -45,11 +45,6 @@ namespace SocketIt.Editor
                 RecordModules();
                 socketA.Connect(socketB);
         
-                if (socketA.Module.Composition != null)
-                {
-                    Undo.RegisterCreatedObjectUndo(socketA.Module.Composition.gameObject, "Create composition");
-                }
-
                 socketA = null;
                 socketB = null;
             }
@@ -78,7 +73,6 @@ namespace SocketIt.Editor
             if (socketB != null && socketB.Module != null)
             {
                 Undo.RecordObject(socketB.Module, "Connect");
-
             }
         }
     }
