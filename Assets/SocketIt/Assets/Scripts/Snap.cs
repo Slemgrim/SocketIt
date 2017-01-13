@@ -7,10 +7,10 @@ namespace SocketIt
     [System.Serializable]
     public class Snap
     {
-        public SnapSocket SocketA;
-        public SnapSocket SocketB;
+        public Socket SocketA;
+        public Socket SocketB;
 
-        public Snap(SnapSocket socketA, SnapSocket socketB)
+        public Snap(Socket socketA, Socket socketB)
         {
             SocketA = socketA;
             SocketB = socketB;

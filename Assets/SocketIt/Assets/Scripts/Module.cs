@@ -16,8 +16,13 @@ namespace SocketIt
         public delegate void CompositionEvent(Composition composition);
         public event CompositionEvent OnCompositionChanged;
 
+        public delegate void SnapEvent(Snap snap);
+        public event SnapEvent OnSnap;
+
         public List<Socket> Sockets = new List<Socket>();
         public Composition Composition = null;
+
+        public List<ISnapValidator> SnapValidators;
 
         public void SetComposition(Composition composition)
         {
@@ -97,7 +102,6 @@ namespace SocketIt
             return Composition.GetConnection(this, otherModule);
         }
 
-
         public void Reset()
         {
             Sockets = new List<Socket>(GetComponentsInChildren<Socket>());
@@ -105,6 +109,11 @@ namespace SocketIt
             {
                 socket.Module = this;
             }
+        }
+
+        public void Awake()
+        {
+            SnapValidators = new List<ISnapValidator>(GetComponents<ISnapValidator>());
         }
 
         public bool ConnectSocket(Socket connector, Socket connectee)
@@ -140,6 +149,32 @@ namespace SocketIt
         public void RemoveSocket(Socket socketToRemove)
         {
            
+        }
+
+        public void SnapSockets(Snap snap)
+        {
+            if (!validateSnap(snap))
+            {
+                return;
+            }
+
+            if (OnSnap != null)
+            {
+                OnSnap(snap);
+            }
+        }
+
+        private bool validateSnap(Snap snap)
+        {
+            foreach (ISnapValidator validator in SnapValidators)
+            {
+                if (!validator.Validate(snap))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }

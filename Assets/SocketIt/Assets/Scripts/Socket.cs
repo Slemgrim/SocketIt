@@ -12,6 +12,14 @@ namespace SocketIt {
         public event SocketEvent OnConnect;
         public event SocketEvent OnDisconnect;
 
+        public delegate void SnapEvent(Snap snap);
+        public event SnapEvent OnSnap;
+
+        public bool AllowSnapping = false;
+
+        [Range(0.0f, 180.0f)]
+        public float AngleLimit = 180;
+
         public Module Module;
 
         public void Awake()
@@ -33,7 +41,7 @@ namespace SocketIt {
 
         public void Connect(Socket socket)
         {
-            if (!isValidSocket(socket))
+            if (!isValidConnection(socket))
             {
                 throw new SocketException("Socket Already Connected");
             }
@@ -123,18 +131,62 @@ namespace SocketIt {
             return null;
         }
 
-        private bool isValidSocket(Socket socket)
+        public void Snap(Socket otherSocket)
+        {
+            if (!isValidSnap(otherSocket))
+            {
+                return;
+            }
+
+            Snap snap = new Snap(this, otherSocket);
+
+            if (OnSnap != null)
+            {
+                OnSnap(snap);
+            }
+
+            Module.SnapSockets(snap);
+        }
+
+        private bool isValidSnap(Socket otherSocket)
+        {
+            if (!AllowSnapping)
+            {
+                return false;
+            }
+
+            if (otherSocket == this)
+            {
+                return false;
+            }
+
+            if (Module == otherSocket.Module)
+            {
+                return false;
+            }
+
+            if (GetConnectedSocket() != null || otherSocket.GetConnectedSocket() != null)
+            {
+                return false;
+            }
+
+            if (AngleLimit < 180 && !isInsideAngle(otherSocket))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool isValidConnection(Socket socket)
         {
             if (socket == this)
             {
-                Debug.Log("Its me");
                 return false;
             }
 
             if (socket.Module == this)
             {
-                Debug.Log("Its same module");
-
                 return false;
             }
 
@@ -153,6 +205,13 @@ namespace SocketIt {
             */
 
             return true;
+        }
+
+        private bool isInsideAngle(Socket socket)
+        {
+            float minAngle = Math.Min(AngleLimit, socket.AngleLimit);
+            float connectionAngle = Vector3.Angle(transform.forward, socket.transform.forward);
+            return connectionAngle > 180 - minAngle / 2 && connectionAngle < 180 + minAngle / 2;
         }
     }
 }

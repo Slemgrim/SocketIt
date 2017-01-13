@@ -66,7 +66,7 @@ namespace SocketIt
             Handles.DrawSolidDisc(endObject.transform.position, Camera.current.transform.forward, .1f);
         }
 
-        public static void DrawSocketAngle(SnapSocket socket, float angle)
+        public static void DrawSocketAngle(Socket socket, float angle)
         {
             if(angle == 180)
             {

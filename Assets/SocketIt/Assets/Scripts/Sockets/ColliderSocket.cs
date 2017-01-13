@@ -6,15 +6,15 @@ namespace SocketIt {
     [RequireComponent(typeof(Socket))]
     [AddComponentMenu("SocketIt/Socket/Collider Socket")]
     public class ColliderSocket : MonoBehaviour {
-		private SnapSocket socket;
+		private Socket socket;
 
         void Awake(){
-			socket = GetComponent<SnapSocket> ();
+			socket = GetComponent<Socket> ();
 		}
 
 		void OnTriggerEnter(Collider other)
 		{
-            SnapSocket otherSocket = other.GetComponent<SnapSocket> ();
+            Socket otherSocket = other.GetComponent<Socket> ();
 
 			if (otherSocket != null) {
 				socket.Snap(otherSocket);

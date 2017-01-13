@@ -11,11 +11,11 @@ namespace SocketIt.Example04
         /**
          * List of clicked sockets.
          */
-        private List<SnapSocket> sockets = new List<SnapSocket>();
+        private List<Socket> sockets = new List<Socket>();
 
         void Update()
         {
-            SnapSocket socket = GetClickedSocket();
+            Socket socket = GetClickedSocket();
             if(socket == null)
             {
                 return;
@@ -32,7 +32,7 @@ namespace SocketIt.Example04
         /**
          * Get the socket under the mouse curser on click
          */
-        private SnapSocket GetClickedSocket()
+        private Socket GetClickedSocket()
         {
             if (!Input.GetMouseButtonDown(0))
             {
@@ -46,7 +46,7 @@ namespace SocketIt.Example04
                 return null;
             }
 
-            SnapSocket socket = hit.collider.GetComponent<SnapSocket>();
+            Socket socket = hit.collider.GetComponent<Socket>();
 
             return socket;
         }
@@ -54,7 +54,7 @@ namespace SocketIt.Example04
         /**
          * Add clicked socket to list of sockets
          */
-        private void AddSocket(SnapSocket socket)
+        private void AddSocket(Socket socket)
         {
             if (!sockets.Contains(socket))
             {
@@ -76,17 +76,10 @@ namespace SocketIt.Example04
         /**
          * Snap two clicked sockets together
          */
-        private void Snap(SnapSocket firstClicked, SnapSocket secondClicked)
+        private void Snap(Socket firstClicked, Socket secondClicked)
         {
-
-            //Make the first clicked socket moveable so we can snap it to the second one. 
-            //A snap should always happen into one direction.
-            firstClicked.SnapModule.IsStatic = false;
-            //Snap the first clicked socket to the second one
             firstClicked.Snap(secondClicked);
-            //Set first clicked socket back to static
-            firstClicked.SnapModule.IsStatic = true;
-
+            
             //Remove emission from clicked sockets
             ChangeEmissionColor(firstClicked.gameObject, Color.black);
             ChangeEmissionColor(secondClicked.gameObject, Color.black);

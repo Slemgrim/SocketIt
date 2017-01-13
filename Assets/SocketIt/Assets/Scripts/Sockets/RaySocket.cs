@@ -10,13 +10,13 @@ namespace SocketIt
     {
 
         public Camera Cam;
-        public SnapSocket Socket;
+        public Socket Socket;
 
         public bool RaysActive = false;
         private RaySocket current;
 
         public void Reset() {
-            Socket = GetComponent<SnapSocket>();
+            Socket = GetComponent<Socket>();
             Cam = Camera.main;
         }
 

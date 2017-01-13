@@ -41,7 +41,7 @@ namespace SocketIt.Examples
 
         private void Connect(Snap snap)
         {
-            snap.SocketA.Socket.Connect(snap.SocketB.Socket);
+            snap.SocketA.Connect(snap.SocketB);
             snap.SocketA.Module.transform.SetParent(snap.SocketB.Module.transform);
         }
 

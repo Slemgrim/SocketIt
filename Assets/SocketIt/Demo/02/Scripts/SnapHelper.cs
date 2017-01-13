@@ -7,8 +7,8 @@ namespace SocketIt.Demo
 {
     public class SnapHelper : MonoBehaviour
     {
-        public SnapSocket snapSocketA;
-        public SnapSocket snapSocketB;
+        public Socket snapSocketA;
+        public Socket snapSocketB;
 
         private Vector3 initPosition;
         private Quaternion initRotation;

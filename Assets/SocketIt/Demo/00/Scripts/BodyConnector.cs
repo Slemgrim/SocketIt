@@ -26,7 +26,7 @@ namespace SocketIt.Example00
         {
             if(follower == gameObject && mouseControll.CurrentSnap != null)
             {
-                mouseControll.CurrentSnap.SocketB.Socket.Connect(mouseControll.CurrentSnap.SocketA.Socket);
+                mouseControll.CurrentSnap.SocketB.Connect(mouseControll.CurrentSnap.SocketA);
             }
         }
 

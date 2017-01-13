@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEditor;
+using System;
 
 namespace SocketIt.Editor
 {
@@ -9,6 +10,10 @@ namespace SocketIt.Editor
     {
         Socket socketB;
         Socket socketA;
+
+        bool SnapPosition = true;
+        bool SnapUp = true;
+        bool SnapForward = true;
 
         public override void OnInspectorGUI()
         {
@@ -26,21 +31,42 @@ namespace SocketIt.Editor
                 Disconnect();
             } else
             {
-                Connect("Connect other Socket", "Connect");
+                Connect();
             }
+
+            SnapField();
         }
 
-        public void Connect(string label, string buttonLabel)
+        private void SnapField()
         {
             EditorGUILayout.BeginVertical("box");
-            EditorGUILayout.LabelField(label);
+            EditorGUILayout.LabelField("Snap To Socket");
+
+            socketB = (Socket)EditorGUILayout.ObjectField(socketB, typeof(Socket), true);
+
+            if (GUILayout.Button("Snap"))
+            {
+
+            }
+
+            SnapPosition = EditorGUILayout.Toggle("Position", SnapPosition);
+            SnapUp = EditorGUILayout.Toggle("Up", SnapUp);
+            SnapForward = EditorGUILayout.Toggle("Forward", SnapForward);
+
+            EditorGUILayout.EndVertical();
+        }
+
+        public void Connect()
+        {
+            EditorGUILayout.BeginVertical("box");
+            EditorGUILayout.LabelField("Connect to Socket");
             EditorGUILayout.BeginHorizontal();
 
             socketB = (Socket)EditorGUILayout.ObjectField(socketB, typeof(Socket), true);
 
             EditorGUILayout.EndHorizontal();
             EditorGUI.BeginDisabledGroup(socketA == false || socketB == false || !socketA.Module.Sockets.Contains(socketA) || socketA.Module.Sockets.Contains(socketB));
-            if (GUILayout.Button(buttonLabel))
+            if (GUILayout.Button("Connect"))
             {
                 RecordModules();
                 socketA.Connect(socketB);

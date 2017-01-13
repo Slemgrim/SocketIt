@@ -3,7 +3,7 @@ using System.Collections;
 using System;
 
 namespace SocketIt {
-    [RequireComponent(typeof(SnapModule))]
+    [RequireComponent(typeof(Module))]
     [AddComponentMenu("SocketIt/Snap Validators/Free Validator")]
     public class FreeValidator : MonoBehaviour, ISnapValidator
 	{
@@ -21,7 +21,7 @@ namespace SocketIt {
 
         private bool BothSocketsAreFree(Snap snap)
         {
-            return snap.SocketA.Socket.GetConnectedSocket() == null && snap.SocketB.Socket.GetConnectedSocket() == null;
+            return snap.SocketA.GetConnectedSocket() == null && snap.SocketB.GetConnectedSocket() == null;
 
         }
     }

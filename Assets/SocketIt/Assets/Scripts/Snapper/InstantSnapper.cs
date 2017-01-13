@@ -4,7 +4,7 @@ using System;
 
 namespace SocketIt {
     [DisallowMultipleComponent]
-    [RequireComponent(typeof(SnapModule))]
+    [RequireComponent(typeof(Module))]
     [AddComponentMenu("SocketIt/Snapper/Instant Snapper")]
     public class InstantSnapper : MonoBehaviour, ISocketSnapper
 	{
@@ -28,11 +28,11 @@ namespace SocketIt {
 
         public bool SetParentOnSnap = false;
 
-        private SnapModule module;
+        private Module module;
 
         public void Start()
         {
-            module = GetComponent<SnapModule>();
+            module = GetComponent<Module>();
 
             if(module == null)
             {
@@ -44,8 +44,8 @@ namespace SocketIt {
 
         public void StartSnapping(Snap snap)
         {
-            SnapSocket ownSocket = snap.SocketA;
-            SnapSocket otherSocket = snap.SocketB;
+            Socket ownSocket = snap.SocketA;
+            Socket otherSocket = snap.SocketB;
 
             if (OnSnapStart != null)
             {
@@ -66,7 +66,7 @@ namespace SocketIt {
             }
         }
 
-        private void RotateToOtherSocket(SnapSocket ownSocket, SnapSocket otherSocket)
+        private void RotateToOtherSocket(Socket ownSocket, Socket otherSocket)
         {
             if (SnapRotationForward)
             {
@@ -89,7 +89,7 @@ namespace SocketIt {
             }
         }
 
-        private void MoveToOtherSocket(SnapSocket ownSocket, SnapSocket otherSocket)
+        private void MoveToOtherSocket(Socket ownSocket, Socket otherSocket)
         {
             if (SnapPosition)
             {

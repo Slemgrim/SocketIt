@@ -15,6 +15,7 @@ namespace SocketIt.Editor
             Socket secondSocket = GetSecondSocket();
 
             Connect(activeSocket, secondSocket);
+            RemoveEmptyComposition();
         }
 
         private static void Connect(Socket activeSocket, Socket secondSocket)
@@ -58,6 +59,7 @@ namespace SocketIt.Editor
                     connection.Connector.Disconnect(connection.Connectee);
                 }
             }
+            RemoveEmptyComposition();
         }
 
         private static void Disconnect(Socket activeSocket, Socket secondSocket)
@@ -123,6 +125,19 @@ namespace SocketIt.Editor
             {
                 Undo.RecordObject(socket.Module, "Connect " + socket.Module.name);
             }
+        }
+
+        private static void RemoveEmptyComposition()
+        {
+            Composition[] compositions = GameObject.FindObjectsOfType<Composition>();
+            foreach (Composition composition in compositions)
+            {
+                if (composition.Modules.Count <= 1)
+                {
+                    Undo.DestroyObjectImmediate(composition.gameObject);
+                }
+            }
+
         }
     }
 }

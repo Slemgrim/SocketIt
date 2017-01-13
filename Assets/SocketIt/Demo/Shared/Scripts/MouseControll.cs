@@ -109,23 +109,23 @@ namespace SocketIt.Examples
                 return;
             }
 
-            SnapModule snapModule = clickedObject.GetComponent<SnapModule>();
-            ISocketSnapper snapper = clickedObject.GetComponent<ISocketSnapper>();
+            Module module = clickedObject.GetComponent<Module>();
 
-            // Return if we don't have snap components. In a real project you would do this with layer or tag checking
-            if(snapModule == null || snapper == null)
+            if(module == null)
             {
                 return;
             }
 
+            ISocketSnapper snapper = clickedObject.GetComponent<ISocketSnapper>();
+
+            foreach(Socket socket in module.Sockets)
+            {
+                socket.AllowSnapping = true;
+            }
+
             follower = clickedObject;
 
-
-            // Mark the snap module as moveable. Only non static objects can snap to static object. We need this to
-            // prevent the snapping system from destroying static structures
-            snapModule.IsStatic = false;
-
-            // Register to the snapper OnSnapEnd delegate so we are able to stop folling while snapping
+            // Register to the snapper OnSnapEnd delegate so we are able to stop following while snapping
             snapper.OnSnapEnd += OnSnap;
 
             // Make the clicked object transparent
@@ -163,17 +163,19 @@ namespace SocketIt.Examples
             // Remove all transparency
             MakeOpaque(follower);
 
-            SnapModule snapModule = follower.GetComponent<SnapModule>();
-            ISocketSnapper snapper = follower.GetComponent<ISocketSnapper>();
+            Module module = follower.GetComponent<Module>();
 
-            // Return if we don't have snap components. In a real project you would do this with layer or tag checking
-            if (snapModule == null || snapper == null)
+            if (module == null)
             {
                 return;
             }
 
-            //Restore the module to static
-            snapModule.IsStatic = true;
+            ISocketSnapper snapper = follower.GetComponent<ISocketSnapper>();
+
+            foreach (Socket socket in module.Sockets)
+            {
+                socket.AllowSnapping = false;
+            }
 
             if (OnDropOff != null)
             {
