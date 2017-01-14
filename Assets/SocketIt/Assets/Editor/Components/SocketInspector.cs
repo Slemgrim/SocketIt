@@ -69,7 +69,7 @@ namespace SocketIt.Editor
             if (GUILayout.Button("Connect"))
             {
                 RecordModules();
-                socketA.Connect(socketB);
+                socketB.Connect(socketA);
         
                 socketA = null;
                 socketB = null;

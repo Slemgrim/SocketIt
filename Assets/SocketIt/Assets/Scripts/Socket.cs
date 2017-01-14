@@ -190,19 +190,16 @@ namespace SocketIt {
                 return false;
             }
 
-            /*
-            Socket otherConnectedSocket = socket.GetConnectedSocket();
-            if (otherConnectedSocket != null && otherConnectedSocket != this)
+            if (socket.IsConnected())
             {
                 return false;
             }
 
-            Socket connectedSocket = GetConnectedSocket();
-            if (connectedSocket != null && connectedSocket != socket)
+            if (IsConnected())
             {
                 return false;
             }
-            */
+            
 
             return true;
         }

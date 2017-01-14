@@ -241,6 +241,7 @@ namespace SocketIt
             Connection connection = GetConnection(module1, module2);
             Disconnect(connection.Connector, connection.Connectee);
         }
+
         public List<Connection> GetConnections(Module module)
         {
             List<Connection> connections = new List<Connection>();

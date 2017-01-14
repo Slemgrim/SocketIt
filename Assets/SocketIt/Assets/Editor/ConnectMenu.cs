@@ -18,12 +18,56 @@ namespace SocketIt.Editor
             RemoveEmptyComposition();
         }
 
+        [MenuItem("SocketIt/Connect %&c", true)]
+        static bool ValidateConnect()
+        {
+            Socket activeSocket = GetActiveSocket();
+            Socket secondSocket = GetSecondSocket();
+
+            if(activeSocket == null || secondSocket == null)
+            {
+                return false;
+            }
+
+            if (activeSocket.Module == null || secondSocket.Module == null)
+            {
+                return false;
+            }
+
+            if (activeSocket.IsConnected() || secondSocket.IsConnected())
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+
         private static void Connect(Socket activeSocket, Socket secondSocket)
         {
+            Composition activeOldComposition = activeSocket.Module.Composition;
+            Composition secondOldComposition = secondSocket.Module.Composition;
+
+            bool UndoComposition = false;
+            if(activeOldComposition == null && secondOldComposition == null)
+            {
+                UndoComposition = true;
+            }
+
             RecordModule(activeSocket);
             RecordModule(secondSocket);
 
-            secondSocket.Connect(activeSocket);
+            activeSocket.Connect(secondSocket);
+
+            if(activeSocket.Module.Composition != activeOldComposition && activeSocket.Module.Composition != secondOldComposition)
+            {
+                UndoComposition = true;
+            }
+
+            if (UndoComposition)
+            {
+                Undo.RegisterCreatedObjectUndo(secondSocket.Module.Composition.gameObject, "Create new Composition");
+            }
         }
 
         [MenuItem("SocketIt/Disconnect %&x")]
@@ -49,14 +93,14 @@ namespace SocketIt.Editor
             {
                 foreach(Connection connection in new List<Connection>(activeModule.Composition.Connections))
                 {
-                    connection.Connector.Disconnect(connection.Connectee);
+                    Disconnect(connection.Connector, connection.Connectee);
                 }
             } else if (activeModule != null && secondModule != null)
             {
                 Connection connection = activeModule.GetConnection(secondModule);
                 if(connection != null)
                 {
-                    connection.Connector.Disconnect(connection.Connectee);
+                    Disconnect(connection.Connector, connection.Connectee);
                 }
             }
             RemoveEmptyComposition();
@@ -67,13 +111,14 @@ namespace SocketIt.Editor
             RecordModule(activeSocket);
             RecordModule(secondSocket);
 
-            if (activeSocket != null)
+
+            if (secondSocket != null)
             {
-                secondSocket.Disconnect(activeSocket);
+                activeSocket.Disconnect(secondSocket);
             }
             else
             {
-                secondSocket.Disconnect();
+                activeSocket.Disconnect();
             }
         }
 
