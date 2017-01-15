@@ -10,7 +10,8 @@ namespace SocketIt.Editor {
         static Module activeModule;
         static Socket activeSocket;
         static Composition activeComposition;
-        Vector2 scrollPos;
+        static Vector2 scrollPos = new Vector2();
+        static bool showOnlySelected = false;
 
         [MenuItem ("Window/Composition")]
 		public static void ShowWindow () {
@@ -18,96 +19,120 @@ namespace SocketIt.Editor {
 		}
 
 		void OnGUI () {
-			if (activeComposition != null) {
+            if (activeComposition != null) {
 				RenderCompositionEditor ();
 			} else {
 				RenderEmpty ();
-			}	
-		}
+			}
+        }
 
-		void RenderCompositionEditor(){
-            EditorGUILayout.BeginScrollView(scrollPos);
+		void RenderCompositionEditor()
+        {
+            scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
 
             EditorGUILayout.LabelField("Connections: " + activeComposition.Connections.Count);
             EditorGUILayout.LabelField("Modules: " + activeComposition.Modules.Count);
 
-            if (GUILayout.Button("Origin: " + activeComposition.Origin.name, "Label", GUILayout.ExpandWidth(false)))
+            if (activeComposition.Origin != null)
             {
-                Selection.activeGameObject = activeComposition.Origin.gameObject;
+                if (GUILayout.Button("Origin: " + activeComposition.Origin.name, "Label", GUILayout.ExpandWidth(false)))
+                {
+                    Selection.activeGameObject = activeComposition.Origin.gameObject;
+                }
             }
+
+            showOnlySelected = EditorGUILayout.Toggle("Show only selected", showOnlySelected);
 
             EditorGUILayout.Space();
             EditorGUILayout.Space();
 
             Connection toRemove = null;
 
-            List<Connection> selectedConnections = new List<Connection>();
-            if(activeSocket != null)
+            List<Connection> selectedConnections = GetSelectedConnections();
+            List<Connection> connections = activeComposition.Connections;
+
+            if (showOnlySelected)
             {
-                selectedConnections.Add(activeComposition.GetConnection(activeSocket));
-            } else if(activeModule != null)
-            {
-                selectedConnections.AddRange(activeComposition.GetConnections(activeModule));
+                connections = selectedConnections;
             }
 
-            foreach (Connection connection in activeComposition.Connections)
+            foreach (Connection connection in connections)
             {
-                EditorGUILayout.BeginHorizontal();
-
-                EditorGUILayout.BeginHorizontal("Box", GUILayout.ExpandWidth(true));
-
                 GUIStyle style = new GUIStyle(GUI.skin.label);
                 if (selectedConnections.Contains(connection))
                 {
-                    style.normal.textColor = Color.blue;
                     style.fontStyle = FontStyle.Bold;
                 }
 
-                if (GUILayout.Button(connection.Connector.Module.name + " -> " + connection.Connector.name, style, GUILayout.ExpandWidth(false)))
+                EditorGUILayout.BeginHorizontal();
+
+                EditorGUILayout.BeginHorizontal("Box", GUILayout.ExpandWidth(true));
+                EditorGUILayout.LabelField(connection.Connector.Module.name + " -> " + connection.Connector.name, style, GUILayout.ExpandWidth(false));
+
+                GUILayout.FlexibleSpace();
+
+                if (GUILayout.Button("Select", GUILayout.ExpandWidth(false)))
                 {
                     Selection.activeGameObject = connection.Connector.gameObject;
                 }
-                
+
                 EditorGUILayout.EndHorizontal();
 
-                    if (GUILayout.Button("X", GUILayout.ExpandWidth(false)))
+                if (GUILayout.Button("X", GUILayout.ExpandWidth(false)))
                 {
                     toRemove = connection;
                 }
 
                 EditorGUILayout.BeginHorizontal("Box", GUILayout.ExpandWidth(true));
 
-                if (GUILayout.Button(connection.Connectee.Module.name + " -> " + connection.Connectee.name, style, GUILayout.ExpandWidth(true)))
+
+                if (GUILayout.Button("Select", GUILayout.ExpandWidth(false)))
                 {
                     Selection.activeGameObject = connection.Connectee.gameObject;
                 }
 
+                GUILayout.FlexibleSpace();
+
+                EditorGUILayout.LabelField(connection.Connectee.Module.name + " -> " + connection.Connector.name, style, GUILayout.ExpandWidth(false));
                 EditorGUILayout.EndHorizontal();
 
                 EditorGUILayout.EndHorizontal();
 
             }
 
-            if(toRemove != null)
+            if (toRemove != null)
             {
                 toRemove.Connector.Disconnect(toRemove.Connectee);
-            }
-
-            if(activeComposition.Connections.Count == 0)
-            {
-                Undo.DestroyObjectImmediate(activeComposition.gameObject);
             }
 
             EditorGUILayout.EndScrollView();
         }
 
-	 	void RenderEmpty(){
+        private static List<Connection> GetSelectedConnections()
+        {
+            List<Connection> selectedConnections = new List<Connection>();
+            if (activeSocket != null)
+            {
+                selectedConnections.Add(activeComposition.GetConnection(activeSocket));
+            }
+            else if (activeModule != null)
+            {
+                selectedConnections.AddRange(activeComposition.GetConnections(activeModule));
+            }
+
+            return selectedConnections;
+        }
+
+        void RenderEmpty(){
 			EditorGUILayout.LabelField ("Select a Composition or a Module/Socket connected to a Composition");
 		}
 
 		void OnSelectionChange() {
-			if (Selection.activeGameObject == null) {
-				activeComposition = null;
+            activeComposition = null;
+            activeModule = null;
+            activeSocket = null;
+
+            if (Selection.activeGameObject == null) {
 				return;
 			}	
 
@@ -122,9 +147,9 @@ namespace SocketIt.Editor {
 			}
 				
 			activeComposition = composition;
-		}
+        }
 
-		static Composition GetCompositionFromModule ()
+        static Composition GetCompositionFromModule ()
 		{	
 			Module module = Selection.activeGameObject.GetComponent<Module> ();
 			if (module == null) {

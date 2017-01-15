@@ -8,31 +8,47 @@ namespace SocketIt
     [DisallowMultipleComponent]
     public class Composition : MonoBehaviour
     {
-        public List<Module> Modules = new List<Module>();
-        public List<Connection> Connections = new List<Connection>();
-
         public Module Origin = null;
 
         public delegate void ModuleEvent(Module module);
         public delegate void ConnectionEvent(Connection module);
         public delegate void CompositionEvent(Composition composition);
         public delegate void CompositionModuleEvent(Composition composition, Module module);
+        public delegate void OriginEvent(Module newOrigin, Module oldOrigin);
 
         public event ModuleEvent OnModuleAdded;
         public event ModuleEvent OnModuleRemoved;
         public event ConnectionEvent OnConnectionAdded;
         public event ConnectionEvent OnConnectionRemoved;
+        public event OriginEvent OnOriginChanged;
 
         public static event CompositionEvent OnCompositionCreated;
         public static event CompositionModuleEvent OnCompositionModuleAdded;
         public static event CompositionModuleEvent OnCompositionModuleRemoved;
 
-        public bool DestroyWhenEmpty = false;
+        private List<Module> modules = new List<Module>();
+        private List<Connection> connections = new List<Connection>();
+
+        public List<Module> Modules
+        {
+            get
+            {
+                return modules;
+            }
+        }
+
+        public List<Connection> Connections
+        {
+            get
+            {
+                return connections;
+            }
+        }
 
         public bool Connect(Socket connector, Socket conectee)
         {
             Module module = conectee.Module;
-            if (!Modules.Contains(module))
+            if (!modules.Contains(module))
             {
                 AddModule(module);
             }
@@ -45,7 +61,7 @@ namespace SocketIt
             Connection connection = new Connection();
             connection.Connector = connector;
             connection.Connectee = conectee;
-            Connections.Add(connection);
+            connections.Add(connection);
 
             if(OnConnectionAdded != null)
             {
@@ -96,12 +112,12 @@ namespace SocketIt
 
         private void RemoveConnection(Connection connection)
         {
-            if (!Connections.Contains(connection))
+            if (!this.connections.Contains(connection))
             {
                 return;
             }
 
-            Connections.Remove(connection);
+            this.connections.Remove(connection);
 
             if (OnConnectionRemoved != null)
             {
@@ -122,9 +138,9 @@ namespace SocketIt
 
         public void AddModule(Module module)
         {
-            if (!Modules.Contains(module))
+            if (!modules.Contains(module))
             {
-                Modules.Add(module);
+                modules.Add(module);
 
                 if(module.Composition != this)
                 {
@@ -147,16 +163,16 @@ namespace SocketIt
         {
             if(module == Origin)
             {
-                return;
+                SetOrigin(null);
             }
 
-            if (Modules.Contains(module))
+            if (modules.Contains(module))
             {
                 if(module.Composition == this)
                 {
                     module.SetComposition(null);
                 }
-                Modules.Remove(module);
+                modules.Remove(module);
 
                 if (OnModuleRemoved != null)
                 {
@@ -167,12 +183,6 @@ namespace SocketIt
                 {
                     OnCompositionModuleRemoved(this, module);
                 }
-            }
-            
-            if (DestroyWhenEmpty && Modules.Count < 2)
-            {
-                Origin.Composition = null;
-                Destroy(gameObject);
             }
         }
 
@@ -245,9 +255,9 @@ namespace SocketIt
         public List<Connection> GetConnections(Module module)
         {
             List<Connection> connections = new List<Connection>();
-            foreach(Connection connection in Connections)
+            foreach(Connection connection in this.connections)
             {
-                if(connection.Connector.Module == module || connection.Connectee.Module == this)
+                if(connection.Connector.Module == module || connection.Connectee.Module == module)
                 {
                     connections.Add(connection);
                 }
@@ -258,7 +268,7 @@ namespace SocketIt
 
         public Connection GetConnection(Module moduleA, Module moduleB)
         {
-            foreach (Connection connection in Connections)
+            foreach (Connection connection in connections)
             {
                 if ((moduleA == connection.Connector.Module && moduleB == connection.Connectee.Module) || 
                     (moduleA == connection.Connectee.Module && moduleB == connection.Connector.Module))
@@ -272,7 +282,7 @@ namespace SocketIt
 
         public Connection GetConnection(Socket socketA, Socket socketB)
         {
-            foreach (Connection connection in Connections)
+            foreach (Connection connection in connections)
             {
                 if ((socketA == connection.Connector && socketB == connection.Connectee) ||
                     (socketA == connection.Connectee && socketB == connection.Connector))
@@ -286,7 +296,7 @@ namespace SocketIt
 
         public Connection GetConnection(Socket socket)
         {
-            foreach (Connection connection in Connections)
+            foreach (Connection connection in connections)
             {
                 if (socket == connection.Connector || socket == connection.Connectee)
                 {
@@ -311,6 +321,7 @@ namespace SocketIt
                 {
                     connectee.SetComposition(connector.Composition);
                 }
+
                 else if (connector.Composition == null && connectee.Composition != null)
                 {
                     Composition oldComposition = connectee.Composition;
@@ -319,7 +330,7 @@ namespace SocketIt
                     connector.Composition.IntegrateOther(connectee.Composition);
                     connectee.SetComposition(compositon);
 
-                    oldComposition.FreeModules();
+                    oldComposition.RemoveAllModules();
 
                 }
                 else if (connector.Composition != null && connectee.Composition != null)
@@ -327,22 +338,22 @@ namespace SocketIt
                     Composition oldComposition = connectee.Composition;
                     connector.Composition.IntegrateOther(connectee.Composition);
                     connectee.SetComposition(connector.Composition);
-                    oldComposition.FreeModules();
+                    oldComposition.RemoveAllModules();
                 }
             }
         }
 
         private void IntegrateOther(Composition otherComposition)
         {
-            foreach(Connection connection in otherComposition.Connections)
+            foreach(Connection connection in otherComposition.connections)
             {
                 if (GetConnection(connection.Connector, connection.Connectee) == null)
                 {
-                    Connections.Add(connection);
+                    connections.Add(connection);
                 }   
             }
 
-            foreach(Module module in otherComposition.Modules)
+            foreach(Module module in otherComposition.modules)
             {
                 AddModule(module);
             }
@@ -350,9 +361,25 @@ namespace SocketIt
 
         public static Composition CreateComposition(Module origin)
         {
-            GameObject go = new GameObject("Composition");
-            Composition composition = go.AddComponent<Composition>();
-            composition.Origin = origin;
+            CompositionManager manager = CompositionManager.Instance;
+            Composition composition = null;
+            if (manager.compositionPrefab != null)
+            {
+                 composition = Instantiate(manager.compositionPrefab).GetComponent<Composition>();
+            }
+
+            if (composition == null)
+            {
+                GameObject go = new GameObject("Composition");
+                composition = go.AddComponent<Composition>();
+            }
+
+            if (manager.compositionPrefab == null)
+            {
+                manager.compositionPrefab = composition;
+            }
+
+            composition.SetOrigin(origin);
             composition.AddModule(origin);
 
             if(OnCompositionCreated != null)
@@ -363,25 +390,46 @@ namespace SocketIt
             return composition;
         }
 
+        public void SetOrigin(Module newOrigin)
+        {
+            if(newOrigin == Origin)
+            {
+                return;
+            }
+
+            Module oldOrigin = Origin;
+            Origin = newOrigin;
+
+            if (OnOriginChanged != null)
+            {
+                OnOriginChanged(newOrigin, oldOrigin);
+            }
+        }
+
         public void OnDestroy()
         {
-            FreeModules();
+            RemoveAllModules();
         }
 
         /**
          * Remove all Modules and Connections from this Composition
          */
-        public void FreeModules()
+        public void RemoveAllModules()
         {
-            Connections.Clear();
-            foreach (Module module in Modules)
+            connections.Clear();
+            foreach (Module module in modules)
             {
                 if(module.Composition == this)
                 {
                     module.Composition = null;
                 }
+
+                if(module == Origin)
+                {
+                    SetOrigin(null);
+                }
             }
-            Modules.Clear();
+            modules.Clear();
         }
     }
 }

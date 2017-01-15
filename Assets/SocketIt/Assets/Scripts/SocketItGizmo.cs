@@ -69,6 +69,9 @@ namespace SocketIt
 
             foreach (Module module in composition.Modules)
             {
+                Handles.DrawWireDisc(module.transform.position, Camera.current.transform.forward, .1f);
+                Handles.DrawSolidDisc(module.transform.position, Camera.current.transform.forward, .06f);
+
                 List<Connection> connections = composition.GetConnections(module);
                 Handles.color = CompositionColor;
                 foreach (Connection connection in connections)

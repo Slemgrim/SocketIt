@@ -9,17 +9,27 @@ namespace SocketIt.Editor
     {
         Composition composition;
 
+
         public override void OnInspectorGUI()
         {
-            DrawDefaultInspector();
-
             composition = (Composition)target;
-
-            if(composition.Modules != null)
+            if (composition.Modules == null)
             {
-                if (GUILayout.Button("Free Modules"))
+                return;
+            }
+
+            EditorGUILayout.BeginHorizontal();
+            composition.Origin = (Module) EditorGUILayout.ObjectField("Origin", composition.Origin, typeof(Module), false);
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.LabelField("Modules: " + composition.Modules.Count);
+            EditorGUILayout.LabelField("Connections: " + composition.Connections.Count);
+
+            if(composition.Modules.Count > 0)
+            {
+                if (GUILayout.Button("Remove all modules"))
                 {
-                    composition.FreeModules();
+                    composition.RemoveAllModules();
                 }
             }
         }
