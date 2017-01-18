@@ -27,7 +27,10 @@ namespace SocketIt
         public static event CompositionModuleEvent OnCompositionModuleRemoved;
         public static event CompositionEvent OnCompositionEmpty;
 
+        [SerializeField]
         private List<Module> modules = new List<Module>();
+
+        [SerializeField]
         private List<Connection> connections = new List<Connection>();
 
         public List<Module> Modules
