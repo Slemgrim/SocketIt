@@ -29,7 +29,7 @@ namespace SocketIt.Editor
             {
                 if (GUILayout.Button("Remove all modules"))
                 {
-                    composition.RemoveAllModules();
+                    composition.Clear();
                 }
             }
         }

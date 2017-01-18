@@ -25,6 +25,7 @@ namespace SocketIt
         public static event CompositionEvent OnCompositionCreated;
         public static event CompositionModuleEvent OnCompositionModuleAdded;
         public static event CompositionModuleEvent OnCompositionModuleRemoved;
+        public static event CompositionEvent OnCompositionEmpty;
 
         private List<Module> modules = new List<Module>();
         private List<Connection> connections = new List<Connection>();
@@ -183,6 +184,14 @@ namespace SocketIt
                 {
                     OnCompositionModuleRemoved(this, module);
                 }
+
+                if(modules.Count == 0)
+                {
+                    if (OnCompositionEmpty != null)
+                    {
+                        OnCompositionEmpty(this);
+                    }
+                }
             }
         }
 
@@ -330,7 +339,7 @@ namespace SocketIt
                     connector.Composition.IntegrateOther(connectee.Composition);
                     connectee.SetComposition(compositon);
 
-                    oldComposition.RemoveAllModules();
+                    oldComposition.Clear();
 
                 }
                 else if (connector.Composition != null && connectee.Composition != null)
@@ -338,7 +347,7 @@ namespace SocketIt
                     Composition oldComposition = connectee.Composition;
                     connector.Composition.IntegrateOther(connectee.Composition);
                     connectee.SetComposition(connector.Composition);
-                    oldComposition.RemoveAllModules();
+                    oldComposition.Clear();
                 }
             }
         }
@@ -408,13 +417,13 @@ namespace SocketIt
 
         public void OnDestroy()
         {
-            RemoveAllModules();
+            Clear();
         }
 
         /**
          * Remove all Modules and Connections from this Composition
          */
-        public void RemoveAllModules()
+        public void Clear()
         {
             connections.Clear();
             foreach (Module module in modules)
@@ -430,6 +439,11 @@ namespace SocketIt
                 }
             }
             modules.Clear();
+
+            if(OnCompositionEmpty != null)
+            {
+                OnCompositionEmpty(this);
+            }
         }
     }
 }

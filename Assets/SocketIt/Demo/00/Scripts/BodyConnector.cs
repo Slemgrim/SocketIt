@@ -62,11 +62,6 @@ namespace SocketIt.Example00
 
         private void OnDisconnect(Connection connection)
         {
-            if (connection.Connectee.Module != Module)
-            {
-                return;
-            }
-
             List<CharacterJoint> joints = new List<CharacterJoint>(GetComponents<CharacterJoint>());
 
             foreach (CharacterJoint joint in joints)
@@ -76,7 +71,11 @@ namespace SocketIt.Example00
                     Destroy(joint);
                 }
             }
-            connection.Connector.Module.transform.SetParent(null);
+
+            if (connection.Connectee.Module.Composition == null)
+            {
+                connection.Connector.Module.transform.SetParent(null);
+            }
         }
     }
 }

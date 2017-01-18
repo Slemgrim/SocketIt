@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 namespace SocketIt
 {
@@ -8,6 +9,7 @@ namespace SocketIt
         private static CompositionManager instance = null;
 
         public Composition compositionPrefab;
+        public bool destroyEmptyCompositions = false;
 
         public static CompositionManager Instance
         {
@@ -31,6 +33,19 @@ namespace SocketIt
         void OnApplicationQuit()
         {
             instance = null;
+        }
+
+        void Awake()
+        {
+            Composition.OnCompositionEmpty += OnCompositionEmpty;
+        }
+
+        private void OnCompositionEmpty(Composition composition)
+        {
+            if(destroyEmptyCompositions && composition.Modules.Count == 0)
+            {
+                Destroy(composition.gameObject);
+            }
         }
     }
 }
