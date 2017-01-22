@@ -28,6 +28,12 @@ namespace SocketIt {
 
         private Module module;
 
+        private class TempTransform
+        {
+            public Vector3 position;
+            public Quaternion rotation;
+        }
+
         public void Start()
         {
             module = GetComponent<Module>();
@@ -50,13 +56,35 @@ namespace SocketIt {
                 OnSnapStart(new Snap(ownSocket, otherSocket));
             }
 
-            RotateToOtherSocket(ownSocket, otherSocket);
-            MoveToOtherSocket(ownSocket, otherSocket);
+            TempTransform targetTransform = GetTargetTransform(snap);
+            ownSocket.Module.transform.position = targetTransform.position;
+            ownSocket.Module.transform.rotation = targetTransform.rotation;
 
             if (OnSnapEnd != null)
             {
                 OnSnapEnd(new Snap(ownSocket, otherSocket));
             }
+        }
+
+        private TempTransform GetTargetTransform(Snap snap)
+        {
+            Socket ownSocket = snap.SocketA;
+            Socket otherSocket = snap.SocketB;
+
+            Vector3 originalPosition = ownSocket.Module.transform.position;
+            Quaternion originalRotation = ownSocket.Module.transform.rotation;
+
+            RotateToOtherSocket(ownSocket, otherSocket);
+            MoveToOtherSocket(ownSocket, otherSocket);
+
+            TempTransform tempTranform = new TempTransform();
+            tempTranform.position = ownSocket.Module.transform.position;
+            tempTranform.rotation = ownSocket.Module.transform.rotation;
+
+            ownSocket.Module.transform.position = originalPosition;
+            ownSocket.Module.transform.rotation = originalRotation;
+
+            return tempTranform;
         }
 
         private void RotateToOtherSocket(Socket ownSocket, Socket otherSocket)
