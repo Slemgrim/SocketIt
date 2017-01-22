@@ -18,7 +18,9 @@ public class ModuleInspector : UnityEditor.Editor
         DrawDefaultInspector();
 
         module = (Module)target;
-        
+
+        EditorGUILayout.LabelField("Composition: " + (module.Composition != null ? module.Composition.name : "null" ));
+
         Undo.RecordObject(module, "Edit module " + module);
 
         if (module.Composition == null && module.Sockets.Count != 0)

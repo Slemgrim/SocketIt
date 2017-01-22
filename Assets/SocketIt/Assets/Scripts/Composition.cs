@@ -111,7 +111,20 @@ namespace SocketIt
                 RemoveModule(connection.Connectee.Module);
             }
 
+            if (Connections.Count == 0)
+            {
+                if (OnCompositionEmpty != null)
+                {
+                    OnCompositionEmpty(this);
+                }
+            }
+
             return true;
+        }
+
+        public bool Disconnect(Connection connection)
+        {
+            return Disconnect(connection.Connector, connection.Connectee);
         }
 
         private void RemoveConnection(Connection connection)
@@ -133,11 +146,6 @@ namespace SocketIt
             {
                 RemoveModule(connection.Connectee.Module);
             }
-        }
-
-        public bool Disconnect(Connection connection)
-        {
-            return Disconnect(connection.Connector, connection.Connectee);
         }
 
         public void AddModule(Module module)
@@ -258,7 +266,7 @@ namespace SocketIt
             return false;
         }
 
-        internal void DisconnectModules(Module module1, Module module2)
+        public void DisconnectModules(Module module1, Module module2)
         {
             Connection connection = GetConnection(module1, module2);
             Disconnect(connection.Connector, connection.Connectee);
@@ -446,6 +454,11 @@ namespace SocketIt
             if(OnCompositionEmpty != null)
             {
                 OnCompositionEmpty(this);
+            }
+
+            if (!Application.isPlaying)
+            {
+                DestroyImmediate(gameObject);
             }
         }
     }

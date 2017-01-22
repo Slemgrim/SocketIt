@@ -109,15 +109,13 @@ namespace SocketIt.Editor
             RecordModule(activeSocket);
             RecordModule(secondSocket);
 
+            if (secondSocket == null)
+            {
+                return;
+            }
 
-            if (secondSocket != null)
-            {
-                activeSocket.Disconnect(secondSocket);
-            }
-            else
-            {
-                activeSocket.Disconnect();
-            }
+            Connection connection = activeSocket.Module.Composition.GetConnection(secondSocket);
+            connection.Connector.Disconnect(connection.Connectee);
         }
 
         private static Socket GetActiveSocket()

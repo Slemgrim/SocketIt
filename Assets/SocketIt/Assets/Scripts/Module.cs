@@ -20,6 +20,8 @@ namespace SocketIt
         public event SnapEvent OnSnap;
 
         public List<Socket> Sockets = new List<Socket>();
+
+        [HideInInspector]
         public Composition Composition = null;
 
         public List<ISnapValidator> SnapValidators;

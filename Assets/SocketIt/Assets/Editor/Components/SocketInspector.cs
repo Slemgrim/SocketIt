@@ -46,7 +46,8 @@ namespace SocketIt.Editor
 
             if (GUILayout.Button("Snap"))
             {
-
+                Debug.Log("Snap");
+                socketB.Snap(socketA);
             }
 
             SnapPosition = EditorGUILayout.Toggle("Position", SnapPosition);

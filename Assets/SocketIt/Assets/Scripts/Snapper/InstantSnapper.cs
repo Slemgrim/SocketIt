@@ -26,8 +26,6 @@ namespace SocketIt {
 		 */
         public bool SnapRotationUp = true;
 
-        public bool SetParentOnSnap = false;
-
         private Module module;
 
         public void Start()
@@ -54,11 +52,6 @@ namespace SocketIt {
 
             RotateToOtherSocket(ownSocket, otherSocket);
             MoveToOtherSocket(ownSocket, otherSocket);
-
-            if (SetParentOnSnap)
-            {
-                transform.parent = otherSocket.Module.transform;
-            }
 
             if (OnSnapEnd != null)
             {
@@ -101,8 +94,6 @@ namespace SocketIt {
 
         public void StopSnapping()
         {
-            //transform.parent = null;
-
             return;
         }
     }
