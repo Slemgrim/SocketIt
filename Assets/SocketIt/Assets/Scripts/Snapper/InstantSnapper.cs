@@ -26,13 +26,11 @@ namespace SocketIt {
 		 */
         public bool SnapRotationUp = true;
 
+        private Snap currentSnap = null;
+
         private Module module;
 
-        private class TempTransform
-        {
-            public Vector3 position;
-            public Quaternion rotation;
-        }
+        private SnapTransform targetTransform = null;
 
         public void Start()
         {
@@ -48,76 +46,25 @@ namespace SocketIt {
 
         public void StartSnapping(Snap snap)
         {
-            Socket ownSocket = snap.SocketA;
-            Socket otherSocket = snap.SocketB;
 
             if (OnSnapStart != null)
             {
-                OnSnapStart(new Snap(ownSocket, otherSocket));
+                OnSnapStart(new Snap(snap.SocketA, snap.SocketB));
             }
 
-            TempTransform targetTransform = GetTargetTransform(snap);
-            ownSocket.Module.transform.position = targetTransform.position;
-            ownSocket.Module.transform.rotation = targetTransform.rotation;
+            currentSnap = snap;
+            targetTransform = snap.GetTargetTransform(SnapPosition, SnapRotationForward, SnapRotationUp);
+
+            snap.SocketA.Module.transform.position = targetTransform.position;
+            snap.SocketA.Module.transform.rotation = targetTransform.rotation;
 
             if (OnSnapEnd != null)
             {
-                OnSnapEnd(new Snap(ownSocket, otherSocket));
-            }
-        }
-
-        private TempTransform GetTargetTransform(Snap snap)
-        {
-            Socket ownSocket = snap.SocketA;
-            Socket otherSocket = snap.SocketB;
-
-            Vector3 originalPosition = ownSocket.Module.transform.position;
-            Quaternion originalRotation = ownSocket.Module.transform.rotation;
-
-            RotateToOtherSocket(ownSocket, otherSocket);
-            MoveToOtherSocket(ownSocket, otherSocket);
-
-            TempTransform tempTranform = new TempTransform();
-            tempTranform.position = ownSocket.Module.transform.position;
-            tempTranform.rotation = ownSocket.Module.transform.rotation;
-
-            ownSocket.Module.transform.position = originalPosition;
-            ownSocket.Module.transform.rotation = originalRotation;
-
-            return tempTranform;
-        }
-
-        private void RotateToOtherSocket(Socket ownSocket, Socket otherSocket)
-        {
-            if (SnapRotationForward)
-            {
-                Quaternion forwardRot = Quaternion.FromToRotation(
-                    ownSocket.transform.forward,
-                    -otherSocket.transform.forward
-                );
-
-                ownSocket.Module.transform.rotation = forwardRot * ownSocket.Module.transform.rotation;
+                OnSnapEnd(currentSnap);
             }
 
-            if (SnapRotationUp)
-            {
-                Quaternion upRot = Quaternion.FromToRotation(
-                    ownSocket.transform.up,
-                    -otherSocket.transform.up
-                );
-
-                ownSocket.Module.transform.rotation = upRot * ownSocket.Module.transform.rotation;
-            }
-        }
-
-        private void MoveToOtherSocket(Socket ownSocket, Socket otherSocket)
-        {
-            if (SnapPosition)
-            {
-                Vector3 ownSocketPosition = ownSocket.transform.localPosition;
-                ownSocketPosition = ownSocket.Module.transform.rotation * ownSocketPosition;
-                ownSocket.Module.transform.position = otherSocket.transform.position - ownSocketPosition;
-            }
+            currentSnap = null;
+            targetTransform = null;
         }
 
         public void StopSnapping()

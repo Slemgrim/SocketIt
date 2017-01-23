@@ -449,6 +449,7 @@ namespace SocketIt
                     SetOrigin(null);
                 }
             }
+
             modules.Clear();
 
             if(OnCompositionEmpty != null)
