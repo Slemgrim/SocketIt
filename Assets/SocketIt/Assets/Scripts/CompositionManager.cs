@@ -30,6 +30,29 @@ namespace SocketIt
             }
         }
 
+        public Composition CreateComposition()
+        {
+            if (compositionPrefab == null)
+            {
+                return null;
+            }
+
+            Composition composition = Instantiate(compositionPrefab).GetComponent<Composition>();
+
+            composition.OnCompositionEmpty.AddListener(RemoveEmptyCompositions);
+
+            return composition;
+        }
+
+        private void RemoveEmptyCompositions(Composition composition)
+        {
+            if (destroyEmptyCompositions)
+            {
+                composition.OnCompositionEmpty.RemoveListener(RemoveEmptyCompositions);
+                Destroy(composition.gameObject);
+            }
+        }
+
         void OnApplicationQuit()
         {
             instance = null;

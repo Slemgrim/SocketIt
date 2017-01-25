@@ -359,7 +359,7 @@ namespace SocketIt
             Composition composition = null;
             if (manager.compositionPrefab != null)
             {
-                 composition = Instantiate(manager.compositionPrefab).GetComponent<Composition>();
+                composition = manager.CreateComposition();
             }
 
             if (composition == null)
