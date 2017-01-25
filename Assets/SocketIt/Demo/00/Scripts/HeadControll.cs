@@ -5,20 +5,12 @@ using System;
 namespace SocketIt.Example00
 { 
     public class HeadControll : MonoBehaviour {
-
-        public Module Module;
-
         public Material activeMaterial;
         public Material inactiveMaterial;
 
         public Composition Composition;
 
-	    void Awake() {
-            Module = GetComponent<Module>();
-            Module.OnCompositionChanged += OnCompositonChanged;
-        }
-
-        private void OnCompositonChanged(Composition composition)
+        public void OnCompositonChanged(Composition composition)
         {
             if(Composition != null)
             {

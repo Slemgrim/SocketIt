@@ -20,13 +20,14 @@ namespace SocketIt
         public class SnapEvent : UnityEvent<Snap> { }
         public SnapEvent OnSnap;
 
-        public delegate void ModuleEvent(Connection connection);
+        [System.Serializable]
+        public class ModuleEvent : UnityEvent<Connection> { }
+        public ModuleEvent OnModuleConnected;
+        public ModuleEvent OnModuleDisconnected; 
 
-        public event ModuleEvent OnModuleConnected;
-        public event ModuleEvent OnModuleDisconnected;
-
-        public delegate void CompositionEvent(Composition composition);
-        public event CompositionEvent OnCompositionChanged;
+        [System.Serializable]
+        public class CompositionEvent : UnityEvent<Composition> { }
+        public CompositionEvent OnCompositionChanged;
 
         public void SetComposition(Composition composition)
         {
@@ -49,10 +50,7 @@ namespace SocketIt
                 Composition.OnConnectionRemoved += CompositionConnectionRemoved;
             }
 
-            if (OnCompositionChanged != null)
-            {
-                OnCompositionChanged(composition);
-            }
+            OnCompositionChanged.Invoke(composition);
         }
 
         private void CompositionConnectionAdded(Connection connection)
@@ -62,10 +60,7 @@ namespace SocketIt
                 return;
             }
 
-            if (OnModuleConnected != null)
-            {
-                OnModuleConnected(connection);
-            }
+            OnModuleConnected.Invoke(connection);  
         }
 
         private void CompositionConnectionRemoved(Connection connection)
@@ -75,10 +70,7 @@ namespace SocketIt
                 return;
             }
 
-            if (OnModuleDisconnected != null)
-            {
-                OnModuleDisconnected(connection);
-            }
+            OnModuleDisconnected.Invoke(connection);
         }
 
         public Socket GetConnectedSocket(Socket socket)

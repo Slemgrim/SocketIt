@@ -16,9 +16,6 @@ namespace SocketIt.Example00
         {
             Module = GetComponent<Module>();
             mouseControll.OnDropOff += OnDrop;
-            Module.OnModuleConnected += OnConnect;
-            Module.OnModuleDisconnected += OnDisconnect;
-
             mouseControll.OnPickUp += OnPickUp;
         }
 
@@ -44,7 +41,7 @@ namespace SocketIt.Example00
             follower.transform.SetParent(null);
         }
 
-        private void OnConnect(Connection connection)
+        public void OnConnect(Connection connection)
         {
             if (connection.Connectee.Module != Module)
             {
@@ -60,7 +57,7 @@ namespace SocketIt.Example00
             
         }
 
-        private void OnDisconnect(Connection connection)
+        public void OnDisconnect(Connection connection)
         {
             List<CharacterJoint> joints = new List<CharacterJoint>(GetComponents<CharacterJoint>());
 

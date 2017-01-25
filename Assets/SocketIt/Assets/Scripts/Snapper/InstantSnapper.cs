@@ -5,7 +5,6 @@ using UnityEngine.Events;
 
 namespace SocketIt {
     [DisallowMultipleComponent]
-    [RequireComponent(typeof(Module))]
     [AddComponentMenu("SocketIt/Snapper/Instant Snapper")]
     public class InstantSnapper : MonoBehaviour
 	{
