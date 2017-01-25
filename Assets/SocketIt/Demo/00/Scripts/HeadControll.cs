@@ -14,14 +14,14 @@ namespace SocketIt.Example00
         {
             if(Composition != null)
             {
-                Composition.OnModuleAdded -= OnModuleConnect;
-                Composition.OnModuleRemoved -= OnModuleDisconnect;
+                Composition.OnModuleAdded.RemoveListener(OnModuleConnect);
+                Composition.OnModuleRemoved.RemoveListener(OnModuleDisconnect);
             }
 
             if (composition != null)
             {
-                composition.OnModuleAdded += OnModuleConnect;
-                composition.OnModuleRemoved += OnModuleDisconnect;
+                composition.OnModuleAdded.AddListener(OnModuleConnect);
+                composition.OnModuleRemoved.AddListener(OnModuleDisconnect);
             } 
 
             Composition = composition;

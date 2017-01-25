@@ -38,16 +38,16 @@ namespace SocketIt
 
             if(Composition != null)
             {
-                Composition.OnConnectionAdded -= CompositionConnectionAdded;
-                Composition.OnConnectionRemoved -= CompositionConnectionRemoved;
+                Composition.OnConnectionAdded.RemoveListener(CompositionConnectionAdded);
+                Composition.OnConnectionRemoved.RemoveListener(CompositionConnectionRemoved);
             }
 
             Composition = composition;
 
             if (Composition != null)
             {
-                Composition.OnConnectionAdded += CompositionConnectionAdded;
-                Composition.OnConnectionRemoved += CompositionConnectionRemoved;
+                Composition.OnConnectionAdded.AddListener(CompositionConnectionAdded);
+                Composition.OnConnectionRemoved.AddListener(CompositionConnectionRemoved);
             }
 
             OnCompositionChanged.Invoke(composition);

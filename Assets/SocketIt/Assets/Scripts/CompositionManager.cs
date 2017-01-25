@@ -34,18 +34,5 @@ namespace SocketIt
         {
             instance = null;
         }
-
-        void Awake()
-        {
-            Composition.OnCompositionEmpty += OnCompositionEmpty;
-        }
-
-        private void OnCompositionEmpty(Composition composition)
-        {
-            if(destroyEmptyCompositions && composition.Modules.Count == 0)
-            {
-                Destroy(composition.gameObject);
-            }
-        }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using UnityEngine.Events;
 
 namespace SocketIt
 {
@@ -10,22 +11,23 @@ namespace SocketIt
     {
         public Module Origin = null;
 
-        public delegate void ModuleEvent(Module module);
-        public delegate void ConnectionEvent(Connection module);
-        public delegate void CompositionEvent(Composition composition);
-        public delegate void CompositionModuleEvent(Composition composition, Module module);
-        public delegate void OriginEvent(Module newOrigin, Module oldOrigin);
+        [System.Serializable]
+        public class ModuleEvent : UnityEvent<Module> { }
+        public ModuleEvent OnModuleAdded;
+        public ModuleEvent OnModuleRemoved;
 
-        public event ModuleEvent OnModuleAdded;
-        public event ModuleEvent OnModuleRemoved;
-        public event ConnectionEvent OnConnectionAdded;
-        public event ConnectionEvent OnConnectionRemoved;
-        public event OriginEvent OnOriginChanged;
+        [System.Serializable]
+        public class ConnectionEvent : UnityEvent<Connection> { }
+        public ConnectionEvent OnConnectionAdded;
+        public ConnectionEvent OnConnectionRemoved;
 
-        public static event CompositionEvent OnCompositionCreated;
-        public static event CompositionModuleEvent OnCompositionModuleAdded;
-        public static event CompositionModuleEvent OnCompositionModuleRemoved;
-        public static event CompositionEvent OnCompositionEmpty;
+        [System.Serializable]
+        public class CompositionEvent : UnityEvent<Composition> { }
+        public CompositionEvent OnCompositionEmpty;
+
+        [System.Serializable]
+        public class OriginEvent : UnityEvent<Module, Module> { }
+        public OriginEvent OnOriginChanged;
 
         [SerializeField]
         private List<Module> modules = new List<Module>();
@@ -67,11 +69,8 @@ namespace SocketIt
             connection.Connectee = conectee;
             connections.Add(connection);
 
-            if(OnConnectionAdded != null)
-            {
-                OnConnectionAdded(connection);
-            }
-
+            OnConnectionAdded.Invoke(connection);
+            
             return true;
         }
 
@@ -113,10 +112,7 @@ namespace SocketIt
 
             if (Connections.Count == 0)
             {
-                if (OnCompositionEmpty != null)
-                {
-                    OnCompositionEmpty(this);
-                }
+                OnCompositionEmpty.Invoke(this);
             }
 
             return true;
@@ -136,11 +132,8 @@ namespace SocketIt
 
             this.connections.Remove(connection);
 
-            if (OnConnectionRemoved != null)
-            {
-                OnConnectionRemoved(connection);
-            }
-
+            OnConnectionRemoved.Invoke(connection);
+            
             List<Connection> connections = GetConnections(connection.Connectee.Module);
             if (connections.Count == 0)
             {
@@ -159,15 +152,7 @@ namespace SocketIt
                     module.SetComposition(this);
                 }
 
-                if (OnModuleAdded != null)
-                {
-                    OnModuleAdded(module);
-                }
-
-                if (OnCompositionModuleAdded != null)
-                {
-                    OnCompositionModuleAdded(this, module);
-                }
+                OnModuleAdded.Invoke(module);
             }
         }
 
@@ -186,22 +171,11 @@ namespace SocketIt
                 }
                 modules.Remove(module);
 
-                if (OnModuleRemoved != null)
-                {
-                    OnModuleRemoved(module);
-                }
-
-                if (OnCompositionModuleRemoved != null)
-                {
-                    OnCompositionModuleRemoved(this, module);
-                }
-
+                OnModuleRemoved.Invoke(module);
+               
                 if(modules.Count == 0)
                 {
-                    if (OnCompositionEmpty != null)
-                    {
-                        OnCompositionEmpty(this);
-                    }
+                    OnCompositionEmpty.Invoke(this);
                 }
             }
         }
@@ -401,12 +375,7 @@ namespace SocketIt
 
             composition.SetOrigin(origin);
             composition.AddModule(origin);
-
-            if(OnCompositionCreated != null)
-            {
-                OnCompositionCreated(composition);
-            }
-
+            
             return composition;
         }
 
@@ -420,10 +389,7 @@ namespace SocketIt
             Module oldOrigin = Origin;
             Origin = newOrigin;
 
-            if (OnOriginChanged != null)
-            {
-                OnOriginChanged(newOrigin, oldOrigin);
-            }
+            OnOriginChanged.Invoke(newOrigin, oldOrigin); 
         }
 
         public void OnDestroy()
@@ -452,11 +418,8 @@ namespace SocketIt
 
             modules.Clear();
 
-            if(OnCompositionEmpty != null)
-            {
-                OnCompositionEmpty(this);
-            }
-
+            OnCompositionEmpty.Invoke(this);
+            
             if (!Application.isPlaying)
             {
                 DestroyImmediate(gameObject);
