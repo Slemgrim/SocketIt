@@ -8,15 +8,18 @@ namespace SocketIt.Editor
     [CustomEditor(typeof(Socket))]
     public class SocketInspector : UnityEditor.Editor
     {
-        Socket socketB;
         Socket socketA;
+        Socket socketB;
 
         bool SnapPosition = true;
         bool SnapUp = true;
         bool SnapForward = true;
 
+        public static bool ShowRotationHandle = false;
+
         public override void OnInspectorGUI()
         {
+            HandleUtility.Repaint();
             DrawDefaultInspector();
 
             socketA = (Socket)target;
@@ -24,6 +27,14 @@ namespace SocketIt.Editor
             if(socketA.Module == null)
             {
                 return;
+            }
+
+            EditorGUILayout.Space();
+            bool changedRotationHandle = EditorGUILayout.Toggle("Show Rotation Handle", ShowRotationHandle);
+            if (changedRotationHandle != ShowRotationHandle)
+            {
+                SceneView.RepaintAll();
+                ShowRotationHandle = changedRotationHandle;
             }
 
             if (socketA.IsConnected())
@@ -35,6 +46,40 @@ namespace SocketIt.Editor
             }
 
             SnapField();
+        }
+
+        void OnSceneGUI()
+        {
+            socketA = (Socket)target;
+            if (ShowRotationHandle == false || socketA.Module == null)
+            {
+                return;
+            }
+
+            Quaternion newRoation = Handles.RotationHandle(socketA.transform.rotation, socketA.transform.position);
+            if(newRoation != socketA.transform.rotation)
+            {
+                Undo.RecordObject(socketA.transform, "Rotate by Socket");
+                Undo.RecordObject(socketA.Module.transform, "Rotate by Socket");
+
+                //Save old parents
+                Transform oldSocketParent = socketA.transform.parent;
+                Transform oldModuleParent = socketA.Module.transform.parent;
+
+                //Switch parents old parents
+                socketA.Module.transform.SetParent(null);
+                socketA.transform.SetParent(null);
+                socketA.Module.transform.SetParent(socketA.transform);
+
+                //Apply new rotation to socket. Module follows since it has the socket as parent now
+                socketA.transform.rotation = newRoation;
+
+                //Restore old parents
+                socketA.Module.transform.SetParent(null);
+                socketA.transform.SetParent(null);
+                socketA.transform.SetParent(oldSocketParent);
+                socketA.Module.transform.SetParent(oldModuleParent);
+            }
         }
 
         private void SnapField()
