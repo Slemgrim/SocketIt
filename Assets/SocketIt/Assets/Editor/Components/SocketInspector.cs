@@ -89,11 +89,12 @@ namespace SocketIt.Editor
 
             socketB = (Socket)EditorGUILayout.ObjectField(socketB, typeof(Socket), true);
 
+            EditorGUI.BeginDisabledGroup(socketB == null);
             if (GUILayout.Button("Snap"))
             {
-                Debug.Log("Snap");
                 socketB.Snap(socketA);
             }
+            EditorGUI.EndDisabledGroup();
 
             SnapPosition = EditorGUILayout.Toggle("Position", SnapPosition);
             SnapUp = EditorGUILayout.Toggle("Up", SnapUp);
