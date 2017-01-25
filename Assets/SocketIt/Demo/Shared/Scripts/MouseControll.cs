@@ -13,7 +13,7 @@ namespace SocketIt.Examples
          * Distance betwenn mouse and follower until snapping stops
          */
         public float snapDistance = 1f;
-
+        public delegate void SnapEvent(Snap snap);
         public delegate void MouseEvent(GameObject follower);
         public event MouseEvent OnPickUp;
         public event MouseEvent OnDropOff;
@@ -116,17 +116,12 @@ namespace SocketIt.Examples
                 return;
             }
 
-            ISocketSnapper snapper = clickedObject.GetComponent<ISocketSnapper>();
-
             foreach(Socket socket in module.Sockets)
             {
                 socket.AllowSnapping = true;
             }
 
             follower = clickedObject;
-
-            // Register to the snapper OnSnapEnd delegate so we are able to stop following while snapping
-            snapper.OnSnapEnd += OnSnap;
 
             // Make the clicked object transparent
             MakeTransparent(this.follower);
@@ -170,8 +165,6 @@ namespace SocketIt.Examples
                 return;
             }
 
-            ISocketSnapper snapper = follower.GetComponent<ISocketSnapper>();
-
             foreach (Socket socket in module.Sockets)
             {
                 socket.AllowSnapping = false;
@@ -184,13 +177,12 @@ namespace SocketIt.Examples
 
             //Remove the reference to the follower;
             follower = null;
-            snapper.OnSnapEnd -= OnSnap;
 
             //Reset the isSnapped property to avoid errors with the next followed module
             currentSnap = null;
         }
 
-        private void OnSnap(Snap snap)
+        public void OnSnap(Snap snap)
         {
             //Mark the object as snapped so we can stop moving it around
             currentSnap = snap;

@@ -2,18 +2,12 @@
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace SocketIt {
     [DisallowMultipleComponent]
     [AddComponentMenu("SocketIt/Socket/Socket")]
     public class Socket : MonoBehaviour {
-
-		public delegate void SocketEvent(Socket connector, Socket connectee);
-        public event SocketEvent OnConnect;
-        public event SocketEvent OnDisconnect;
-
-        public delegate void SnapEvent(Snap snap);
-        public event SnapEvent OnSnap;
 
         public bool AllowSnapping = false;
 
@@ -21,6 +15,15 @@ namespace SocketIt {
         public float AngleLimit = 180;
 
         public Module Module;
+
+        [System.Serializable]
+        public class SocketEvent : UnityEvent<Socket, Socket> { }
+        public SocketEvent OnConnect;
+        public SocketEvent OnDisconnect;
+
+        [System.Serializable]
+        public class SnapEvent : UnityEvent<Snap> { }
+        public SnapEvent OnSnap;
 
         public void Awake()
         {
@@ -48,9 +51,9 @@ namespace SocketIt {
 
             bool isConnected = Module.ConnectSocket(this, socket);
 
-            if (isConnected && OnConnect != null)
+            if (isConnected )
             {
-                OnConnect(this, socket);
+                OnConnect.Invoke(this, socket);
             }
         }
 
@@ -78,9 +81,9 @@ namespace SocketIt {
 
             bool isDisconnected = Module.DisconnectSocket(this, socket);
 
-            if (isDisconnected && OnDisconnect != null)
+            if (isDisconnected)
             {
-                OnDisconnect(this, socket);
+                OnDisconnect.Invoke(this, socket);
             }
         }
 
@@ -139,12 +142,8 @@ namespace SocketIt {
             }
 
             Snap snap = new Snap(this, otherSocket);
-
-            if (OnSnap != null)
-            {
-                OnSnap(snap);
-            }
-
+            OnSnap.Invoke(snap);
+        
             Module.SnapSockets(snap);
         }
 

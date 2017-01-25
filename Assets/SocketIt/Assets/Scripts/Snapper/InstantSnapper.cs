@@ -1,16 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using UnityEngine.Events;
 
 namespace SocketIt {
     [DisallowMultipleComponent]
     [RequireComponent(typeof(Module))]
     [AddComponentMenu("SocketIt/Snapper/Instant Snapper")]
-    public class InstantSnapper : MonoBehaviour, ISocketSnapper
+    public class InstantSnapper : MonoBehaviour
 	{
-		public event SnapEvent OnSnapStart;
-		public event SnapEvent OnSnapEnd;
-
         /**
 		 * Does this Socket snap its Position to the other Socket;
 		 */
@@ -26,42 +24,22 @@ namespace SocketIt {
 		 */
         public bool SnapRotationUp = true;
 
-        private Snap currentSnap = null;
-
-        private Module module;
-
-        private SnapTransform targetTransform = null;
-
-        public void Start()
-        {
-            module = GetComponent<Module>();
-
-            if(module == null)
-            {
-                throw new SnapperException("Snapper needs a snap module attached");
-            }
-
-            module.OnSnap += StartSnapping;
-        }
+        [System.Serializable]
+        public class SnapEvent : UnityEvent<Snap> { }
+        public SnapEvent OnSnapStart;
+        public SnapEvent OnSnapEnd;
 
         public void StartSnapping(Snap snap)
         {
+            OnSnapStart.Invoke(new Snap(snap.SocketA, snap.SocketB));
 
-            if (OnSnapStart != null)
-            {
-                OnSnapStart(new Snap(snap.SocketA, snap.SocketB));
-            }
-
-            currentSnap = snap;
-            targetTransform = snap.GetTargetTransform(SnapPosition, SnapRotationForward, SnapRotationUp);
+            Snap currentSnap = snap;
+            SnapTransform targetTransform = snap.GetTargetTransform(SnapPosition, SnapRotationForward, SnapRotationUp);
 
             snap.SocketA.Module.transform.position = targetTransform.position;
             snap.SocketA.Module.transform.rotation = targetTransform.rotation;
 
-            if (OnSnapEnd != null)
-            {
-                OnSnapEnd(currentSnap);
-            }
+            OnSnapEnd.Invoke(currentSnap);
 
             currentSnap = null;
             targetTransform = null;

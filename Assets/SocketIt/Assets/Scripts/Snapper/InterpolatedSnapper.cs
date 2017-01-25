@@ -7,8 +7,9 @@ namespace SocketIt
     [DisallowMultipleComponent]
     [RequireComponent(typeof(Module))]
     [AddComponentMenu("SocketIt/Snapper/Interpolated Snapper")]
-    public class InterpolatedSnapper : MonoBehaviour, ISocketSnapper
+    public class InterpolatedSnapper : MonoBehaviour
     {
+        public delegate void SnapEvent(Snap snap);
         public event SnapEvent OnSnapStart;
         public event SnapEvent OnSnapEnd;
 
@@ -35,22 +36,8 @@ namespace SocketIt
         private float Progress = 0;
         private Snap currentSnap = null;
 
-        private Module module;
-
         private SnapTransform targetTransform = null;
         private SnapTransform startTransform = null;
-
-        public void Start()
-        {
-            module = GetComponent<Module>();
-
-            if (module == null)
-            {
-                throw new SnapperException("Snapper needs a snap module attached");
-            }
-
-            module.OnSnap += StartSnapping;
-        }
 
         public void StartSnapping(Snap snap)
         {

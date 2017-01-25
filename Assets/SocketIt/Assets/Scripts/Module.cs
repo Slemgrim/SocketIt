@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System;
+using UnityEngine.Events;
 
 namespace SocketIt
 {
@@ -8,6 +9,17 @@ namespace SocketIt
     [AddComponentMenu("SocketIt/Module/Module")]
     public class Module : MonoBehaviour
     {
+        public List<Socket> Sockets = new List<Socket>();
+
+        [HideInInspector]
+        public Composition Composition = null;
+
+        public List<ISnapValidator> SnapValidators;
+
+        [System.Serializable]
+        public class SnapEvent : UnityEvent<Snap> { }
+        public SnapEvent OnSnap;
+
         public delegate void ModuleEvent(Connection connection);
 
         public event ModuleEvent OnModuleConnected;
@@ -15,16 +27,6 @@ namespace SocketIt
 
         public delegate void CompositionEvent(Composition composition);
         public event CompositionEvent OnCompositionChanged;
-
-        public delegate void SnapEvent(Snap snap);
-        public event SnapEvent OnSnap;
-
-        public List<Socket> Sockets = new List<Socket>();
-
-        [HideInInspector]
-        public Composition Composition = null;
-
-        public List<ISnapValidator> SnapValidators;
 
         public void SetComposition(Composition composition)
         {
@@ -160,10 +162,7 @@ namespace SocketIt
                 return;
             }
 
-            if (OnSnap != null)
-            {
-                OnSnap(snap);
-            }
+            OnSnap.Invoke(snap);
         }
 
         private bool validateSnap(Snap snap)

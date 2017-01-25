@@ -20,6 +20,11 @@ namespace SocketIt.Editor
         [MenuItem("SocketIt/Connect %&c", true)]
         static bool ValidateConnect()
         {
+            if (Selection.activeGameObject == null || Selection.gameObjects.Length != 2)
+            {
+                return false;
+            }
+
             Socket activeSocket = GetActiveSocket();
             Socket secondSocket = GetSecondSocket();
 
@@ -102,6 +107,29 @@ namespace SocketIt.Editor
                     Disconnect(connection.Connector, connection.Connectee);
                 }
             }
+        }
+
+        [MenuItem("SocketIt/Disconnect %&x", true)]
+        static bool ValidateDisconnect()
+        {
+            if (Selection.activeGameObject == null)
+            {
+                return false;
+            }
+
+            Socket activeSocket = GetActiveSocket();
+
+            if (activeSocket == null)
+            {
+                return false;
+            }
+
+            if(activeSocket.IsConnected() == false)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         private static void Disconnect(Socket activeSocket, Socket secondSocket)

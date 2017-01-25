@@ -9,11 +9,12 @@ namespace SocketIt.Editor
     public class SocketInspector : UnityEditor.Editor
     {
         Socket socketA;
-        Socket socketB;
+        static Socket snapSocketB;
+        static Socket connectSocketB;
 
-        bool SnapPosition = true;
-        bool SnapUp = true;
-        bool SnapForward = true;
+        static bool SnapPosition = true;
+        static bool SnapUp = true;
+        static bool SnapForward = true;
 
         public static bool ShowRotationHandle = false;
 
@@ -59,8 +60,7 @@ namespace SocketIt.Editor
             Quaternion newRoation = Handles.RotationHandle(socketA.transform.rotation, socketA.transform.position);
             if(newRoation != socketA.transform.rotation)
             {
-                Undo.RecordObject(socketA.transform, "Rotate by Socket");
-                Undo.RecordObject(socketA.Module.transform, "Rotate by Socket");
+                RecordModules();
 
                 //Save old parents
                 Transform oldSocketParent = socketA.transform.parent;
@@ -87,12 +87,13 @@ namespace SocketIt.Editor
             EditorGUILayout.BeginVertical("box");
             EditorGUILayout.LabelField("Snap To Socket");
 
-            socketB = (Socket)EditorGUILayout.ObjectField(socketB, typeof(Socket), true);
+            snapSocketB = (Socket)EditorGUILayout.ObjectField(snapSocketB, typeof(Socket), true);
 
-            EditorGUI.BeginDisabledGroup(socketB == null);
+            EditorGUI.BeginDisabledGroup(snapSocketB == null);
             if (GUILayout.Button("Snap"))
             {
-                socketB.Snap(socketA);
+                Snap snap = new Snap(socketA, snapSocketB);
+                Snap(snap);
             }
             EditorGUI.EndDisabledGroup();
 
@@ -103,23 +104,24 @@ namespace SocketIt.Editor
             EditorGUILayout.EndVertical();
         }
 
+
         public void Connect()
         {
             EditorGUILayout.BeginVertical("box");
             EditorGUILayout.LabelField("Connect to Socket");
             EditorGUILayout.BeginHorizontal();
 
-            socketB = (Socket)EditorGUILayout.ObjectField(socketB, typeof(Socket), true);
+            connectSocketB = (Socket)EditorGUILayout.ObjectField(connectSocketB, typeof(Socket), true);
 
             EditorGUILayout.EndHorizontal();
-            EditorGUI.BeginDisabledGroup(socketA == false || socketB == false || !socketA.Module.Sockets.Contains(socketA) || socketA.Module.Sockets.Contains(socketB));
+            EditorGUI.BeginDisabledGroup(socketA == false || connectSocketB == false || !socketA.Module.Sockets.Contains(socketA) || socketA.Module.Sockets.Contains(connectSocketB));
             if (GUILayout.Button("Connect"))
             {
                 RecordModules();
-                socketB.Connect(socketA);
+                connectSocketB.Connect(socketA);
         
                 socketA = null;
-                socketB = null;
+                connectSocketB = null;
             }
 
             EditorGUI.EndDisabledGroup();
@@ -136,6 +138,14 @@ namespace SocketIt.Editor
             }
         }
 
+        private void Snap(Snap snap)
+        {
+            RecordModules();
+            SnapTransform target = snap.GetTargetTransform(SnapPosition, SnapForward, SnapUp);
+            snap.SocketA.Module.transform.position = target.position;
+            snap.SocketA.Module.transform.rotation = target.rotation;
+        }
+
         private void RecordModules()
         {
             if (socketA != null && socketA.Module != null)
@@ -143,9 +153,14 @@ namespace SocketIt.Editor
                 Undo.RecordObject(socketA.Module, "Connect");
             }
 
-            if (socketB != null && socketB.Module != null)
+            if (snapSocketB != null && snapSocketB.Module != null)
             {
-                Undo.RecordObject(socketB.Module, "Connect");
+                Undo.RecordObject(snapSocketB.Module, "Snap");
+            }
+
+            if (connectSocketB != null && connectSocketB.Module != null)
+            {
+                Undo.RecordObject(connectSocketB.Module, "Connect");
             }
         }
     }
