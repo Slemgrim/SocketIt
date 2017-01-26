@@ -27,12 +27,18 @@ namespace SocketIt.Example00
             Composition = composition;
         }
 
+		public void Start(){
+			Composition = GetComponent<Module> ().Composition;
+			ActivateAll ();
+		}	
+
         private void ActivateAll()
         {
-           if(Composition == null)
+            if(Composition == null)
             {
                 return;
             }
+
 
             foreach (Module module in Composition.Modules)
             {
