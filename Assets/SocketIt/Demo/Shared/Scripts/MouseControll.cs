@@ -20,6 +20,10 @@ namespace SocketIt.Examples
         public event SnapEvent OnSnapStart;
         public event SnapEvent OnSnapEnd;
 
+        public bool lockX = false;
+        public bool lockY = false;
+        public bool lockZ = false;
+
         private bool isEnabled = true;
 
         /*
@@ -94,6 +98,22 @@ namespace SocketIt.Examples
             Vector3 pos = Input.mousePosition;
             pos.z = mouseDistance;
             pos = Camera.main.ScreenToWorldPoint(pos);
+
+            if (lockX)
+            {
+                pos.x = 0;
+            }
+
+            if (lockY)
+            {
+                pos.y = 0;
+            }
+
+            if (lockZ)
+            {
+                pos.z = 0;
+            }
+
             return pos;
         }
 
@@ -110,13 +130,13 @@ namespace SocketIt.Examples
             }
 
             Module module = clickedObject.GetComponent<Module>();
-
+  
             if(module == null)
             {
                 return;
             }
 
-            foreach(Socket socket in module.Sockets)
+            foreach (Socket socket in module.Sockets)
             {
                 socket.AllowSnapping = true;
             }

@@ -30,9 +30,11 @@ namespace SocketIt
         public OriginEvent OnOriginChanged;
 
         [SerializeField]
+        [HideInInspector]
         private List<Module> modules = new List<Module>();
 
         [SerializeField]
+        [HideInInspector]
         private List<Connection> connections = new List<Connection>();
 
         public List<Module> Modules
@@ -178,6 +180,18 @@ namespace SocketIt
                     OnCompositionEmpty.Invoke(this);
                 }
             }
+        }
+
+        void Awake()
+        {
+            Module module = GetComponent<Module>();
+            if (module == null)
+            {
+                return;
+            }
+
+            SetOrigin(module);
+            AddModule(module);
         }
 
         void OnDrawGizmos()
@@ -357,16 +371,7 @@ namespace SocketIt
         {
             CompositionManager manager = CompositionManager.Instance;
             Composition composition = null;
-            if (manager.compositionPrefab != null)
-            {
-                composition = manager.CreateComposition();
-            }
-
-            if (composition == null)
-            {
-                GameObject go = new GameObject("Composition");
-                composition = go.AddComponent<Composition>();
-            }
+            composition = manager.CreateComposition();
 
             if (manager.compositionPrefab == null)
             {
@@ -389,7 +394,7 @@ namespace SocketIt
             Module oldOrigin = Origin;
             Origin = newOrigin;
 
-            OnOriginChanged.Invoke(newOrigin, oldOrigin); 
+            OnOriginChanged.Invoke(newOrigin, oldOrigin);
         }
 
         public void OnDestroy()

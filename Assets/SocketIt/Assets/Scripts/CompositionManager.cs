@@ -22,7 +22,7 @@ namespace SocketIt
 
                 if (instance == null)
                 {
-                    GameObject obj = new GameObject("CompositionController");
+                    GameObject obj = new GameObject("CompositionManager");
                     instance = obj.AddComponent(typeof(CompositionManager)) as CompositionManager;
                 }
 
@@ -34,7 +34,7 @@ namespace SocketIt
         {
             if (compositionPrefab == null)
             {
-                return null;
+                throw new SocketItException("Composition manager has no composition prefab");
             }
 
             Composition composition = Instantiate(compositionPrefab).GetComponent<Composition>();

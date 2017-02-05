@@ -61,7 +61,9 @@ namespace SocketIt.Editor
             if(newRoation != socketA.transform.rotation)
             {
                 RecordModules();
-
+             
+                Undo.RecordObject(socketA.Module.transform, "Connect");
+            
                 //Save old parents
                 Transform oldSocketParent = socketA.transform.parent;
                 Transform oldModuleParent = socketA.Module.transform.parent;

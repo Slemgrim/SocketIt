@@ -12,6 +12,8 @@ namespace SocketIt.Editor
 
         public override void OnInspectorGUI()
         {
+            DrawDefaultInspector();
+
             composition = (Composition)target;
             if (composition.Modules == null)
             {
