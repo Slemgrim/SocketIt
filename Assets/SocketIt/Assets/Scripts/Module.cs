@@ -14,7 +14,7 @@ namespace SocketIt
         [HideInInspector]
         public Composition Composition = null;
 
-        public List<ISnapValidator> SnapValidators;
+        public List<ISnapValidator> SnapValidators = new List<ISnapValidator>();
 
         [System.Serializable]
         public class SnapEvent : UnityEvent<Snap> { }
@@ -53,26 +53,6 @@ namespace SocketIt
             OnCompositionChanged.Invoke(composition);
         }
 
-        private void CompositionConnectionAdded(Connection connection)
-        {
-            if (connection.Connector.Module != this && connection.Connectee.Module != this)
-            {
-                return;
-            }
-
-            OnModuleConnected.Invoke(connection);  
-        }
-
-        private void CompositionConnectionRemoved(Connection connection)
-        {
-            if (connection.Connector.Module != this && connection.Connectee.Module != this)
-            {
-                return;
-            }
-
-            OnModuleDisconnected.Invoke(connection);
-        }
-
         public Socket GetConnectedSocket(Socket socket)
         {
             if (Composition == null)
@@ -80,7 +60,7 @@ namespace SocketIt
                 return null;
             }
             Connection connection = Composition.GetConnection(socket);
-            if(connection != null)
+            if (connection != null)
             {
                 return socket == connection.Connector ? connection.Connectee : connection.Connector;
             }
@@ -101,15 +81,10 @@ namespace SocketIt
         public void Reset()
         {
             Sockets = new List<Socket>(GetComponentsInChildren<Socket>());
-            foreach(Socket socket in Sockets)
+            foreach (Socket socket in Sockets)
             {
                 socket.Module = this;
             }
-        }
-
-        public void Awake()
-        {
-            SnapValidators = new List<ISnapValidator>(GetComponents<ISnapValidator>());
         }
 
         public bool ConnectSocket(Socket connector, Socket connectee)
@@ -125,7 +100,11 @@ namespace SocketIt
 
         public void DisconnectAll()
         {
-
+            List<Module> connectedModules = Composition.GetConnectedModules(this);
+            foreach(Module module in connectedModules)
+            {
+                Composition.DisconnectModules(this, module);
+            }
         }
 
         public void DisconnectModule(Module module)
@@ -144,7 +123,7 @@ namespace SocketIt
          */
         public void RemoveSocket(Socket socketToRemove)
         {
-           
+
         }
 
         public void SnapSockets(Snap snap)
@@ -155,6 +134,26 @@ namespace SocketIt
             }
 
             OnSnap.Invoke(snap);
+        }
+
+        private void CompositionConnectionAdded(Connection connection)
+        {
+            if (connection.Connector.Module != this && connection.Connectee.Module != this)
+            {
+                return;
+            }
+
+            OnModuleConnected.Invoke(connection);  
+        }
+
+        private void CompositionConnectionRemoved(Connection connection)
+        {
+            if (connection.Connector.Module != this && connection.Connectee.Module != this)
+            {
+                return;
+            }
+
+            OnModuleDisconnected.Invoke(connection);
         }
 
         private bool validateSnap(Snap snap)

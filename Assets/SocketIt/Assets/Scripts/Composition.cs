@@ -11,6 +11,9 @@ namespace SocketIt
     {
         public Module Origin = null;
 
+        public List<IConnectValidator> ConnectValidators = new List<IConnectValidator>();
+        public List<IDisconnectValidator> DisconnectValidators = new List<IDisconnectValidator>();
+
         [System.Serializable]
         public class ModuleEvent : UnityEvent<Module> { }
         public ModuleEvent OnModuleAdded;
@@ -53,22 +56,30 @@ namespace SocketIt
             }
         }
 
-        public bool Connect(Socket connector, Socket conectee)
+        public bool Connect(Socket connector, Socket connectee)
         {
-            Module module = conectee.Module;
+            foreach (IConnectValidator validator in ConnectValidators)
+            {
+                if(validator.Validate(connector, connectee) == false)
+                {
+                    return false;
+                }
+            }
+
+            Module module = connectee.Module;
             if (!modules.Contains(module))
             {
                 AddModule(module);
             }
 
-            if (GetConnection(connector, conectee) != null)
+            if (GetConnection(connector, connectee) != null)
             {
                 return false;
             }
 
             Connection connection = new Connection();
             connection.Connector = connector;
-            connection.Connectee = conectee;
+            connection.Connectee = connectee;
             connections.Add(connection);
 
             OnConnectionAdded.Invoke(connection);
@@ -81,11 +92,19 @@ namespace SocketIt
             return Connect(connection.Connector, connection.Connectee);
         }
 
-        public bool Disconnect(Socket connector, Socket conectee)
+        public bool Disconnect(Socket connector, Socket connectee)
         {
-            Module module = conectee.Module;
+            foreach (IDisconnectValidator validator in DisconnectValidators)
+            {
+                if (validator.Validate(connector, connectee) == false)
+                {
+                    return false;
+                }
+            }
 
-            Connection connection = GetConnection(connector.Module, conectee.Module);
+            Module module = connectee.Module;
+
+            Connection connection = GetConnection(connector.Module, connectee.Module);
             if (connection == null)
             {
                 return false;
@@ -93,7 +112,7 @@ namespace SocketIt
 
             RemoveConnection(connection);
 
-            List<Module> connectedModules = GetConnectedModulesRecursive(conectee.Module);
+            List<Module> connectedModules = GetConnectedModulesRecursive(connectee.Module);
 
             if (connectedModules.Count >= 2 && !IsConnected(module, connectedModules))
             {
@@ -258,6 +277,24 @@ namespace SocketIt
         {
             Connection connection = GetConnection(module1, module2);
             Disconnect(connection.Connector, connection.Connectee);
+        }
+
+        public List<Module> GetConnectedModules(Module module)
+        {
+            List<Module> modules = new List<Module>();
+
+            foreach(Connection connection in connections)
+            {
+                if(connection.Connectee.Module == this && !modules.Contains(connection.Connector.Module))
+                {
+                    modules.Add(connection.Connector.Module);
+                }
+                else if (connection.Connector.Module == this && !modules.Contains(connection.Connectee.Module))
+                {
+                    modules.Add(connection.Connectee.Module);
+                }
+            }
+            return modules;
         }
 
         public List<Connection> GetConnections(Module module)

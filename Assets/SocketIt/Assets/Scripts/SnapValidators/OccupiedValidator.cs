@@ -3,6 +3,10 @@ using System.Collections;
 using System;
 
 namespace SocketIt {
+
+    /**
+     * Snap only to sockets that are not part of an existing connection
+     */
     [RequireComponent(typeof(Module))]
     [AddComponentMenu("SocketIt/Snap Validators/Occupied Validator")]
     public class OccupiedValidator : MonoBehaviour, ISnapValidator
