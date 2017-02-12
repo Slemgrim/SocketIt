@@ -4,11 +4,25 @@ using System.Collections.Generic;
 
 namespace SocketIt
 {
+    /// <summary>
+    /// Handles all editor gizmos for SocketIt
+    /// </summary>
     public class SocketItGizmo
     {
+        /// <summary>
+        /// Color for gizmos representing connections between two sockets
+        /// </summary>
         private static Color ConnectionColor = Color.green;
+
+        /// <summary>
+        /// Color for gizmos representing connections between two modules
+        /// </summary>
         private static Color CompositionColor = Color.red;
 
+        /// <summary>
+        /// Draws gizmos for a connection between two sockets
+        /// </summary>
+        /// <param name="connection">Draw gizmo for this connection</param>
         public static void DrawConnection(Connection connection)
         {
             Color color = ConnectionColor;
@@ -33,6 +47,11 @@ namespace SocketIt
             Handles.DrawWireDisc(connection.Connectee.transform.position, Camera.current.transform.forward, .1f);
         }
 
+        /// <summary>
+        /// Draw a gizmo representing the snapping angle of a socket. Sockets with an angle of 360 won't draw a gizmo
+        /// </summary>
+        /// <param name="socket">target socket</param>
+        /// <param name="angle">angle of the socket</param>
         public static void DrawSocketAngle(Socket socket, float angle)
         {
             if(angle == 180)
@@ -53,6 +72,10 @@ namespace SocketIt
         }
 
 
+        /// <summary>
+        /// Draws gizmos for all connections and modules inside of a composition
+        /// </summary>
+        /// <param name="composition"></param>
         public static void DrawComposition(Composition composition)
         {
             if (composition.Origin == null) {
