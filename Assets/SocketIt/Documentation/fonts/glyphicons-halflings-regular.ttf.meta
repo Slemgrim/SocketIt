@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: f6938a2421706164a8b3c41d51b5b952
+timeCreated: 1507456620
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: GLYPHICONS Halflings
+  fontNames:
+  - GLYPHICONS Halflings
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
