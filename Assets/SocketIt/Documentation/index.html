@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,148 +13,247 @@
 
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="starter-template.css" rel="stylesheet">
-  </head>
-  <body>
+</head>
+<body>
 
-  <div class="container">
-     <div class="jumbotron">
-      <h1>SocketIt v1.0</h1>
-      <p class="lead">the connection library</p>
+<div class="container">
+    <div class="jumbotron">
+        <h1>SocketIt v1.0</h1>
+        <p class="lead">the connection library</p>
     </div>
 
     <div class="row marketing">
 
-      <div class="col-md-4">
-        <ul class="list-unstyled">
-          <li><a href="#preface">Preface</a></li>
-          <li><a href="#preface">Installation</a></li>
-          <li><a href="#preface">Components</a>
-            <ul>
-              <li><a href="#preface">Module</a></li>
-              <li><a href="#preface">Socket</a></li>
+        <div class="col-md-4">
+            <ul class="list-unstyled">
+                <li><a href="#preface">Preface</a></li>
+                <li><a href="#preface">Installation</a></li>
+                <li><a href="#preface">Components</a>
+                    <ul>
+                        <li><a href="#preface">Module</a></li>
+                        <li><a href="#preface">Socket</a></li>
+
+                    </ul>
+                </li>
 
             </ul>
-          </li>
-
-        </ul>
-      </div>
+        </div>
 
 
-      <div class="col-md-8">
-        <h2 id="preface">Preface</h2>
-        <p class="lead">Thank you for buying SocketIt - the connection library. SocketIt helps you to connect and
-          group things together by providing premade components. You can use it to connect structures
-          like LEGO blocks, body limbs, car parts or parts of buildings. It’s also helpful for creating slotted interfaces
-          with snapping points or just to connect GameObjects virtually together so that they are able
-          to communicate with each other.</p>
+        <div class="col-md-8">
+            <h2 id="preface">Preface</h2>
+            <p class="lead">Thank you for buying SocketIt - the connection library. SocketIt helps you to connect and
+                group things together by providing premade components. You can use it to connect structures
+                like LEGO blocks, body limbs, car parts or parts of buildings. It’s also helpful for creating slotted
+                interfaces
+                with snapping points or just to connect GameObjects virtually together so that they are able
+                to communicate with each other.</p>
 
-        <h4>Components</h4>
+            <h4>Components</h4>
 
-        <p class="">SocketIt is split into multiple drop-In components and can be configured to your needs. It makes
-        heavy use of the Unity event system and is easily extendable</p>
+            <p class="">SocketIt is split into multiple drop-In components and can be configured to your needs. It makes
+                heavy use of the Unity event system and is easily extendable. You can inject your code in almost every
+                situation</p>
 
-        <h4>Editor</h4>
+            <h4>Editor</h4>
 
-        <p class="">SocketIt is fully integrated into the Unity editor with custom windows, shortcuts and gizmos.
-        Every feature is usable ingame and inside the editor.</p>
+            <p class="">SocketIt is fully integrated into the Unity editor with custom windows, shortcuts and gizmos.
+                Every feature is usable ingame and inside the editor.</p>
 
-        <h4>State</h4>
+            <h4>State</h4>
 
-        <p class="">All properties are public without any hidden state. You can access, manipualte and serialize them.
-        </p>
+            <p class="">All properties are public without any hidden state. You can access, manipualte and serialize
+                them.
+            </p>
 
-        <div class="alert alert-warning" role="alert">Be aware that SocketIt is not a “finished game”.
-          You will have to write code so that it integrates into your game. </div>
+            <div class="alert alert-warning" role="alert">Be aware that SocketIt is not a “finished game”.
+                You will have to write code so that it integrates into your game.
+            </div>
 
-        <h2 id="installation">Installation</h2>
-        <p class="">Copy the Editor folder from /SocketIt/Assets/Editor into your applications root directory.
-          This step is neccessary for Unity to activate the editor features.
-        </p>
+            <h2 id="installation">Installation</h2>
+            <p class="">Copy the Editor folder from /SocketIt/Assets/Editor into your applications root directory.
+                This step is neccessary for Unity to activate the editor features.
+            </p>
 
-        <h2 id="concept">Concept</h2>
-        <p class="">
-          In SocketIt modules can be connected with their sockets. A module can have multiple sockets. Imagine a LEGO brick.
-          You can connect the brick in various combinations but always limited to the nobs and holes of the brick. A socket in
-          SocketIt represents both the knobs and holes.
-        </p>
-        <p>[img gif of sockets]
-        </p>
+            <h2 id="concept">Concept</h2>
+            <p class="">
+                In SocketIt modules can be connected with their sockets. A module can have multiple sockets. Imagine a
+                LEGO brick.
+                You can connect the brick in various combinations but always limited to the nobs and holes of the brick.
+                A socket in
+                SocketIt represents both the knobs and holes.
+            </p>
+            <p>[img gif of sockets]
+            </p>
 
-        <p>Connected modules form a composition. A composition knows everything about its modules and can be used to
-        propagate events and information to them.</p>
+            <p>Connected modules form a composition. A composition knows everything about its modules and can be used to
+                propagate events and information to them.</p>
 
-        <h2 id="components">Components</h2>
-        <p class="">Copy the Editor folder from /SocketIt/Assets/Editor into your applications root directory.
-          This step is neccessary for Unity to activate the editor features.
-        </p>
+            <h2 id="components">Components</h2>
+            <p class="">SocketIt consists mainly of 3 basic components: Compositions, Modules and Sockets.
+            </p>
 
-        <h4 id="composition">Composition</h4>
-        <p class="">Copy the Editor folder from /SocketIt/Assets/Editor into your applications root directory.
-          This step is neccessary for Unity to activate the editor features.
-        </p>
+            <h3 id="module">Module</h3>
+            <p class="">Modules form the basis blocks of socketIt. Every GameObject that should be connectable to others
+                needs the Module Component. A Module by itself is kinda useless, it needs at least one socket component.
+            </p>
 
-        <h4 id="module">Module</h4>
-        <p class="">Copy the Editor folder from /SocketIt/Assets/Editor into your applications root directory.
-          This step is neccessary for Unity to activate the editor features.
-        </p>
+            <p>The normal structure of your modules looks like this:</p>
 
-        <h4 id="socket">Socket</h4>
-        <p class="">Copy the Editor folder from /SocketIt/Assets/Editor into your applications root directory.
-          This step is neccessary for Unity to activate the editor features.
-        </p>
+            <!--
+            [IMG OF MODULE SOCKET STRUCTURE]
+                - Module
+                    - Socket
+                    - Socket
+-->
+            <p>
+                A <code>Module</code> needs to be aware of its <code>Sockets</code>. You have to add them to the <code>Sockets</code> property of the <code>Module</code>
+            </p>
 
-        <h4 id="connection">Connection</h4>
-        <p class="">Copy the Editor folder from /SocketIt/Assets/Editor into your applications root directory.
-          This step is neccessary for Unity to activate the editor features.
-        </p>
-      </div>
+            <p class="alert alert-info" role="info">If you create a socket on a child element of a module, socketIt
+                will recognize it and adds the socket automatically to the modules socket property.
+            </p>
+
+            <p>
+                If two <code>Modules</code> are connected, they form a <code>Composition</code>. A Module can only be part
+                of one <code>Composition</code> at a time. Even though a <code>Module</code> needs at least one <code>Socket</code>
+                to work properly, you are free to combine the <code>Socket</code> and <code>Module</code> component in one <code>GameObject</code>
+            </p>
+
+            <h4>Module Events</h4>
+            <table class="table">
+                <thead class="thead-inverse">
+                <tr>
+                    <th>Event</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <th scope="row">On Snap</th>
+                    <td>Fired whenever a <code>Socket</code> of another <code>Module</code>
+                        snaps to a <code>Socket</code> ot this Module.
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">On Module Connected</th>
+                    <td>Fired whenever a <code>Module</code> connects to another <code>Module</code>. </td>
+                </tr>
+                <tr>
+                    <th scope="row">On Module Disconnected</th>
+                    <td>Fired whenever a <code>Module</code> gets disconnected from a connected <code>Module</code>. </td>
+                </tr>
+                <tr>
+                    <th scope="row">On Composition Changed</th>
+                    <td>Fired whenever a <code>Module</code> gets separated from its <code>Composition</code>
+                    or when a <code>Composition</code> gets split in half and the <code>Module</code> is part of the new <code>Composition</code></td>
+                </tr>
+                </tbody>
+            </table>
+
+            <p class="alert alert-info" role="info">All <code>Module</code> events are mirrored to the other <code>Module</code>.
+                When two Module get connected, both will fire the <code>On Module Connect</code> event.
+                See the <code><a href="#connection">Connection</a></code> section for detailed information.
+            </p>
+
+            <h3 id="composition">Composition</h3>
+            <p class="">Compositions
+            </p>
+
+            <h3>Composition Events</h3>
+            <table class="table">
+                <thead class="thead-inverse">
+                <tr>
+                    <th>Event</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <th scope="row">On Module Added</th>
+                    <td>test</td>
+                </tr>
+                <tr>
+                    <th scope="row">On Module Removed</th>
+                    <td>test</td>
+                </tr>
+                <tr>
+                    <th scope="row">On Connection Added</th>
+                    <td>test</td>
+                </tr>
+                <tr>
+                    <th scope="row">On Composition Added</th>
+                    <td>test</td>
+                </tr>
+                <tr>
+                    <th scope="row">On Origin Changed</th>
+                    <td>test</td>
+                </tr>
+                <tr>
+                    <th scope="row">On Connection Added</th>
+                    <td>test</td>
+                </tr>
+                </tbody>
+            </table>
+
+
+            <h4 id="socket">Socket</h4>
+            <p class="">Copy the Editor folder from /SocketIt/Assets/Editor into your applications root directory.
+                This step is neccessary for Unity to activate the editor features.
+            </p>
+
+            <h4 id="connection">Connection</h4>
+            <p class="">Copy the Editor folder from /SocketIt/Assets/Editor into your applications root directory.
+                This step is neccessary for Unity to activate the editor features.
+            </p>
+        </div>
     </div>
 
     <h2 id="prefabs">Prefabs</h2>
     <p class="">Copy the Editor folder from /SocketIt/Assets/Editor into your applications root directory.
-      This step is neccessary for Unity to activate the editor features.
+        This step is neccessary for Unity to activate the editor features.
     </p>
 
     <h4 id="prefab-composition">Composition</h4>
     <p class="">Copy the Editor folder from /SocketIt/Assets/Editor into your applications root directory.
-      This step is neccessary for Unity to activate the editor features.
+        This step is neccessary for Unity to activate the editor features.
     </p>
 
     <h4 id="prefab-composition-manager">CompositionManager</h4>
     <p class="">Copy the Editor folder from /SocketIt/Assets/Editor into your applications root directory.
-      This step is neccessary for Unity to activate the editor features.
+        This step is neccessary for Unity to activate the editor features.
     </p>
 
     <h2 id="getting-started">Getting Started</h2>
     <p class="">Copy the Editor folder from /SocketIt/Assets/Editor into your applications root directory.
-      This step is neccessary for Unity to activate the editor features.
+        This step is neccessary for Unity to activate the editor features.
     </p>
 
     <h2 id="snapping">Snapping</h2>
     <p class="">Copy the Editor folder from /SocketIt/Assets/Editor into your applications root directory.
-      This step is neccessary for Unity to activate the editor features.
+        This step is neccessary for Unity to activate the editor features.
     </p>
 
     <h2 id="events">Events</h2>
     <p class="">Copy the Editor folder from /SocketIt/Assets/Editor into your applications root directory.
-      This step is neccessary for Unity to activate the editor features.
+        This step is neccessary for Unity to activate the editor features.
     </p>
 
     <h2 id="exceptions">Exceptions</h2>
     <p class="">Copy the Editor folder from /SocketIt/Assets/Editor into your applications root directory.
-      This step is neccessary for Unity to activate the editor features.
+        This step is neccessary for Unity to activate the editor features.
     </p>
 
     <h2 id="problems">Problems</h2>
     <p class="">Copy the Editor folder from /SocketIt/Assets/Editor into your applications root directory.
-      This step is neccessary for Unity to activate the editor features.
+        This step is neccessary for Unity to activate the editor features.
     </p>
 
     <footer class="footer">
-      <p>&copy; 2017 Ephelion Labs</p>
+        <p>&copy; 2017 Ephelion Labs</p>
     </footer>
 
-  </div> <!-- /container -->
+</div> <!-- /container -->
 
-  </body>
+</body>
 </html>
